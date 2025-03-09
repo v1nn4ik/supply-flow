@@ -1,0 +1,43 @@
+<div class="avatar-name">
+  <img src="/assets/avatar.jpg" alt="avatar" class="avatar">
+  <span>Винник Константин Алексеевич</span>
+</div>
+
+<div class="nav-buttons">
+  <nav>
+    <ul class="sidebar-menu-list">
+      @for (item of menuItems.slice(0, menuItems.length - 2); track item) {
+        <li class="menu-item"
+            [routerLink]="[item.link]"
+            [class.active]="item.isActive"
+            (click)="toggleActivate(item)">
+          <svg [icon]="switchIcon(item)"
+               class="menu-item__icon">
+          </svg>
+          {{ item.label }}
+        </li>
+      }
+    </ul>
+  </nav>
+  <div class="nav-buttons__bottom">
+    <button class="sidebar-menu-button" *ngIf="showButton">
+      {{ buttonText }}
+    </button>
+    <nav>
+      <ul class="sidebar-bottom-menu-list">
+        @for (item of menuItems.slice(menuItems.length - 2); track item) {
+          <li class="menu-item"
+              [routerLink]="[item.link]"
+              [class.active]="item.isActive"
+              (click)="toggleActivate(item)">
+            <svg [icon]="switchIcon(item)"
+                 class="menu-item__icon">
+            </svg>
+            {{ item.label }}
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
+</div>
+

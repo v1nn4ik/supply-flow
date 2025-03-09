@@ -1,0 +1,42 @@
+.supply-card {
+  margin: 24px 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 18px;
+  height: 160px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.supply-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.info__status {
+  color: var(--ligher-gray-color);
+}
+
+.info__title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.info__author {
+  color: var(--ligher-gray-color);
+}
+
+.details-button {
+  margin-top: 12px;
+}
+
+.supply-card__image {
+  height: 100%;
+  width: 25%;
+  object-fit: cover;
+  border: none;
+  border-radius: 8px;
+}

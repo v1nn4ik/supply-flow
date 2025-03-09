@@ -1,0 +1,6 @@
+.task-card {
+  background: var(--light-blue-color);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
