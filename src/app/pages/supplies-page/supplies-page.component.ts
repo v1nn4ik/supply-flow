@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import {SupplyCardComponent} from '../../supply-card/supply-card.component';
+import { SupplyCardComponent } from '../../components/supply-card/supply-card.component';
+
 @Component({
   selector: 'app-supplies-page',
   imports: [

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SvgIconComponent} from '../svg-icon/svg-icon.component';
+import {SvgIconComponent} from '../../shared/svg-icon/svg-icon.component';
 import {ActivatedRoute, NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter} from 'rxjs';
 import {NgIf} from '@angular/common';

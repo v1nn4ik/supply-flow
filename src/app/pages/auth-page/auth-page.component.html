@@ -1,0 +1,53 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Добро пожаловать</h1>
+    <p>Войдите в систему для продолжения работы</p>
+
+    <div class="form-group" *ngIf="!isCodeSent">
+      <label for="phone">Номер телефона</label>
+      <input
+        type="tel"
+        id="phone"
+        [(ngModel)]="phone"
+        [prefix]="'+7 '"
+        mask="(000) 000-00-00"
+        [showMaskTyped]="true"
+        [dropSpecialCharacters]="false"
+        [leadZero]="false"
+        placeholder="+7 (___) ___-__-__"
+      >
+      <button class="continue-button" (click)="requestCode()">Получить код</button>
+    </div>
+
+    <div class="form-group" *ngIf="isCodeSent">
+      <label for="code">Код подтверждения</label>
+      <input
+        type="text"
+        id="code"
+        [(ngModel)]="code"
+        mask="000000"
+        [validation]="true"
+        placeholder="Введите код из SMS"
+      >
+      <button class="continue-button" (click)="verifyCode()">Подтвердить</button>
+      
+      <div class="resend-section">
+        <button 
+          class="resend-button" 
+          [disabled]="!canResend"
+          (click)="resendCode()"
+        >
+          {{ canResend ? 'Отправить код повторно' : 'Повторная отправка через ' + timeLeft + ' сек' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+    
+    <button class="logout-button" (click)="logout()" *ngIf="authService.getToken()">
+      Выйти из системы
+    </button>
+  </div>
+</div>
