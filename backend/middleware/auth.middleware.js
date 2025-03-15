@@ -1,20 +1,29 @@
 const jwt = require('jsonwebtoken');
 
-// Валидация номера телефона (Российский формат)
+// Валидация номера телефона (только количество цифр)
 const validatePhoneNumber = (req, res, next) => {
   const { phone } = req.body;
-  const phoneRegex = /^7[9][0-9]{9}$/;
-
+  
+  console.log('Получен номер телефона:', phone);
+  console.log('Тип номера:', typeof phone);
+  
   if (!phone) {
     return res.status(400).json({ message: 'Необходимо указать номер телефона' });
   }
 
-  if (!phoneRegex.test(phone)) {
+  // Убираем все нецифровые символы
+  const cleanPhone = phone.replace(/\D/g, '');
+  
+  // Проверяем только длину номера (11 цифр)
+  if (cleanPhone.length !== 11) {
     return res.status(400).json({ 
-      message: 'Неверный формат номера телефона. Используйте формат: 79XXXXXXXXX' 
+      message: 'Номер телефона должен содержать 11 цифр' 
     });
   }
 
+  // Сохраняем очищенный номер
+  req.body.phone = cleanPhone;
+  
   next();
 };
 

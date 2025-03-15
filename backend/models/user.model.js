@@ -17,6 +17,26 @@ const userSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false,
+  },
+  hasCompletedRegistration: {
+    type: Boolean,
+    default: false,
+  },
+  lastName: {
+    type: String,
+    default: null,
+  },
+  firstName: {
+    type: String,
+    default: null,
+  },
+  middleName: {
+    type: String,
+    default: null,
+  },
+  birthDate: {
+    type: String,
+    default: '',
   }
 }, { timestamps: true });
 

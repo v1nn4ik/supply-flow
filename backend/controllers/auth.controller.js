@@ -85,7 +85,7 @@ class AuthController {
 
   static async verifyCode(req, res) {
     try {
-      const { phone, code } = req.body;
+      const { phone, code, lastName, firstName, middleName } = req.body;
 
       if (!phone || !code) {
         return res.status(400).json({ message: 'Необходимо указать номер телефона и код' });
@@ -101,10 +101,36 @@ class AuthController {
         return res.status(400).json({ message: 'Неверный или просроченный код' });
       }
 
+      // Сохраняем текущие данные пользователя
+      const currentUserData = {
+        lastName: user.lastName,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        birthDate: user.birthDate,
+        hasCompletedRegistration: user.hasCompletedRegistration
+      };
+
       // Очищаем код верификации и помечаем пользователя как верифицированного
       user.verificationCode = null;
       user.verificationCodeExpires = null;
       user.isVerified = true;
+
+      // Обновляем данные пользователя только если они предоставлены И пользователь еще не завершил регистрацию
+      if (lastName && firstName && !currentUserData.hasCompletedRegistration) {
+        user.lastName = lastName;
+        user.firstName = firstName;
+        user.middleName = middleName || '';
+        user.birthDate = ''; // Устанавливаем пустую строку при первой регистрации
+        user.hasCompletedRegistration = true;
+      } else {
+        // Восстанавливаем существующие данные
+        user.lastName = currentUserData.lastName;
+        user.firstName = currentUserData.firstName;
+        user.middleName = currentUserData.middleName;
+        user.birthDate = currentUserData.birthDate;
+        user.hasCompletedRegistration = currentUserData.hasCompletedRegistration;
+      }
+
       await user.save();
 
       // Создаем JWT токен
@@ -114,7 +140,18 @@ class AuthController {
         { expiresIn: '7d' }
       );
 
-      res.json({ token, user: { id: user._id, phone: user.phone } });
+      res.json({ 
+        token, 
+        user: { 
+          id: user._id, 
+          phone: user.phone,
+          lastName: user.lastName,
+          firstName: user.firstName,
+          middleName: user.middleName,
+          birthDate: user.birthDate,
+          hasCompletedRegistration: user.hasCompletedRegistration
+        } 
+      });
     } catch (error) {
       console.error('Ошибка верификации кода:', error);
       res.status(500).json({ message: 'Внутренняя ошибка сервера' });
@@ -161,6 +198,87 @@ class AuthController {
       });
     } catch (error) {
       console.error('Ошибка получения списка пользователей:', error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+  }
+
+  static async checkUser(req, res) {
+    try {
+      const { phone } = req.body;
+      const user = await User.findOne({ phone });
+
+      if (user && user.hasCompletedRegistration) {
+        res.json({
+          hasUserData: true,
+          userData: {
+            lastName: user.lastName,
+            firstName: user.firstName,
+            middleName: user.middleName,
+            birthDate: user.birthDate
+          }
+        });
+      } else {
+        res.json({
+          hasUserData: false
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка проверки пользователя:', error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+  }
+
+  static async getUserData(req, res) {
+    try {
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+
+      res.json({
+        lastName: user.lastName,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        birthDate: user.birthDate,
+        hasCompletedRegistration: user.hasCompletedRegistration
+      });
+    } catch (error) {
+      console.error('Ошибка получения данных пользователя:', error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+  }
+
+  static async updateUserData(req, res) {
+    try {
+      const { lastName, firstName, middleName, birthDate } = req.body;
+      
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+
+      // Обновляем данные пользователя
+      user.lastName = lastName;
+      user.firstName = firstName;
+      user.middleName = middleName || '';
+      user.birthDate = birthDate || '';
+      user.hasCompletedRegistration = true;
+
+      await user.save();
+
+      const savedUser = {
+        lastName: user.lastName,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        birthDate: user.birthDate,
+        hasCompletedRegistration: user.hasCompletedRegistration
+      };
+
+      res.json(savedUser);
+    } catch (error) {
+      console.error('Ошибка обновления данных пользователя:', error);
       res.status(500).json({ message: 'Внутренняя ошибка сервера' });
     }
   }

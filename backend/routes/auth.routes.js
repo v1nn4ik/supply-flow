@@ -16,7 +16,17 @@ router.post('/verify', validatePhoneNumber, AuthController.verifyCode);
 // Маршрут для проверки статуса верификации (защищенный)
 router.get('/status', verifyToken, AuthController.checkVerificationStatus);
 
+// Маршруты для работы с данными пользователя (защищенные)
+router.get('/user/data', verifyToken, AuthController.getUserData);
+router.post('/user/data', verifyToken, AuthController.updateUserData);
+
 // Маршрут для получения списка всех пользователей (только для разработки)
 router.get('/users', AuthController.getAllUsers);
+
+// Новый маршрут для проверки пользователя
+router.post('/check-user', AuthController.checkUser);
+
+// Новый маршрут для получения статуса верификации
+router.get('/check-verification', AuthController.checkVerificationStatus);
 
 module.exports = router; 

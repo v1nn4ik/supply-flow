@@ -1,6 +1,6 @@
 <div class="avatar-name">
   <img src="/assets/avatar.jpg" alt="avatar" class="avatar">
-  <span>Винник Константин Алексеевич</span>
+  <span>{{ userName || 'Загрузка...' }}</span>
 </div>
 
 <div class="nav-buttons">
@@ -9,8 +9,12 @@
       @for (item of menuItems.slice(0, menuItems.length - 2); track item) {
         <li class="menu-item"
             [routerLink]="[item.link]"
-            [class.active]="item.isActive"
-            (click)="toggleActivate(item)">
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: true}"
+            (click)="onMenuItemClick(item)"
+            (keydown.enter)="onMenuItemClick(item)"
+            tabindex="0"
+            role="menuitem">
           <svg [icon]="switchIcon(item)"
                class="menu-item__icon">
           </svg>
@@ -28,8 +32,12 @@
         @for (item of menuItems.slice(menuItems.length - 2); track item) {
           <li class="menu-item"
               [routerLink]="[item.link]"
-              [class.active]="item.isActive"
-              (click)="toggleActivate(item)">
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}"
+              (click)="onMenuItemClick(item)"
+              (keydown.enter)="onMenuItemClick(item)"
+              tabindex="0"
+              role="menuitem">
             <svg [icon]="switchIcon(item)"
                  class="menu-item__icon">
             </svg>

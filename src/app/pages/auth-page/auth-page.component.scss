@@ -105,3 +105,91 @@ p {
   margin-top: 1rem;
   text-align: center;
 }
+
+.phone-input-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.phone-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #4285f4;
+  }
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+
+.code-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  color: #333;
+  text-align: center;
+  letter-spacing: 1px;
+
+  &:focus {
+    outline: none;
+    border-color: #4285f4;
+  }
+
+  &::placeholder {
+    color: #999;
+    letter-spacing: 1px;
+  }
+}
+
+.user-info {
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #4285f4;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Стили для маски
+::ng-deep {
+  .ngx-mask-placeholder {
+    color: #999 !important;
+  }
+}

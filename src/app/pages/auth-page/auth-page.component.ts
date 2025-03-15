@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 import { provideNgxMask, NgxMaskDirective } from 'ngx-mask';
 
 @Component({
@@ -14,113 +15,187 @@ import { provideNgxMask, NgxMaskDirective } from 'ngx-mask';
   styleUrl: './auth-page.component.scss'
 })
 export class AuthPageComponent implements OnInit {
-  phone: string = '+7';
+  phone: string = '';
   code: string = '';
+  lastName: string = '';
+  firstName: string = '';
+  middleName: string = '';
+  birthDate: string = '';
+  maxDate: string;
   isCodeSent: boolean = false;
   errorMessage: string = '';
   timeLeft: number = 0;
   canResend: boolean = true;
+  hasExistingUserData: boolean = false;
 
   constructor(
     private router: Router,
-    public authService: AuthService
-  ) {}
+    public authService: AuthService,
+    private userService: UserService
+  ) {
+    // Устанавливаем максимальную дату как текущую
+    const today = new Date();
+    this.maxDate = today.toISOString().split('T')[0];
+  }
 
   ngOnInit() {
-    // Если пользователь уже авторизован, перенаправляем его
     if (this.authService.getToken()) {
       this.router.navigate(['/app']);
     }
   }
 
-  handlePhoneInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-
-    // Если начинается с 7, удаляем эту цифру
-    if (value.startsWith('7')) {
-      value = value.substring(1);
-    }
-
-    // Всегда добавляем +7 в начало
-    this.phone = '+7' + value;
-  }
-
-  logout(): void {
-    this.authService.logout();
-    window.location.reload();
-  }
-
   private getCleanPhone(): string {
-    // Убираем все нецифровые символы и добавляем 7 в начало, если его нет
-    let cleaned = this.phone.replace(/\D/g, '');
-    if (cleaned.length > 0 && cleaned[0] !== '7') {
-      cleaned = '7' + cleaned;
-    }
-    return cleaned;
+    const digits = this.phone.replace(/\D/g, '');
+    return `7${digits}`;
   }
 
-  requestCode(): void {
+  requestCode() {
     const cleanPhone = this.getCleanPhone();
-    
     if (cleanPhone.length !== 11) {
       this.errorMessage = 'Введите корректный номер телефона';
       return;
     }
 
-    this.authService.requestCode(cleanPhone).subscribe({
+    // Сначала проверяем, есть ли данные пользователя
+    this.authService.checkUser(cleanPhone).subscribe({
       next: (response) => {
-        this.isCodeSent = true;
-        this.errorMessage = '';
-        this.startTimer(response.timeLeft || 120);
+        this.hasExistingUserData = response.hasUserData;
+        
+        // После проверки отправляем код
+        this.authService.requestCode(cleanPhone).subscribe({
+          next: (response) => {
+            this.isCodeSent = true;
+            this.errorMessage = '';
+            if (response.timeLeft) {
+              this.startTimer(response.timeLeft);
+            }
+          },
+          error: (error) => {
+            this.errorMessage = error.error.message || 'Произошла ошибка при отправке кода';
+          }
+        });
       },
       error: (error) => {
-        if (error.error.timeLeft) {
-          this.errorMessage = error.error.message;
-          this.startTimer(error.error.timeLeft);
-        } else {
-          this.errorMessage = 'Произошла ошибка при отправке кода';
-        }
+        this.errorMessage = error.error.message || 'Произошла ошибка при проверке пользователя';
       }
     });
   }
 
-  resendCode(): void {
-    if (!this.canResend) return;
+  resendCode() {
+    if (!this.canResend) {
+      return;
+    }
 
     const cleanPhone = this.getCleanPhone();
     this.authService.resendCode(cleanPhone).subscribe({
       next: (response) => {
         this.errorMessage = '';
-        this.startTimer(response.timeLeft || 120);
+        if (response.timeLeft) {
+          this.startTimer(response.timeLeft);
+        }
       },
       error: (error) => {
-        if (error.error.timeLeft) {
-          this.errorMessage = error.error.message;
-          this.startTimer(error.error.timeLeft);
-        } else {
-          this.errorMessage = 'Произошла ошибка при повторной отправке кода';
-        }
+        this.errorMessage = error.error.message || 'Произошла ошибка при повторной отправке кода';
       }
     });
   }
 
-  verifyCode(): void {
-    if (!this.code) {
-      this.errorMessage = 'Введите код подтверждения';
+  verifyCode() {
+    const cleanPhone = this.getCleanPhone();
+    
+    // Проверяем валидность кода
+    if (this.code.length !== 6) {
+      this.errorMessage = 'Введите корректный код подтверждения';
       return;
     }
 
-    const cleanPhone = this.getCleanPhone();
-    this.authService.verifyCode(cleanPhone, this.code).subscribe({
+    // Проверяем валидность имени и фамилии для новых пользователей
+    if (!this.hasExistingUserData) {
+      if (!this.isFormValid()) {
+        return;
+      }
+    }
+
+    const verificationData = {
+      phone: cleanPhone,
+      code: this.code,
+      ...((!this.hasExistingUserData && {
+        lastName: this.capitalizeFirstLetter(this.lastName.trim()),
+        firstName: this.capitalizeFirstLetter(this.firstName.trim()),
+        middleName: this.middleName.trim() ? this.capitalizeFirstLetter(this.middleName.trim()) : ''
+      }))
+    };
+
+    this.authService.verifyCode(verificationData).subscribe({
       next: (response) => {
         this.authService.setToken(response.token);
+        this.userService.loadUserData();
         this.router.navigate(['/app']);
       },
       error: (error) => {
-        this.errorMessage = error.error.message || 'Неверный код подтверждения';
+        this.errorMessage = error.error.message || 'Произошла ошибка при проверке кода';
       }
     });
+  }
+
+  private isFormValid(): boolean {
+    if (!this.lastName.trim() || !this.firstName.trim()) {
+      this.errorMessage = 'Пожалуйста, заполните обязательные поля';
+      return false;
+    }
+
+    // Проверка формата фамилии (одно или два слова через дефис)
+    const lastNamePattern = /^[А-ЯЁ][а-яё]+(-[А-ЯЁ][а-яё]+)?$/;
+    if (!lastNamePattern.test(this.lastName.trim())) {
+      this.errorMessage = 'Фамилия должна содержать одно слово или два слова через дефис, начинаться с заглавной буквы и содержать только русские буквы';
+      return false;
+    }
+
+    // Проверка формата имени (одно слово)
+    const namePattern = /^[А-ЯЁ][а-яё]+$/;
+    if (!namePattern.test(this.firstName.trim())) {
+      this.errorMessage = 'Имя должно начинаться с заглавной буквы и содержать только русские буквы';
+      return false;
+    }
+
+    // Проверка формата отчества (одно слово)
+    if (this.middleName.trim() && !namePattern.test(this.middleName.trim())) {
+      this.errorMessage = 'Отчество должно начинаться с заглавной буквы и содержать только русские буквы';
+      return false;
+    }
+
+    // Проверка длины отдельных полей
+    if (this.lastName.trim().length > 25) {
+      this.errorMessage = 'Длина фамилии не должна превышать 25 символов';
+      return false;
+    }
+
+    if (this.firstName.trim().length > 15) {
+      this.errorMessage = 'Длина имени не должна превышать 15 символов';
+      return false;
+    }
+
+    if (this.middleName.trim().length > 15) {
+      this.errorMessage = 'Длина отчества не должна превышать 15 символов';
+      return false;
+    }
+
+    // Проверка общей длины ФИО
+    const totalLength = this.lastName.trim().length + 
+                       this.firstName.trim().length + 
+                       this.middleName.trim().length;
+    
+    if (totalLength > 38) {
+      this.errorMessage = 'Общая длина ФИО не должна превышать 38 символов';
+      return false;
+    }
+
+    return true;
+  }
+
+  private capitalizeFirstLetter(str: string): string {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
   private startTimer(seconds: number): void {
@@ -134,5 +209,11 @@ export class AuthPageComponent implements OnInit {
         this.canResend = true;
       }
     }, 1000);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.userService.clearUserData();
+    window.location.reload();
   }
 }
