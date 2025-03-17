@@ -1,46 +1,94 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const SmsService = require('../services/sms.service');
+const fs = require('fs');
+const path = require('path');
 
-// Константы для управления временем
-const RESEND_TIMEOUT = 2 * 60 * 1000; // 2 минуты в миллисекундах
+// Константы
+const RESEND_TIMEOUT = 2 * 60 * 1000; // 2 минуты
+const JWT_EXPIRATION = '7d';
 
 class AuthController {
+  // Вспомогательные методы
+  static async _findUserByPhone(phone) {
+    return await User.findOne({ phone });
+  }
+
+  static _getTimeLeft(expirationDate) {
+    return Math.ceil((expirationDate - new Date()) / 1000);
+  }
+
+  static _createToken(user) {
+    return jwt.sign(
+      { userId: user._id, phone: user.phone },
+      process.env.JWT_SECRET,
+      { expiresIn: JWT_EXPIRATION }
+    );
+  }
+
+  static _validatePhoneNumber(phone) {
+    return /^7\d{10}$/.test(phone);
+  }
+
+  static _handleServerError(res, error) {
+    console.error('Server error:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
+
+  static _getUserPublicData(user) {
+    return {
+      lastName: user.lastName,
+      firstName: user.firstName,
+      middleName: user.middleName,
+      birthDate: user.birthDate,
+      profilePhoto: user.profilePhoto,
+      hasCompletedRegistration: user.hasCompletedRegistration
+    };
+  }
+
+  // Основные методы контроллера
+  static async getAllUsers(req, res) {
+    try {
+      const users = await User.find(
+        { hasCompletedRegistration: true },
+        'firstName lastName middleName email'
+      );
+      res.json(users);
+    } catch (error) {
+      AuthController._handleServerError(res, error);
+    }
+  }
+
   static async requestAuth(req, res) {
     try {
       const { phone } = req.body;
 
-      // Проверяем, не отправляли ли мы код недавно
       const existingUser = await User.findOne({ phone });
       if (existingUser && existingUser.verificationCodeExpires > new Date()) {
         const timeLeft = Math.ceil((existingUser.verificationCodeExpires - new Date()) / 1000);
         return res.status(400).json({ 
           message: `Повторная отправка кода будет доступна через ${timeLeft} секунд`,
-          timeLeft: timeLeft
+          timeLeft
         });
       }
 
-      // Генерируем код верификации
       const verificationCode = SmsService.generateVerificationCode();
       const verificationCodeExpires = new Date(Date.now() + RESEND_TIMEOUT);
 
-      // Создаем или обновляем пользователя
       let user = existingUser || new User({ phone });
       user.verificationCode = verificationCode;
       user.verificationCodeExpires = verificationCodeExpires;
       user.isVerified = false;
       await user.save();
 
-      // Отправляем SMS
       await SmsService.sendVerificationCode(phone, verificationCode);
 
       res.json({ 
         message: 'Код подтверждения успешно отправлен',
-        resendAvailable: new Date(Date.now() + RESEND_TIMEOUT)
+        timeLeft: RESEND_TIMEOUT / 1000
       });
     } catch (error) {
-      console.error('Ошибка запроса авторизации:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
     }
   }
 
@@ -53,16 +101,14 @@ class AuthController {
         return res.status(404).json({ message: 'Пользователь не найден' });
       }
 
-      // Проверяем, не отправляли ли мы код недавно
       if (user.verificationCodeExpires > new Date()) {
         const timeLeft = Math.ceil((user.verificationCodeExpires - new Date()) / 1000);
         return res.status(400).json({ 
           message: `Повторная отправка кода будет доступна через ${timeLeft} секунд`,
-          timeLeft: timeLeft
+          timeLeft
         });
       }
 
-      // Генерируем новый код
       const verificationCode = SmsService.generateVerificationCode();
       const verificationCodeExpires = new Date(Date.now() + RESEND_TIMEOUT);
 
@@ -70,16 +116,14 @@ class AuthController {
       user.verificationCodeExpires = verificationCodeExpires;
       await user.save();
 
-      // Отправляем SMS
       await SmsService.sendVerificationCode(phone, verificationCode);
 
       res.json({ 
         message: 'Код подтверждения успешно отправлен повторно',
-        resendAvailable: new Date(Date.now() + RESEND_TIMEOUT)
+        timeLeft: RESEND_TIMEOUT / 1000
       });
     } catch (error) {
-      console.error('Ошибка повторной отправки кода:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
     }
   }
 
@@ -101,39 +145,36 @@ class AuthController {
         return res.status(400).json({ message: 'Неверный или просроченный код' });
       }
 
-      // Сохраняем текущие данные пользователя
       const currentUserData = {
         lastName: user.lastName,
         firstName: user.firstName,
         middleName: user.middleName,
         birthDate: user.birthDate,
+        profilePhoto: user.profilePhoto,
         hasCompletedRegistration: user.hasCompletedRegistration
       };
 
-      // Очищаем код верификации и помечаем пользователя как верифицированного
       user.verificationCode = null;
       user.verificationCodeExpires = null;
       user.isVerified = true;
 
-      // Обновляем данные пользователя только если они предоставлены И пользователь еще не завершил регистрацию
       if (lastName && firstName && !currentUserData.hasCompletedRegistration) {
         user.lastName = lastName;
         user.firstName = firstName;
         user.middleName = middleName || '';
-        user.birthDate = ''; // Устанавливаем пустую строку при первой регистрации
+        user.birthDate = '';
         user.hasCompletedRegistration = true;
       } else {
-        // Восстанавливаем существующие данные
         user.lastName = currentUserData.lastName;
         user.firstName = currentUserData.firstName;
         user.middleName = currentUserData.middleName;
         user.birthDate = currentUserData.birthDate;
+        user.profilePhoto = currentUserData.profilePhoto;
         user.hasCompletedRegistration = currentUserData.hasCompletedRegistration;
       }
 
       await user.save();
 
-      // Создаем JWT токен
       const token = jwt.sign(
         { userId: user._id, phone: user.phone },
         process.env.JWT_SECRET,
@@ -141,64 +182,20 @@ class AuthController {
       );
 
       res.json({ 
-        token, 
-        user: { 
-          id: user._id, 
+        token,
+        user: {
+          id: user._id,
           phone: user.phone,
           lastName: user.lastName,
           firstName: user.firstName,
           middleName: user.middleName,
           birthDate: user.birthDate,
+          profilePhoto: user.profilePhoto,
           hasCompletedRegistration: user.hasCompletedRegistration
-        } 
+        }
       });
     } catch (error) {
-      console.error('Ошибка верификации кода:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-    }
-  }
-
-  static async checkVerificationStatus(req, res) {
-    try {
-      const user = await User.findById(req.user.userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: 'Пользователь не найден' });
-      }
-
-      res.json({ 
-        isVerified: user.isVerified,
-        phone: user.phone
-      });
-    } catch (error) {
-      console.error('Ошибка проверки статуса верификации:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-    }
-  }
-
-  static async getAllUsers(req, res) {
-    try {
-      const users = await User.find({}, {
-        phone: 1,
-        isVerified: 1,
-        verificationCodeExpires: 1,
-        createdAt: 1,
-        updatedAt: 1
-      });
-
-      res.json({
-        totalUsers: users.length,
-        users: users.map(user => ({
-          phone: user.phone,
-          isVerified: user.isVerified,
-          canResendCode: user.verificationCodeExpires ? user.verificationCodeExpires < new Date() : true,
-          createdAt: user.createdAt,
-          lastUpdate: user.updatedAt
-        }))
-      });
-    } catch (error) {
-      console.error('Ошибка получения списка пользователей:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
     }
   }
 
@@ -214,7 +211,8 @@ class AuthController {
             lastName: user.lastName,
             firstName: user.firstName,
             middleName: user.middleName,
-            birthDate: user.birthDate
+            birthDate: user.birthDate,
+            profilePhoto: user.profilePhoto
           }
         });
       } else {
@@ -223,8 +221,7 @@ class AuthController {
         });
       }
     } catch (error) {
-      console.error('Ошибка проверки пользователя:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
     }
   }
 
@@ -241,11 +238,28 @@ class AuthController {
         firstName: user.firstName,
         middleName: user.middleName,
         birthDate: user.birthDate,
+        profilePhoto: user.profilePhoto,
         hasCompletedRegistration: user.hasCompletedRegistration
       });
     } catch (error) {
-      console.error('Ошибка получения данных пользователя:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
+    }
+  }
+
+  static async checkVerificationStatus(req, res) {
+    try {
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+
+      res.json({ 
+        isVerified: user.isVerified,
+        phone: user.phone
+      });
+    } catch (error) {
+      AuthController._handleServerError(res, error);
     }
   }
 
@@ -273,15 +287,87 @@ class AuthController {
         firstName: user.firstName,
         middleName: user.middleName,
         birthDate: user.birthDate,
+        profilePhoto: user.profilePhoto,
         hasCompletedRegistration: user.hasCompletedRegistration
       };
 
       res.json(savedUser);
     } catch (error) {
-      console.error('Ошибка обновления данных пользователя:', error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      AuthController._handleServerError(res, error);
+    }
+  }
+
+  static async uploadProfilePhoto(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'Файл не загружен' });
+      }
+
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        // Удаляем загруженный файл, если пользователь не найден
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+
+      // Если у пользователя уже было фото, удаляем старый файл
+      if (user.profilePhoto) {
+        const oldPhotoPath = path.join(__dirname, '..', 'uploads', path.basename(user.profilePhoto));
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
+      }
+
+      // Создаем URL фото для доступа через HTTP
+      const photoUrl = `/uploads/${req.file.filename}`;
+      
+      // Обновляем данные пользователя
+      user.profilePhoto = photoUrl;
+      await user.save();
+
+      res.json({ 
+        message: 'Фото профиля успешно загружено',
+        profilePhoto: photoUrl
+      });
+    } catch (error) {
+      // Пытаемся удалить загруженный файл в случае ошибки
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (e) {
+          console.error('Ошибка при удалении файла:', e);
+        }
+      }
+      this._handleServerError(res, error);
+    }
+  }
+
+  static async deleteProfilePhoto(req, res) {
+    try {
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+
+      // Если у пользователя есть фото, удаляем его
+      if (user.profilePhoto) {
+        const photoPath = path.join(__dirname, '..', 'uploads', path.basename(user.profilePhoto));
+        if (fs.existsSync(photoPath)) {
+          fs.unlinkSync(photoPath);
+        }
+        
+        // Очищаем ссылку на фото в профиле пользователя
+        user.profilePhoto = null;
+        await user.save();
+      }
+
+      res.json({ message: 'Фото профиля успешно удалено' });
+    } catch (error) {
+      this._handleServerError(res, error);
     }
   }
 }
 
-module.exports = AuthController; 
+module.exports = AuthController;

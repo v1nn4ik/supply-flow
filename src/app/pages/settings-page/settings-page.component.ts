@@ -5,11 +5,22 @@ import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    MatDatepickerModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatNativeDateModule
+  ],
   templateUrl: './settings-page.component.html',
   styleUrls: ['./settings-page.component.scss']
 })
@@ -18,10 +29,15 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   firstName: string = '';
   middleName: string = '';
   birthDate: string = '';
+  profilePhoto: string | null = null;
   maxDate: string;
-  
+
   successMessage: string = '';
   errorMessage: string = '';
+  photoSuccessMessage: string = '';
+  photoErrorMessage: string = '';
+
+  serverUrl: string = 'http://localhost:3000'; // URL сервера для полного пути к изображениям
   private userDataSubscription?: Subscription;
 
   constructor(
@@ -42,6 +58,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         this.firstName = userData.firstName;
         this.middleName = userData.middleName || '';
         this.birthDate = userData.birthDate || '';
+        this.profilePhoto = userData.profilePhoto || null;
       }
     });
 
@@ -66,9 +83,10 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         lastName: this.capitalizeFirstLetter(this.lastName.trim()),
         firstName: this.capitalizeFirstLetter(this.firstName.trim()),
         middleName: this.middleName.trim() ? this.capitalizeFirstLetter(this.middleName.trim()) : '',
-        birthDate: this.birthDate
+        birthDate: this.birthDate,
+        profilePhoto: this.profilePhoto
       };
-      
+
       this.userService.setUserData(updatedUserData);
       this.successMessage = 'Данные успешно сохранены';
       this.errorMessage = '';
@@ -81,6 +99,76 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Произошла ошибка при сохранении данных';
       this.successMessage = '';
     }
+  }
+
+  onPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length) {
+      const file = input.files[0];
+
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        this.photoErrorMessage = 'Пожалуйста, выберите файл изображения.';
+        this.photoSuccessMessage = '';
+        return;
+      }
+
+      // Проверка размера файла (5MB максимум)
+      if (file.size > 5 * 1024 * 1024) {
+        this.photoErrorMessage = 'Размер файла не должен превышать 5MB.';
+        this.photoSuccessMessage = '';
+        return;
+      }
+
+      // Очищаем предыдущие сообщения
+      this.photoErrorMessage = '';
+      this.photoSuccessMessage = '';
+
+      this.userService.uploadProfilePhoto(file)
+        .then(photoUrl => {
+          this.profilePhoto = photoUrl;
+          this.photoSuccessMessage = 'Фото профиля успешно загружено';
+
+          // Сбрасываем input, чтобы позволить загрузить тот же файл повторно
+          input.value = '';
+        })
+        .catch(error => {
+          this.photoErrorMessage = error || 'Ошибка при загрузке фото';
+
+          // Сбрасываем input, чтобы позволить загрузить тот же файл повторно
+          input.value = '';
+        });
+    }
+  }
+
+  deletePhoto() {
+    if (!this.profilePhoto) return;
+
+    this.userService.deleteProfilePhoto()
+      .then(() => {
+        this.profilePhoto = null;
+        this.photoSuccessMessage = 'Фото профиля успешно удалено';
+        this.photoErrorMessage = '';
+      })
+      .catch(error => {
+        this.photoErrorMessage = error || 'Ошибка при удалении фото';
+        this.photoSuccessMessage = '';
+      });
+  }
+
+  getInitials(): string {
+    let initials = '';
+
+    if (this.firstName) {
+      initials += this.firstName.charAt(0);
+    }
+
+    if (this.lastName) {
+      initials += this.lastName.charAt(0);
+    }
+
+    return initials.toUpperCase();
   }
 
   private isFormValid(): boolean {
@@ -134,10 +222,10 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     }
 
     // Проверка общей длины ФИО
-    const totalLength = this.lastName.trim().length + 
-                       this.firstName.trim().length + 
-                       this.middleName.trim().length;
-    
+    const totalLength = this.lastName.trim().length +
+      this.firstName.trim().length +
+      this.middleName.trim().length;
+
     if (totalLength > 38) {
       this.errorMessage = 'Общая длина ФИО не должна превышать 38 символов';
       this.successMessage = '';
@@ -149,7 +237,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       const selectedDate = new Date(this.birthDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Сбрасываем время до начала дня
-      
+
       if (selectedDate > today) {
         this.errorMessage = 'Дата рождения не может быть позже текущей даты';
         this.successMessage = '';

@@ -1,5 +1,8 @@
 <div class="avatar-name">
-  <img src="/assets/avatar.jpg" alt="avatar" class="avatar">
+  <div class="avatar-container" [ngClass]="{'has-photo': profilePhoto}">
+    <img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="avatar" class="avatar">
+    <div *ngIf="!profilePhoto" class="avatar-initials">{{ getInitials() }}</div>
+  </div>
   <span>{{ userName || 'Загрузка...' }}</span>
 </div>
 
@@ -48,4 +51,3 @@
     </nav>
   </div>
 </div>
-

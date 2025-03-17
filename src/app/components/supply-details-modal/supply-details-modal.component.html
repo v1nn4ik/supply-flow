@@ -1,0 +1,85 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Детали заявки</h2>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="details-section">
+        <div class="detail-row">
+          <span class="detail-label">Название:</span>
+          <span class="detail-value">{{ data.title }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Описание:</span>
+          <p class="detail-value description">{{ data.description }}</p>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Предметы:</span>
+          <div class="detail-value items-list">
+            @for (item of data.items; track $index) {
+              <div class="item">
+                <div class="item-info">
+                  <span class="item-name" [class.purchased]="item.purchased">{{ item.name }}</span>
+                  <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+                </div>
+                <div class="item-actions">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" 
+                           [checked]="item.purchased"
+                           (change)="onItemPurchasedChange($index, $event)">
+                    <span class="checkbox-button"></span>
+                  </label>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Приоритет:</span>
+          <span class="detail-value" [class]="getPriorityClass(data.priority)">
+            {{ getPriorityLabel(data.priority) }}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Срок исполнения:</span>
+          <span class="detail-value">{{ data.deadline | date:'dd.MM.yyyy' }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Статус:</span>
+          <select [ngModel]="data.status" (ngModelChange)="onStatusChange($event)" class="status-select">
+            @for (status of statuses; track status.value) {
+              <option [value]="status.value" [class]="getStatusClass(status.value)">
+                {{ status.label }}
+              </option>
+            }
+          </select>
+        </div>
+
+        @if (data.createdAt) {
+          <div class="detail-row">
+            <span class="detail-label">Создано:</span>
+            <span class="detail-value">{{ data.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+          </div>
+        }
+
+        @if (data.updatedAt) {
+          <div class="detail-row">
+            <span class="detail-label">Обновлено:</span>
+            <span class="detail-value">{{ data.updatedAt | date:'dd.MM.yyyy HH:mm' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="close-button" (click)="closeModal()">Закрыть</button>
+    </div>
+  </div>
+</div> 

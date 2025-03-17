@@ -1,0 +1,61 @@
+@use "../../styles/typography" as *;
+
+.supply-list {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.supply-item {
+  @include base-typography;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  h3 {
+    @include heading-typography;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+  }
+
+  p {
+    @include light-typography;
+    margin: 0;
+    color: var(--gray-color);
+  }
+}
+
+.supply-status {
+  @include base-typography;
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.status-new { 
+  background-color: #e3f2fd; 
+  color: #1976d2; 
+}
+
+.status-progress { 
+  background-color: #fff3e0; 
+  color: #f57c00; 
+}
+
+.status-completed { 
+  background-color: #e8f5e9; 
+  color: #388e3c; 
+}
+
+.status-cancelled { 
+  background-color: #ffebee; 
+  color: #d32f2f; 
+} 

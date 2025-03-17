@@ -1,9 +1,52 @@
 <div class="task-card">
-  <div class="icon-name">
-    <img src="" alt="" class="task-card__icon">
-    <div class="task-card__name">
-        <span>Обновить уровни</span>
-        <span>Сделать сегодня</span>
+  <div class="task-header">
+    <h3 class="task-title">{{ task.title }}</h3>
+    <div class="task-actions">
+      <select 
+        [ngModel]="task.status" 
+        (ngModelChange)="onStatusChange($event)"
+        class="status-select"
+        [class]="getStatusClass(task.status)"
+      >
+        @for (status of statuses; track status.value) {
+          <option 
+            [value]="status.value" 
+            [class]="getStatusClass(status.value)"
+          >
+            {{ status.label }}
+          </option>
+        }
+      </select>
+      <button class="delete-button" (click)="onDelete()">
+        Удалить
+      </button>
+    </div>
+  </div>
+
+  <div class="task-content">
+    @if (task.description) {
+      <p class="task-description">{{ task.description }}</p>
+    }
+
+    <div class="task-meta">
+      <div class="meta-item">
+        <span class="meta-label">Приоритет:</span>
+        <span class="meta-value" [class]="getPriorityClass(task.priority)">
+          {{ getPriorityLabel(task.priority) }}
+        </span>
+      </div>
+
+      <div class="meta-item">
+        <span class="meta-label">Срок:</span>
+        <span class="meta-value">{{ task.dueDate | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+
+      @if (task.assignedTo) {
+        <div class="meta-item">
+          <span class="meta-label">Исполнитель:</span>
+          <span class="meta-value">{{ getUserFullName(task.assignedTo) }}</span>
+        </div>
+      }
     </div>
   </div>
 </div>

@@ -1,0 +1,17 @@
+// Миксин для базовой типографики
+@mixin base-typography {
+  font-family: var(--font-family);
+  font-weight: 400;
+}
+
+// Миксин для заголовков
+@mixin heading-typography {
+  font-family: var(--font-family);
+  font-weight: 700;
+}
+
+// Миксин для легкого текста
+@mixin light-typography {
+  font-family: var(--font-family);
+  font-weight: 300;
+} 

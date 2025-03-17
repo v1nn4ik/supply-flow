@@ -1,0 +1,19 @@
+<div class="supply-list">
+  @for (supply of supplies; track supply.id) {
+    <div class="supply-item" (click)="openDetails(supply)">
+      <h3>{{ supply.title }}</h3>
+      <p>{{ supply.description }}</p>
+      <div class="supply-status" [class]="getStatusClass(supply.status)">
+        {{ getStatusLabel(supply.status) }}
+      </div>
+    </div>
+  }
+
+  @if (selectedSupply) {
+    <app-supply-details-modal
+      [data]="selectedSupply"
+      (close)="closeDetails()"
+      (statusChange)="onStatusChange($event)"
+    ></app-supply-details-modal>
+  }
+</div> 

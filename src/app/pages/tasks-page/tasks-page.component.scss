@@ -10,3 +10,69 @@ header {
   font-size: 30px;
   margin: 0;
 }
+
+.tasks-page {
+  padding: 2rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 2rem;
+    }
+
+    .create-task-button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #357abd;
+      }
+    }
+  }
+
+  .tasks-content {
+    .loading, .error, .no-tasks {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+
+    .error {
+      color: #dc3545;
+    }
+
+    .tasks-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+}
+
+// Стили для приоритетов
+.priority-high {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.priority-medium {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.priority-low {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}

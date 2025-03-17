@@ -16,7 +16,6 @@ class SmsService {
       
       return response.data;
     } catch (error) {
-      console.error('Ошибка отправки SMS:', error);
       throw new Error('Не удалось отправить SMS');
     }
   }

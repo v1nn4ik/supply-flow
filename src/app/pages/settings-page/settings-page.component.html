@@ -6,13 +6,45 @@
 
 <div class="settings-container">
   <h1 class="title">Настройки профиля</h1>
-  
+
+  <div class="settings-card">
+    <h2>Фото профиля</h2>
+
+    <div class="profile-photo-container">
+      <div class="profile-photo" [ngClass]="{'has-photo': profilePhoto}">
+        <img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="Фото профиля" class="profile-image">
+        <div *ngIf="!profilePhoto" class="no-photo">
+          {{ getInitials() }}
+        </div>
+      </div>
+
+      <div class="profile-photo-actions">
+        <label class="photo-upload-button">
+          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+          {{ profilePhoto ? 'Изменить фото' : 'Загрузить фото' }}
+        </label>
+
+        <button *ngIf="profilePhoto" class="photo-delete-button" (click)="deletePhoto()">
+          Удалить фото
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="photoSuccessMessage" class="success-message">
+      {{ photoSuccessMessage }}
+    </div>
+
+    <div *ngIf="photoErrorMessage" class="error-message">
+      {{ photoErrorMessage }}
+    </div>
+  </div>
+
   <div class="settings-card">
     <h2>Личные данные</h2>
-    
+
     <div class="form-group">
       <label for="lastName">Фамилия</label>
-      <input 
+      <input
         id="lastName"
         type="text"
         class="form-input"
@@ -23,7 +55,7 @@
 
     <div class="form-group">
       <label for="firstName">Имя</label>
-      <input 
+      <input
         id="firstName"
         type="text"
         class="form-input"
@@ -34,7 +66,7 @@
 
     <div class="form-group">
       <label for="middleName">Отчество</label>
-      <input 
+      <input
         id="middleName"
         type="text"
         class="form-input"
@@ -44,14 +76,12 @@
     </div>
 
     <div class="form-group">
-      <label for="birthDate">Дата рождения</label>
-      <input 
-        id="birthDate"
-        type="date"
-        class="form-input"
-        [(ngModel)]="birthDate"
-        [max]="maxDate"
-      >
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Дата рождения</mat-label>
+        <input matInput [matDatepicker]="birthDatePicker" [(ngModel)]="birthDate" [max]="maxDate">
+        <mat-datepicker-toggle matIconSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #birthDatePicker></mat-datepicker>
+      </mat-form-field>
     </div>
 
     <div class="button-container">
@@ -75,4 +105,3 @@
     </button>
   </div>
 </div>
-

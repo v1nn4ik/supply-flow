@@ -1,11 +1,57 @@
 <div class="supply-card">
-  <div class="supply-card__info">
-    <span class="info__status">В ожидании</span>
-    <span class="info__title">Офисные принадлежности</span>
-    <span class="info__author">Предоставил: Винник Константин Алексеевич</span>
-    <button class="details-button">
-      Посмотреть детали
+  <div class="card-content" (click)="onViewDetails()">
+    <div class="card-header">
+      <h3 class="card-title">{{ data.title }}</h3>
+      <div class="card-status" [class]="getStatusClass(data.status || 'new')">
+        {{ getStatusLabel(data.status || 'new') }}
+      </div>
+    </div>
+
+    <div class="card-body">
+      <p class="card-description">{{ data.description }}</p>
+
+      <div class="items-list">
+        @for (item of data.items; track $index) {
+          <div class="item" [class.purchased]="item.purchased">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="card-meta">
+        <div class="meta-item">
+          <span class="meta-label">Приоритет:</span>
+          <span class="meta-value" [class]="getPriorityClass(data.priority)">
+            {{ getPriorityLabel(data.priority) }}
+          </span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-label">Срок:</span>
+          <span class="meta-value">
+            {{ data.deadline | date:'dd.MM.yyyy' }}
+          </span>
+        </div>
+
+        @if (data.createdAt) {
+          <div class="meta-item">
+            <span class="meta-label">Создано:</span>
+            <span class="meta-value">
+              {{ data.createdAt | date:'dd.MM.yyyy' }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card-actions">
+    <button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
+      Подробнее
+    </button>
+    <button class="action-button delete-button" (click)="onDelete($event)">
+      Удалить
     </button>
   </div>
-  <img src="/assets/supply-request-icon.jpg" alt="request-image" class="supply-card__image">
 </div>

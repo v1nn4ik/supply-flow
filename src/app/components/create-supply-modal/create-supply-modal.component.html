@@ -1,0 +1,104 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Создание заявки в снабжение</h2>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="title">Название <span class="required">*</span></label>
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="formData.title"
+          placeholder="Введите название заявки"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="description">Описание <span class="required">*</span></label>
+        <textarea
+          id="description"
+          [(ngModel)]="formData.description"
+          placeholder="Введите описание заявки"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Приоритет</label>
+        <select id="priority" [(ngModel)]="formData.priority">
+          @for (priority of priorities; track priority.value) {
+            <option [value]="priority.value">{{ priority.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="deadline">Срок исполнения <span class="required">*</span></label>
+        <mat-form-field appearance="outline" class="date-field">
+          <input 
+            matInput 
+            [matDatepicker]="deadlinePicker" 
+            [(ngModel)]="formData.deadline" 
+            [min]="minDate"
+            [matDatepickerFilter]="filterDate"
+            placeholder="Выберите дату"
+          >
+          <mat-datepicker-toggle matIconSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+          <mat-datepicker #deadlinePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="items-section">
+        <h3>Предметы <span class="required">*</span></h3>
+        
+        <div class="items-list">
+          @for (item of formData.items; track $index) {
+            <div class="item-row">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+              <button class="remove-item" (click)="removeItem($index)">×</button>
+            </div>
+          }
+        </div>
+
+        <div class="add-item-form">
+          <div class="form-group">
+            <input
+              type="text"
+              [(ngModel)]="newItem.name"
+              placeholder="Название предмета"
+            >
+          </div>
+          <div class="form-group">
+            <input
+              type="number"
+              [(ngModel)]="newItem.quantity"
+              min="1"
+              placeholder="Количество"
+            >
+          </div>
+          <div class="form-group">
+            <select [(ngModel)]="newItem.unit">
+              @for (unit of units; track unit.value) {
+                <option [value]="unit.value">{{ unit.label }}</option>
+              }
+            </select>
+          </div>
+          <button class="add-item-button" (click)="addItem()">Добавить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        class="create-button" 
+        (click)="createSupply()"
+        [disabled]="!isFormValid"
+      >
+        Создать заявку
+      </button>
+    </div>
+  </div>
+</div> 

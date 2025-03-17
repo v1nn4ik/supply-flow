@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
   birthDate: {
     type: String,
     default: '',
+  },
+  profilePhoto: {
+    type: String,
+    default: null,
   }
 }, { timestamps: true });
 

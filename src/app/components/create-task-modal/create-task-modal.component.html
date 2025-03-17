@@ -1,0 +1,90 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Создание новой задачи</h2>
+    
+    <div *ngIf="validationError" class="error-message">
+      {{ validationError }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #taskForm="ngForm">
+      <div class="form-group">
+        <label for="title">Название *</label>
+        <input 
+          type="text" 
+          id="title" 
+          [(ngModel)]="task.title" 
+          name="title" 
+          required
+          #titleInput="ngModel"
+          [class.invalid]="titleInput.invalid && (titleInput.dirty || titleInput.touched)"
+        >
+        <div class="hint">Обязательное поле</div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Описание</label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="task.description" 
+          name="description"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Приоритет</label>
+        <select id="priority" [(ngModel)]="task.priority" name="priority">
+          <option value="low">Низкий</option>
+          <option value="medium">Средний</option>
+          <option value="high">Высокий</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="dueDate">Срок выполнения *</label>
+        <input 
+          type="datetime-local" 
+          id="dueDate" 
+          [(ngModel)]="task.dueDate" 
+          name="dueDate"
+          required
+          #dueDateInput="ngModel"
+          [class.invalid]="dueDateInput.invalid && (dueDateInput.dirty || dueDateInput.touched)"
+        >
+        <div class="hint">Обязательное поле</div>
+      </div>
+
+      <div class="form-group">
+        <label for="assignedTo">Исполнитель *</label>
+        <select 
+          id="assignedTo" 
+          [(ngModel)]="task.assignedTo" 
+          name="assignedTo"
+          required
+          #assignedToInput="ngModel"
+          [class.invalid]="assignedToInput.invalid && (assignedToInput.dirty || assignedToInput.touched)"
+          class="user-select"
+        >
+          <option value="">Выберите исполнителя</option>
+          @for (user of users; track user._id) {
+            <option [value]="user._id">
+              {{ getUserFullName(user) }}
+            </option>
+          }
+        </select>
+        <div class="hint">Обязательное поле</div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="cancel-button" (click)="onClose()">Отмена</button>
+        <button 
+          type="submit" 
+          class="submit-button"
+          [disabled]="taskForm.invalid"
+        >
+          Создать
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 

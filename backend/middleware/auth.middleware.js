@@ -3,27 +3,24 @@ const jwt = require('jsonwebtoken');
 // Валидация номера телефона (только количество цифр)
 const validatePhoneNumber = (req, res, next) => {
   const { phone } = req.body;
-  
-  console.log('Получен номер телефона:', phone);
-  console.log('Тип номера:', typeof phone);
-  
+
   if (!phone) {
     return res.status(400).json({ message: 'Необходимо указать номер телефона' });
   }
 
   // Убираем все нецифровые символы
   const cleanPhone = phone.replace(/\D/g, '');
-  
+
   // Проверяем только длину номера (11 цифр)
   if (cleanPhone.length !== 11) {
-    return res.status(400).json({ 
-      message: 'Номер телефона должен содержать 11 цифр' 
+    return res.status(400).json({
+      message: 'Номер телефона должен содержать 11 цифр'
     });
   }
 
   // Сохраняем очищенный номер
   req.body.phone = cleanPhone;
-  
+
   next();
 };
 
@@ -47,4 +44,4 @@ const verifyToken = (req, res, next) => {
 module.exports = {
   validatePhoneNumber,
   verifyToken
-}; 
+};

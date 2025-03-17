@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 export interface UserData {
@@ -7,7 +7,16 @@ export interface UserData {
   firstName: string;
   middleName: string;
   birthDate?: string;
+  profilePhoto?: string | null;
   hasCompletedRegistration?: boolean;
+}
+
+export interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
 }
 
 const API_URL = 'http://localhost:3000/api';
@@ -20,7 +29,6 @@ export class UserService {
   userData$ = this.userData.asObservable();
 
   constructor(private http: HttpClient) {
-    // При инициализации загружаем данные пользователя с сервера
     this.loadUserData();
   }
 
@@ -42,6 +50,23 @@ export class UserService {
     }
   }
 
+  getCurrentUser(): Observable<User | null> {
+    const userData = this.getUserData();
+    if (!userData) {
+      return new Observable(subscriber => subscriber.next(null));
+    }
+
+    return this.getUsers().pipe(
+      map(users => {
+        const user = users.find(user => 
+          user.firstName === userData.firstName && 
+          user.lastName === userData.lastName
+        );
+        return user || null;
+      })
+    );
+  }
+
   setUserData(data: UserData): void {
     const token = localStorage.getItem('token');
     if (token) {
@@ -60,6 +85,63 @@ export class UserService {
     }
   }
 
+  uploadProfilePhoto(file: File): Promise<string> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return Promise.reject('Пользователь не авторизован');
+    }
+
+    const formData = new FormData();
+    formData.append('profilePhoto', file);
+
+    return new Promise((resolve, reject) => {
+      this.http.post<{ message: string, profilePhoto: string }>(`${API_URL}/auth/user/photo`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }).subscribe({
+        next: (response) => {
+          const currentUserData = this.userData.value;
+          if (currentUserData) {
+            currentUserData.profilePhoto = response.profilePhoto;
+            this.userData.next(currentUserData);
+          }
+          resolve(response.profilePhoto);
+        },
+        error: (error) => {
+          reject(error?.error?.message || 'Ошибка загрузки фото');
+        }
+      });
+    });
+  }
+
+  deleteProfilePhoto(): Promise<void> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return Promise.reject('Пользователь не авторизован');
+    }
+
+    return new Promise((resolve, reject) => {
+      this.http.delete<{ message: string }>(`${API_URL}/auth/user/photo`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }).subscribe({
+        next: () => {
+          const currentUserData = this.userData.value;
+          if (currentUserData) {
+            currentUserData.profilePhoto = null;
+            this.userData.next(currentUserData);
+          }
+          resolve();
+        },
+        error: (error) => {
+          reject(error?.error?.message || 'Ошибка удаления фото');
+        }
+      });
+    });
+  }
+
   getUserData(): UserData | null {
     return this.userData.value;
   }
@@ -67,4 +149,17 @@ export class UserService {
   clearUserData(): void {
     this.userData.next(null);
   }
-} 
+
+  getUsers(): Observable<User[]> {
+    const token = localStorage.getItem('token');
+    return this.http.get<User[]>(`${API_URL}/auth/users`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  }
+
+  getFullName(user: User): string {
+    return `${user.lastName} ${user.firstName}${user.middleName ? ' ' + user.middleName : ''}`;
+  }
+}

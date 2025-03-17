@@ -1,10 +1,37 @@
-<header>
-  <h1 class="title">
-		Мои задачи
-	</h1>
+<div class="my-tasks-page">
+  <div class="header">
+    <h1>Мои задачи</h1>
+    <button class="create-task-button" (click)="openCreateTaskModal()">
+      Новая задача
+    </button>
+  </div>
 
-  <button class="button">
-		Новая задача
-	</button>
-</header>
-<router-outlet></router-outlet> 
+  <div class="tasks-content">
+    <div *ngIf="loading" class="loading">
+      Загрузка задач...
+    </div>
+
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error" class="tasks-list">
+      <div *ngIf="tasks.length === 0" class="no-tasks">
+        У вас пока нет задач
+      </div>
+
+      <app-task-card
+        *ngFor="let task of tasks"
+        [task]="task"
+        (taskDeleted)="onTaskDeleted($event)"
+        (taskUpdated)="onTaskUpdated($event)"
+      ></app-task-card>
+    </div>
+  </div>
+
+  <app-create-task-modal
+    *ngIf="showCreateTaskModal"
+    (taskCreated)="onTaskCreated($event)"
+    (closeModal)="onCloseModal()"
+  ></app-create-task-modal>
+</div> 

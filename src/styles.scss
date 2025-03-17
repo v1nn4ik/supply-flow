@@ -1,3 +1,29 @@
+@use "app/styles/typography" as *;
+
+@font-face {
+  font-family: 'Literal';
+  src: url('assets/fonts/Literal-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Literal';
+  src: url('assets/fonts/Literal-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Literal';
+  src: url('assets/fonts/Literal-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --dark-color: #222831;
   --gray-color: #393E46;
@@ -5,11 +31,17 @@
   --light-gray-color: #F0F5F9;
   --blue-color: #1A80E5;
   --light-color: #FFFFFF;
+  --font-family: 'Literal', serif;
 }
 
-body {
+html, body { 
+  height: 100%;
+  @include base-typography;
+}
+
+body { 
+  margin: 0; 
   background: var(--light-color);
-  font-family: 'Roboto', sans-serif;
 }
 
 button {
