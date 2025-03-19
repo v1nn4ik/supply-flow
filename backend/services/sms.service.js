@@ -6,7 +6,7 @@ class SmsService {
       const response = await axios.post('https://api.exolve.ru/messaging/v1/SendSMS', {
         number: process.env.SMS_SENDER_NUMBER,
         destination: phone,
-        text: `Ваш код подтверждения: ${code}`
+        text: `ТЕСТ!!! Ваш код подтверждения для входа на сайт Supply Flow: ${code}`
       }, {
         headers: {
           'Authorization': `Bearer ${process.env.SMS_API_KEY}`,

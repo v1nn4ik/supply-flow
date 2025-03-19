@@ -1,9 +1,11 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupplyCardComponent } from '../../components/supply-card/supply-card.component';
 import { CreateSupplyModalComponent } from '../../components/create-supply-modal/create-supply-modal.component';
 import { SupplyDetailsModalComponent } from '../../components/supply-details-modal/supply-details-modal.component';
 import { SupplyService, SupplyRequest, SupplyStatus, SupplyItem } from '../../services/supply.service';
+import { WebsocketService } from '../../services/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-supplies-page',
@@ -17,17 +19,65 @@ import { SupplyService, SupplyRequest, SupplyStatus, SupplyItem } from '../../se
   standalone: true,
   styleUrl: './supplies-page.component.scss'
 })
-export class SuppliesPageComponent implements OnInit {
+export class SuppliesPageComponent implements OnInit, OnDestroy {
   showCreateModal = false;
   showDetailsModal = false;
   supplies: SupplyRequest[] = [];
   selectedSupply: SupplyRequest | null = null;
   error: string | null = null;
+  private supplyUpdateSubscription?: Subscription;
 
-  constructor(private supplyService: SupplyService, private zone: NgZone) {}
+  constructor(
+    private supplyService: SupplyService,
+    private websocketService: WebsocketService,
+    private zone: NgZone
+  ) {}
 
   ngOnInit() {
     this.loadSupplies();
+    this.setupWebSocket();
+  }
+
+  ngOnDestroy() {
+    if (this.supplyUpdateSubscription) {
+      this.supplyUpdateSubscription.unsubscribe();
+    }
+  }
+
+  private setupWebSocket() {
+    this.supplyUpdateSubscription = this.websocketService.onSupplyUpdate().subscribe({
+      next: (updatedSupply) => {
+        if (updatedSupply.deleted) {
+          // Удаляем заявку из списка
+          this.supplies = this.supplies.filter(s => 
+            this.getSupplyId(s) !== this.getSupplyId(updatedSupply)
+          );
+          // Если удалена текущая открытая заявка, закрываем модальное окно
+          if (this.selectedSupply && 
+              this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
+            this.closeDetailsModal();
+          }
+        } else {
+          // Обновляем или добавляем заявку в список
+          const index = this.supplies.findIndex(s => 
+            this.getSupplyId(s) === this.getSupplyId(updatedSupply)
+          );
+          if (index !== -1) {
+            this.supplies[index] = updatedSupply;
+          } else {
+            this.supplies = [updatedSupply, ...this.supplies];
+          }
+          // Если это текущая открытая заявка, обновляем её
+          if (this.selectedSupply && 
+              this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
+            this.selectedSupply = updatedSupply;
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Ошибка при получении обновлений заявок:', error);
+      }
+    });
   }
 
   // Методы для работы с модальными окнами

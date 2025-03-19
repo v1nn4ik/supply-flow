@@ -30,7 +30,7 @@
         <div class="meta-item">
           <span class="meta-label">Срок:</span>
           <span class="meta-value">
-            {{ data.deadline | date:'dd.MM.yyyy' }}
+            {{ data.deadline | date:'dd.MM.yyyy':'UTC' }}
           </span>
         </div>
 
@@ -38,8 +38,15 @@
           <div class="meta-item">
             <span class="meta-label">Создано:</span>
             <span class="meta-value">
-              {{ data.createdAt | date:'dd.MM.yyyy' }}
+              {{ data.createdAt | date:'dd.MM.yyyy':'UTC' }}
             </span>
+          </div>
+        }
+
+        @if (data.createdBy) {
+          <div class="meta-item">
+            <span class="meta-label">Создатель:</span>
+            <span class="meta-value">{{ data.createdBy.name }}</span>
           </div>
         }
       </div>

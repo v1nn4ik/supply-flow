@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
+const ROLES = require('../constants/roles');
 
 const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
     unique: true,
+  },
+  role: {
+    type: String,
+    enum: Object.values(ROLES),
+    default: ROLES.LEVEL_1
   },
   verificationCode: {
     type: String,

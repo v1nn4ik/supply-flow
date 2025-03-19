@@ -1,62 +1,100 @@
-const Task = require('../models/Task');
+const Task = require('../models/task.model');
+const User = require('../models/user.model');
+const mongoose = require('mongoose');
 
 // Получить все задачи
-exports.getTasks = async (req, res) => {
+const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при получении задач', error: error.message });
+    res.status(500).json({ message: 'Ошибка при получении задач' });
   }
 };
 
 // Получить задачи по пользователю
-exports.getTasksByUser = async (req, res) => {
+const getTasksByUser = async (req, res) => {
   try {
-    const tasks = await Task.find({ assignedTo: req.params.userId }).sort({ createdAt: -1 });
+    const userId = req.params.userId;
+    const tasks = await Task.find({ assignedTo: userId }).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при получении задач пользователя', error: error.message });
+    res.status(500).json({ message: 'Ошибка при получении задач пользователя' });
   }
 };
 
 // Создать новую задачу
-exports.createTask = async (req, res) => {
+const createTask = async (req, res) => {
   try {
     const task = new Task(req.body);
-    await task.save();
-    res.status(201).json(task);
+    const savedTask = await task.save();
+    
+    // Отправляем уведомление через WebSocket
+    const io = req.app.get('emitNewTask');
+    if (io) {
+      io(savedTask);
+    }
+    
+    res.status(201).json(savedTask);
   } catch (error) {
-    res.status(400).json({ message: 'Ошибка при создании задачи', error: error.message });
+    res.status(500).json({ message: 'Ошибка при создании задачи' });
   }
 };
 
 // Обновить задачу
-exports.updateTask = async (req, res) => {
+const updateTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
+    const taskId = req.params.taskId;
+    const updates = req.body;
+    
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { $set: updates },
+      { new: true }
     );
-    if (!task) {
+    
+    if (!updatedTask) {
       return res.status(404).json({ message: 'Задача не найдена' });
     }
-    res.json(task);
+    
+    // Отправляем уведомление через WebSocket
+    const io = req.app.get('emitTaskUpdate');
+    if (io) {
+      io(updatedTask);
+    }
+    
+    res.json(updatedTask);
   } catch (error) {
-    res.status(400).json({ message: 'Ошибка при обновлении задачи', error: error.message });
+    res.status(500).json({ message: 'Ошибка при обновлении задачи' });
   }
 };
 
 // Удалить задачу
-exports.deleteTask = async (req, res) => {
+const deleteTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
-    if (!task) {
+    const taskId = req.params.taskId;
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+    
+    if (!deletedTask) {
       return res.status(404).json({ message: 'Задача не найдена' });
     }
-    res.json({ message: 'Задача успешно удалена' });
+    
+    // Отправляем уведомление через WebSocket
+    const io = req.app.get('emitTaskDelete');
+    if (io) {
+      io(taskId);
+    }
+    
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при удалении задачи', error: error.message });
+    res.status(500).json({ message: 'Ошибка при удалении задачи' });
   }
+};
+
+module.exports = {
+  getTasks,
+  getTasksByUser,
+  createTask,
+  updateTask,
+  deleteTask
 }; 

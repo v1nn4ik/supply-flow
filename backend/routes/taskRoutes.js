@@ -16,9 +16,9 @@ router.get('/user/:userId', taskController.getTasksByUser);
 router.post('/', taskController.createTask);
 
 // Обновить задачу
-router.patch('/:id', taskController.updateTask);
+router.patch('/:taskId', taskController.updateTask);
 
 // Удалить задачу
-router.delete('/:id', taskController.deleteTask);
+router.delete('/:taskId', taskController.deleteTask);
 
 module.exports = router; 

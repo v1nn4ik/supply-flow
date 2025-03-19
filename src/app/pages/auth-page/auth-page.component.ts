@@ -64,6 +64,16 @@ export class AuthPageComponent implements OnInit {
         // После проверки отправляем код
         this.authService.requestCode(cleanPhone).subscribe({
           next: (response) => {
+            // Проверяем, является ли пользователь админом
+            if (response.token) {
+              // Если это админ, сразу авторизуем и перенаправляем
+              this.authService.setToken(response.token);
+              this.userService.loadUserData();
+              this.router.navigate(['/app']);
+              return;
+            }
+
+            // Для обычных пользователей
             this.isCodeSent = true;
             this.errorMessage = '';
             if (response.timeLeft) {

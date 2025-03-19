@@ -27,8 +27,7 @@ const supplySchema = new mongoose.Schema({
     required: true
   },
   description: {
-    type: String,
-    required: true
+    type: String
   },
   items: {
     type: [supplyItemSchema],
@@ -48,6 +47,29 @@ const supplySchema = new mongoose.Schema({
     type: String,
     enum: ['new', 'in_progress', 'completed', 'cancelled'],
     default: 'new'
+  },
+  createdBy: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    }
+  },
+  assignedTo: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    name: {
+      type: String
+    },
+    assignedAt: {
+      type: Date
+    }
   },
   createdAt: {
     type: Date,

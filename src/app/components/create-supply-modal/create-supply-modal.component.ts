@@ -70,7 +70,6 @@ export class CreateSupplyModalComponent {
   get isFormValid(): boolean {
     return !!(
       this.formData.title && 
-      this.formData.description && 
       this.formData.deadline && 
       this.formData.items.length > 0
     );
@@ -101,10 +100,19 @@ export class CreateSupplyModalComponent {
         return;
       }
 
+      // Устанавливаем время на конец дня в UTC
+      const deadline = new Date(this.formData.deadline!);
+      const utcDeadline = new Date(Date.UTC(
+        deadline.getFullYear(),
+        deadline.getMonth(),
+        deadline.getDate(),
+        23, 59, 59, 999
+      ));
+
       const formattedData = {
         ...this.formData,
         status: 'new' as const,
-        deadline: this.formData.deadline!.toISOString().split('T')[0]
+        deadline: utcDeadline.toISOString()
       };
       this.create.emit(formattedData);
     }

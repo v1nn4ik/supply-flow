@@ -24,8 +24,13 @@ export interface SupplyRequest {
   priority: 'low' | 'medium' | 'high';
   deadline: string;
   status?: SupplyStatus;
+  createdBy?: {
+    userId: string;
+    name: string;
+  };
   createdAt?: string;
   updatedAt?: string;
+  deleted?: boolean;
 }
 
 @Injectable({
