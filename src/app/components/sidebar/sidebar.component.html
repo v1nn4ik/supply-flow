@@ -1,53 +1,44 @@
 <div class="avatar-name">
-  <div class="avatar-container" [ngClass]="{'has-photo': profilePhoto}">
-    <img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="avatar" class="avatar">
-    <div *ngIf="!profilePhoto" class="avatar-initials">{{ getInitials() }}</div>
-  </div>
-  <span>{{ userName || 'Загрузка...' }}</span>
+	<div class="avatar-container" [ngClass]="{'has-photo': profilePhoto}">
+		<img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="avatar" class="avatar">
+		<div *ngIf="!profilePhoto" class="avatar-initials">{{ getInitials() }}</div>
+	</div>
+	<span>{{ userName || 'Загрузка...' }}</span>
 </div>
 
 <div class="nav-buttons">
-  <nav>
-    <ul class="sidebar-menu-list">
-      @for (item of menuItems.slice(0, menuItems.length - 2); track item) {
-        <li class="menu-item"
-            [routerLink]="[item.link]"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{exact: true}"
-            (click)="onMenuItemClick(item)"
-            (keydown.enter)="onMenuItemClick(item)"
-            tabindex="0"
-            role="menuitem">
-          <svg [icon]="switchIcon(item)"
-               class="menu-item__icon">
-          </svg>
-          {{ item.label }}
-        </li>
-      }
-    </ul>
-  </nav>
-  <div class="nav-buttons__bottom">
-    <button class="sidebar-menu-button" *ngIf="showButton">
-      {{ buttonText }}
-    </button>
-    <nav>
-      <ul class="sidebar-bottom-menu-list">
-        @for (item of menuItems.slice(menuItems.length - 2); track item) {
-          <li class="menu-item"
-              [routerLink]="[item.link]"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{exact: true}"
-              (click)="onMenuItemClick(item)"
-              (keydown.enter)="onMenuItemClick(item)"
-              tabindex="0"
-              role="menuitem">
-            <svg [icon]="switchIcon(item)"
-                 class="menu-item__icon">
-            </svg>
-            {{ item.label }}
-          </li>
-        }
-      </ul>
-    </nav>
-  </div>
+	<div class="menu-content">
+		<nav>
+			<ul class="sidebar-menu-list">
+				@for (item of menuItems.slice(0, menuItems.length - 2); track item) {
+				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
+					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
+					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">
+					<svg [icon]="switchIcon(item)" class="menu-item__icon">
+					</svg>
+					{{ item.label }}
+				</li>
+				}
+			</ul>
+		</nav>
+	</div>
+
+	<div class="nav-buttons__bottom">
+		<button class="sidebar-menu-button" *ngIf="showButton" (click)="onButtonClick()">
+			{{ buttonText }}
+		</button>
+		<nav>
+			<ul class="sidebar-bottom-menu-list">
+				@for (item of menuItems.slice(menuItems.length - 2); track item) {
+				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
+					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
+					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">
+					<svg [icon]="switchIcon(item)" class="menu-item__icon">
+					</svg>
+					{{ item.label }}
+				</li>
+				}
+			</ul>
+		</nav>
+	</div>
 </div>

@@ -1,101 +1,57 @@
 <div class="auth-container">
-  <div class="auth-card">
-    <h1>Добро пожаловать</h1>
-    <p>Войдите в систему для продолжения работы</p>
+	<div class="auth-card">
+		<h1>Добро пожаловать</h1>
+		<p>Войдите в систему для продолжения работы</p>
 
-    <div class="form-group" *ngIf="!isCodeSent">
-      <label for="phone">Номер телефона</label>
-      <div class="phone-input-wrapper">
-        <input
-          type="tel"
-          id="phone"
-          [(ngModel)]="phone"
-          mask="000 000-00-00"
-          prefix="+7 "
-          [showMaskTyped]="true"
-          [dropSpecialCharacters]="true"
-          [clearIfNotMatch]="true"
-          [validation]="true"
-          class="phone-input"
-        >
-      </div>
-      <button class="continue-button" (click)="requestCode()">Получить код</button>
-    </div>
+		<div class="form-group" *ngIf="!isCodeSent">
+			<label for="phone">Номер телефона</label>
+			<div class="phone-input-wrapper">
+				<input type="tel" id="phone" [(ngModel)]="phone" mask="000 000-00-00" prefix="+7 " [showMaskTyped]="true"
+					[dropSpecialCharacters]="true" [clearIfNotMatch]="true" [validation]="true" class="phone-input">
+			</div>
+			<button class="continue-button" (click)="requestCode()">Получить код</button>
+		</div>
 
-    <div class="form-group" *ngIf="isCodeSent">
-      <label for="code">Код подтверждения</label>
-      <input
-        type="text"
-        id="code"
-        [(ngModel)]="code"
-        mask="000000"
-        [showMaskTyped]="true"
-        [dropSpecialCharacters]="true"
-        [clearIfNotMatch]="true"
-        placeholder="______"
-        class="code-input"
-      >
+		<div class="form-group" *ngIf="isCodeSent">
+			<label for="code">Код подтверждения</label>
+			<input type="text" id="code" [(ngModel)]="code" mask="0 0 0 0 0 0" [showMaskTyped]="true"
+				[dropSpecialCharacters]="true" [clearIfNotMatch]="true" placeholder="_ _ _ _ _ _" class="code-input">
 
-      <div class="user-info" *ngIf="code?.length === 6 && !hasExistingUserData">
-        <div class="form-group">
-          <label for="lastName">Фамилия</label>
-          <input 
-            id="lastName" 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="lastName" 
-            placeholder="Иванов"
-          >
-        </div>
+			<div class="user-info" *ngIf="code?.length === 6 && !hasExistingUserData">
+				<div class="form-group">
+					<label for="lastName">Фамилия</label>
+					<input id="lastName" type="text" class="form-input" [(ngModel)]="lastName" placeholder="Иванов">
+				</div>
 
-        <div class="form-group">
-          <label for="firstName">Имя</label>
-          <input 
-            id="firstName" 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="firstName"
-            placeholder="Иван"
-          >
-        </div>
+				<div class="form-group">
+					<label for="firstName">Имя</label>
+					<input id="firstName" type="text" class="form-input" [(ngModel)]="firstName" placeholder="Иван">
+				</div>
 
-        <div class="form-group">
-          <label for="middleName">Отчество</label>
-          <input 
-            id="middleName" 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="middleName"
-            placeholder="Иванович"
-          >
-        </div>
-      </div>
+				<div class="form-group">
+					<label for="middleName">Отчество</label>
+					<input id="middleName" type="text" class="form-input" [(ngModel)]="middleName" placeholder="Иванович">
+				</div>
+			</div>
 
-      <button 
-        class="continue-button" 
-        (click)="verifyCode()"
-        [disabled]="code.length !== 6 || (!hasExistingUserData && (!lastName.trim() || !firstName.trim()))"
-      >
-        Подтвердить
-      </button>
-      
-      <div class="resend-section">
-        <button 
-          class="resend-button" 
-          [disabled]="!canResend"
-          (click)="resendCode()"
-        >
-          {{ canResend ? 'Отправить код повторно' : 'Повторная отправка через ' + timeLeft + ' сек' }}
-        </button>
-      </div>
-    </div>
+			<button class="continue-button" (click)="verifyCode()"
+				[disabled]="code.length !== 6 || (!hasExistingUserData && (!lastName.trim() || !firstName.trim()))">
+				Подтвердить
+			</button>
 
-    <div class="error-message" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
-    
-    <button class="logout-button" (click)="logout()" *ngIf="authService.getToken()">
-      Выйти из системы
-    </button>
-  </div>
+			<div class="resend-section">
+				<button class="resend-button" [disabled]="!canResend" (click)="resendCode()">
+					{{ canResend ? 'Отправить код повторно' : 'Повторная отправка через ' + timeLeft + ' сек' }}
+				</button>
+			</div>
+		</div>
+
+		<div class="error-message" *ngIf="errorMessage">
+			{{ errorMessage }}
+		</div>
+
+		<button class="logout-button" (click)="logout()" *ngIf="authService.getToken()">
+			Выйти из системы
+		</button>
+	</div>
 </div>

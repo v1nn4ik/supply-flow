@@ -9,6 +9,9 @@ router.use(verifyToken);
 // Получить все задачи
 router.get('/', taskController.getTasks);
 
+// Получить задачу по ID
+router.get('/:taskId', taskController.getTaskById);
+
 // Получить задачи по пользователю (должен быть перед другими маршрутами с параметрами)
 router.get('/user/:userId', taskController.getTasksByUser);
 
@@ -20,5 +23,14 @@ router.patch('/:taskId', taskController.updateTask);
 
 // Удалить задачу
 router.delete('/:taskId', taskController.deleteTask);
+
+// Добавить комментарий к задаче
+router.post('/:taskId/comments', taskController.addComment);
+
+// Загрузить файл для задачи
+router.post('/:taskId/attachments', taskController.upload.single('file'), taskController.uploadAttachment);
+
+// Удалить файл задачи
+router.delete('/:taskId/attachments/:attachmentId', taskController.deleteAttachment);
 
 module.exports = router; 

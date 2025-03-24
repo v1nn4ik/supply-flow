@@ -1,5 +1,8 @@
-<app-sidebar></app-sidebar>
+<app-sidebar [ngClass]="{'sidebar-hidden': !isSidebarVisible, 'sidebar-visible': isSidebarVisible}"></app-sidebar>
 
-<div >
-  <router-outlet></router-outlet>
+<div class="main-content" [ngClass]="{'sidebar-hidden': !isSidebarVisible}">
+	<button class="toggle-sidebar" (click)="toggleSidebar()">
+		<div class="arrow-icon" [ngClass]="{'arrow-right': !isSidebarVisible, 'arrow-left': isSidebarVisible}"></div>
+	</button>
+	<router-outlet></router-outlet>
 </div>

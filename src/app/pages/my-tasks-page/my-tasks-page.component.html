@@ -1,37 +1,56 @@
 <div class="my-tasks-page">
-  <div class="header">
-    <h1>Мои задачи</h1>
-    <button class="create-task-button" (click)="openCreateTaskModal()">
-      Новая задача
-    </button>
-  </div>
+	<div class="header">
+		<h1>Мои задачи</h1>
+		<div class="filters-container">
+			<div class="filter-group">
+				<label for="statusFilter">Статус:</label>
+				<select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()">
+					<option value="">Все</option>
+					<option value="pending">В ожидании</option>
+					<option value="in_progress">В работе</option>
+					<option value="completed">Завершено</option>
+					<option value="cancelled">Отменено</option>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="priorityFilter">Приоритет:</label>
+				<select id="priorityFilter" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+					<option value="">Все</option>
+					<option value="low">Низкий</option>
+					<option value="medium">Средний</option>
+					<option value="high">Высокий</option>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="searchFilter">Поиск:</label>
+				<input type="text" id="searchFilter" [(ngModel)]="searchFilter" (input)="applyFilters()"
+					placeholder="Название или описание">
+			</div>
+		</div>
+		<button class="create-task-button" (click)="openCreateTaskModal()">
+			Новая задача
+		</button>
+	</div>
 
-  <div class="tasks-content">
-    <div *ngIf="loading" class="loading">
-      Загрузка задач...
-    </div>
+	<div class="tasks-content">
+		<div *ngIf="loading" class="loading">
+			Загрузка задач...
+		</div>
 
-    <div *ngIf="error" class="error">
-      {{ error }}
-    </div>
+		<div *ngIf="error" class="error">
+			{{ error }}
+		</div>
 
-    <div *ngIf="!loading && !error" class="tasks-list">
-      <div *ngIf="tasks.length === 0" class="no-tasks">
-        У вас пока нет задач
-      </div>
+		<div *ngIf="!loading && !error" class="tasks-list">
+			<div *ngIf="filteredTasks.length === 0" class="no-tasks">
+				У вас пока нет задач
+			</div>
 
-      <app-task-card
-        *ngFor="let task of tasks"
-        [task]="task"
-        (taskDeleted)="onTaskDeleted($event)"
-        (taskUpdated)="onTaskUpdated($event)"
-      ></app-task-card>
-    </div>
-  </div>
+			<app-task-card *ngFor="let task of filteredTasks" [task]="task" (taskDeleted)="onTaskDeleted($event)"
+				(taskUpdated)="onTaskUpdated($event)"></app-task-card>
+		</div>
+	</div>
 
-  <app-create-task-modal
-    *ngIf="showCreateTaskModal"
-    (taskCreated)="onTaskCreated($event)"
-    (closeModal)="onCloseModal()"
-  ></app-create-task-modal>
-</div> 
+	<app-create-my-task-modal *ngIf="showCreateTaskModal" (taskCreated)="onTaskCreated($event)"
+		(closeModal)="onCloseModal()"></app-create-my-task-modal>
+</div>

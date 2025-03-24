@@ -1,181 +1,208 @@
 @use "../../styles/typography" as *;
 
 .supply-card {
-  background: var(--light-color);
-  border: 1px solid var(--light-gray-color);
-  border-radius: 8px;
-  padding: 1rem;
-  transition: all 0.2s ease;
+	background: var(--light-color);
+	border: 1px solid var(--light-gray-color);
+	border-radius: 8px;
+	margin-bottom: 16px;
+	transition: all 0.2s ease;
 
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+	&:hover {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
 
-  .card-content {
-    flex: 1;
-    cursor: pointer;
-  }
+	.card-content {
+		flex: 1;
+		cursor: pointer;
+	}
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+		padding: 16px 16px 0 16px;
+		flex-wrap: wrap;
 
-    .card-title {
-      @include heading-typography;
-      margin: 0;
-      font-size: 1.1rem;
-      color: #333;
-    }
+		.card-title {
+			@include heading-typography;
+			margin: 0 0 8px 0;
+			font-size: 1.1rem;
+			color: var(--dark-color);
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+			word-break: break-word;
+			width: 50%;
+			min-width: 100px;
+		}
 
-    .card-status {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 500;
+		.card-status {
+			padding: 4px 8px;
+			border-radius: 4px;
+			font-size: 0.8rem;
+			font-weight: 500;
 
-      &.status-new {
-        background-color: #e3f2fd;
-        color: #1976d2;
-      }
+			&.status-new {
+				background-color: var(--status-pending-bg);
+				color: var(--blue-color);
+			}
 
-      &.status-in_progress {
-        background-color: #fff3e0;
-        color: #f57c00;
-      }
+			&.status-in_progress {
+				background-color: var(--status-in-progress-bg);
+				color: var(--status-in-progress-text);
+			}
 
-      &.status-completed {
-        background-color: #e8f5e9;
-        color: #388e3c;
-      }
+			&.status-completed {
+				background-color: var(--status-completed-bg);
+				color: var(--status-completed-text);
+			}
 
-      &.status-cancelled {
-        background-color: #ffebee;
-        color: #d32f2f;
-      }
-    }
-  }
+			&.status-cancelled {
+				background-color: var(--status-cancelled-bg);
+				color: var(--status-cancelled-text);
+			}
+		}
+	}
 
-  .card-body {
-    padding: 16px;
+	.card-body {
+		padding: 0 16px 16px 16px;
 
-    .card-description {
-      @include light-typography;
-      margin: 0 0 16px;
-      color: #666;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
+		.card-description {
+			@include light-typography;
+			margin: 0 0 16px;
+			color: var(--gray-color);
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
 
-    .items-list {
-      margin: 0 0 16px;
-      padding: 8px;
-      background-color: #f8f9fa;
-      border-radius: 4px;
+		.items-list {
+			margin: 0 0 16px;
+			background-color: var(--light-gray-color);
+			border-radius: 4px;
 
-      .item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        border-radius: 4px;
-        transition: all 0.2s ease;
+			.item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 8px;
+				border-radius: 4px;
+				transition: all 0.2s ease;
 
-        &:not(:last-child) {
-          margin-bottom: 4px;
-        }
+				&:not(:last-child) {
+					margin-bottom: 4px;
+				}
 
-        &.purchased {
-          background-color: #e8f5e9;
-          .item-name {
-            color: #2e7d32;
-            text-decoration: line-through;
-          }
-          .item-quantity {
-            color: #2e7d32;
-          }
-        }
+				&.purchased {
+					background-color: var(--status-completed-bg);
 
-        .item-name {
-          color: #333;
-          font-size: 0.9rem;
-        }
+					.item-name {
+						color: var(--status-completed-text);
+						text-decoration: line-through;
+					}
 
-        .item-quantity {
-          @include light-typography;
-          color: #666;
-          font-size: 0.9rem;
-        }
-      }
-    }
+					.item-quantity {
+						color: var(--status-completed-text);
+					}
+				}
 
-    .card-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+				.item-name {
+					color: var(--dark-color);
+					font-size: 0.9rem;
+				}
 
-      .meta-item {
-        font-size: 0.85rem;
+				.item-quantity {
+					@include light-typography;
+					color: var(--gray-color);
+					font-size: 0.9rem;
+				}
+			}
+		}
 
-        .meta-label {
-          color: #666;
-          margin-right: 4px;
-        }
+		.card-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-bottom: 8px;
 
-        .meta-value {
-          color: #333;
+			.meta-item {
+				font-size: 0.85rem;
+				margin-bottom: 4px;
 
-          &.priority-low {
-            color: #388e3c;
-          }
+				&.full-width,
+				&.due-date {
+					width: 100%;
+					margin-top: 4px;
+				}
 
-          &.priority-medium {
-            color: #f57c00;
-          }
+				.meta-label {
+					color: var(--gray-color);
+					margin-right: 4px;
+				}
 
-          &.priority-high {
-            color: #d32f2f;
-          }
-        }
-      }
-    }
-  }
+				.meta-value {
+					color: var(--dark-color);
 
-  .card-actions {
-    padding: 16px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+					&.priority-low {
+						color: var(--priority-low);
+					}
 
-    .action-button {
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
+					&.priority-medium {
+						color: var(--priority-medium);
+					}
 
-      &.view-button {
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
-        color: #333;
+					&.priority-high {
+						color: var(--priority-high);
+					}
+				}
+			}
+		}
+	}
 
-        &:hover {
-          background-color: #e9ecef;
-        }
-      }
+	.card-actions {
+		padding: 16px;
+		position: relative;
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
 
-      &.delete-button {
-        background-color: #fff;
-        border: 1px solid #dc3545;
-        color: #dc3545;
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 16px;
+			right: 16px;
+			height: 1px;
+			background-color: var(--light-gray-color);
+		}
 
-        &:hover {
-          background-color: #dc3545;
-          color: #fff;
-        }
-      }
-    }
-  }
+		.action-button {
+			padding: 6px 12px;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			cursor: pointer;
+			transition: all 0.2s;
+
+			&.view-button {
+				background-color: var(--light-color);
+				border: 1px solid var(--light-gray-color);
+				color: var(--dark-color);
+
+				&:hover {
+					background-color: var(--blue-color);
+					color: var(--light-color);
+				}
+			}
+
+			&.delete-button {
+				background-color: var(--light-color);
+				border: 1px solid var(--delete-color);
+				color: var(--delete-color);
+
+				&:hover {
+					background-color: var(--delete-color);
+					color: var(--light-color);
+				}
+			}
+		}
+	}
 }

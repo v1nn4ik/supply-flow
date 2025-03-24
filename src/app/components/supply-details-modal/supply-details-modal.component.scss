@@ -2,375 +2,400 @@
 @use "../../styles/typography" as *;
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	font-family: var(--font-family), serif !important;
+
+	* {
+		font-family: var(--font-family), serif !important;
+	}
+
+	.mat-icon {
+		font-family: 'Material Icons', serif !important;
+	}
 }
 
 .modal-content {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
+	background: var(--light-color);
+	padding: 2rem;
+	border-radius: 8px;
+	width: 90%;
+	max-width: 700px;
+	max-height: 90vh;
+	overflow-y: auto;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	font-family: var(--font-family), serif !important;
+
+	* {
+		font-family: var(--font-family), serif !important;
+	}
+
+	.mat-icon {
+		font-family: 'Material Icons', serif !important;
+	}
 }
 
 .modal-header {
-  padding: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
 
-  h2 {
-    @include heading-typography;
-    margin: 0;
-    font-size: 1.5rem;
-    color: #333;
-  }
+	h2 {
+		margin: 0;
+		color: var(--dark-color);
+		font-size: 1.5rem;
+		font-weight: 500;
+	}
 
-  .close-button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #666;
-    padding: 0.25rem 0.5rem;
-    
-    &:hover {
-      color: #333;
-    }
-  }
+	.close-button {
+		color: var(--gray-color);
+
+		&:hover {
+			color: var(--dark-color);
+			background-color: var(--light-gray-color);
+		}
+	}
 }
 
-.modal-body {
-  padding: 1.5rem;
+.details-section {
+	margin-bottom: 24px;
 
-  .details-section {
-    margin-bottom: 2rem;
-  }
+	.detail-row {
+		margin-bottom: 16px;
 
-  .detail-row {
-    margin-bottom: 1rem;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+		&:last-child {
+			margin-bottom: 0;
+		}
 
-  .detail-label {
-    @include heading-typography;
-    display: block;
-    color: #666;
-    margin-bottom: 0.5rem;
-  }
+		&.status-row {
+			margin-bottom: 8px;
 
-  .detail-value {
-    color: #333;
-    
-    &.description {
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-  }
+			// Скрываем подложку для статуса, которая добавляет лишнее расстояние
+			::ng-deep .mat-mdc-form-field-subscript-wrapper {
+				display: none;
+			}
 
-  .items-list {
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    padding: 0.5rem;
+			// Стиль для mat-select и выпадающего меню
+			::ng-deep mat-select {
+				font-family: var(--font-family-literal), serif !important;
+			}
+		}
 
-    .status-warning {
-      background-color: #fff3e0;
-      color: #f57c00;
-      padding: 12px;
-      border-radius: 4px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      text-align: center;
-    }
+		mat-form-field {
+			margin-bottom: 0;
+		}
+	}
 
-    .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px;
-      border-bottom: 1px solid #eee;
+	.detail-label {
+		@include heading-typography;
+		display: block;
+		color: var(--gray-color);
+		margin-bottom: 4px;
+		font-size: 0.9rem;
+	}
 
-      &:last-child {
-        border-bottom: none;
-      }
+	.detail-value {
+		color: var(--dark-color);
 
-      .item-info {
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-right: 16px;
-
-        .item-name {
-          &.purchased {
-            text-decoration: line-through;
-            color: #666;
-          }
-        }
-
-        .item-quantity {
-          @include light-typography;
-        }
-      }
-
-      .item-actions {
-        .custom-checkbox {
-          position: relative;
-          display: inline-block;
-          cursor: pointer;
-
-          input[type="checkbox"] {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-
-            &:checked ~ .checkbox-button {
-              background-color: #4CAF50;
-              border-color: #4CAF50;
-
-              &:after {
-                opacity: 1;
-              }
-            }
-          }
-
-          .checkbox-button {
-            position: relative;
-            display: block;
-            width: 28px;
-            height: 28px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            background-color: white;
-
-            &:hover {
-              border-color: #4CAF50;
-            }
-
-            &:after {
-              content: '';
-              position: absolute;
-              left: 9px;
-              top: 5px;
-              width: 6px;
-              height: 12px;
-              border: solid white;
-              border-width: 0 2px 2px 0;
-              transform: rotate(45deg);
-              opacity: 0;
-              transition: opacity 0.2s;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .status-actions {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-
-    h3 {
-      @include heading-typography;
-      margin: 0 0 1rem;
-      font-size: 1.2rem;
-      color: #333;
-    }
-  }
-
-  .status-buttons {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-
-    .status-button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-
-      &.new {
-        background-color: #e3f2fd;
-        color: #1976d2;
-        
-        &:hover {
-          background-color: color.adjust(#e3f2fd, $lightness: -5%);
-        }
-      }
-
-      &.in_progress {
-        background-color: #fff3e0;
-        color: #f57c00;
-        
-        &:hover {
-          background-color: color.adjust(#fff3e0, $lightness: -5%);
-        }
-      }
-
-      &.completed {
-        background-color: #e8f5e9;
-        color: #388e3c;
-        
-        &:hover {
-          background-color: color.adjust(#e8f5e9, $lightness: -5%);
-        }
-      }
-
-      &.rejected {
-        background-color: #ffebee;
-        color: #d32f2f;
-        
-        &:hover {
-          background-color: color.adjust(#ffebee, $lightness: -5%);
-        }
-      }
-
-      &.active {
-        opacity: 0.6;
-        cursor: default;
-        
-        &:hover {
-          background-color: inherit;
-        }
-      }
-    }
-  }
-
-  .comments-section {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-
-    h3 {
-      @include heading-typography;
-      margin: 0 0 1rem;
-      font-size: 1.2rem;
-      color: #333;
-    }
-
-    .comments-list {
-      max-height: 300px;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-
-      .comment {
-        background-color: #f8f9fa;
-        border-radius: 6px;
-        padding: 0.75rem;
-        margin-bottom: 0.75rem;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .comment-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-
-          .comment-author {
-            font-weight: 500;
-            color: #333;
-          }
-
-          .comment-date {
-            @include light-typography;
-            font-size: 0.875rem;
-            color: #666;
-          }
-        }
-
-        .comment-text {
-          color: #333;
-          line-height: 1.5;
-          white-space: pre-wrap;
-        }
-      }
-    }
-
-    .comment-input {
-      display: flex;
-      gap: 0.5rem;
-
-      textarea {
-        flex: 1;
-        min-height: 60px;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        resize: vertical;
-        font-family: inherit;
-        font-size: 0.875rem;
-        line-height: 1.5;
-
-        &:focus {
-          outline: none;
-          border-color: #4CAF50;
-        }
-      }
-
-      button {
-        align-self: flex-end;
-        padding: 0.5rem 1rem;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: background-color 0.2s;
-
-        &:hover:not(:disabled) {
-          background-color: color.adjust(#4CAF50, $lightness: -5%);
-        }
-
-        &:disabled {
-          background-color: #ccc;
-          cursor: not-allowed;
-        }
-      }
-    }
-  }
+		&.description {
+			white-space: pre-wrap;
+			line-height: 1.5;
+			margin-top: 4px;
+		}
+	}
 }
 
-.modal-footer {
-  padding: 1rem;
-  border-top: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: flex-end;
+.items-section {
+	.status-warning {
+		display: flex;
+		align-items: center;
+		background-color: var(--status-in-progress-bg);
+		color: var(--status-in-progress-text);
+		padding: 12px;
+		border-radius: 4px;
+		margin-bottom: 12px;
+		font-size: 0.9rem;
+
+		mat-icon {
+			margin-right: 8px;
+			font-size: 20px;
+			height: 20px;
+			width: 20px;
+		}
+	}
 }
 
-.status-select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  width: 200px;
-  
-  option {
-    padding: 8px;
-  }
-} 
+.items-card {
+	padding: 0;
+	box-shadow: none !important;
+	border: 1px solid var(--light-gray-color);
+	border-radius: 8px;
+
+	.item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 16px;
+
+		.item-info {
+			flex: 1;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-right: 16px;
+
+			.item-name {
+				font-weight: 500;
+
+				&.purchased {
+					text-decoration: line-through;
+					color: var(--ligher-gray-color);
+				}
+			}
+
+			.item-quantity {
+				@include light-typography;
+				color: var(--gray-color);
+			}
+		}
+	}
+}
+
+mat-form-field {
+	width: 100%;
+
+	&.comment-text-field {
+		width: 100%;
+		margin-right: 0;
+	}
+}
+
+mat-divider {
+	margin: 0 0 24px 0;
+}
+
+.comments-section {
+	margin-bottom: 24px;
+
+	h3 {
+		@include heading-typography;
+		margin: 0 0 16px;
+		font-size: 1.1rem;
+		color: var(--dark-color);
+		font-weight: 500;
+	}
+
+	.comments-list {
+		max-height: 300px;
+		overflow-y: auto;
+		margin-bottom: 16px;
+
+		.comment {
+			background-color: var(--light-gray-color);
+			margin-bottom: 12px;
+			padding: 12px 16px;
+			box-shadow: none !important;
+			border-radius: 8px;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			.comment-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 8px;
+
+				.comment-author {
+					font-weight: 500;
+					color: var(--dark-color);
+				}
+
+				.comment-date {
+					@include light-typography;
+					font-size: 0.875rem;
+					color: var(--ligher-gray-color);
+				}
+			}
+
+			.comment-text {
+				color: var(--dark-color);
+				line-height: 1.5;
+				white-space: pre-wrap;
+			}
+		}
+	}
+
+	.comment-input {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+
+		.action-button {
+			padding: 6px 12px;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			cursor: pointer;
+			transition: all 0.2s;
+			height: 40px;
+			margin: 0;
+			align-self: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			.send-icon {
+				font-size: 18px;
+				width: 18px;
+				height: 18px;
+				margin-right: 4px;
+			}
+
+			&.view-button {
+				background-color: var(--light-color);
+				border: 1px solid var(--light-gray-color);
+				color: var(--dark-color);
+
+				&:hover:not(:disabled) {
+					background-color: var(--blue-color);
+					color: var(--light-color);
+				}
+			}
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+
+				&:hover {
+					background-color: var(--light-color);
+					color: var(--dark-color);
+				}
+			}
+		}
+	}
+}
+
+.card-actions {
+	padding: 16px 0 0 0;
+	position: relative;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+
+	.action-button {
+		padding: 6px 12px;
+		border-radius: 4px;
+		font-size: 0.9rem;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&.view-button {
+			background-color: var(--light-color);
+			border: 1px solid var(--light-gray-color);
+			color: var(--dark-color);
+
+			&:hover {
+				background-color: var(--blue-color);
+				color: var(--light-color);
+			}
+		}
+
+		&.delete-button {
+			background-color: var(--light-color);
+			border: 1px solid var(--delete-color);
+			color: var(--delete-color);
+
+			&:hover {
+				background-color: var(--delete-color);
+				color: var(--light-color);
+			}
+		}
+	}
+}
+
+// Стили для приоритета
+.priority-indicator {
+	display: flex;
+	align-items: center;
+}
+
+.priority-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 12px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	transition: all 0.2s;
+
+	mat-icon {
+		font-size: 18px;
+		width: 18px;
+		height: 18px;
+		margin-right: 4px;
+	}
+
+	&.priority-low {
+		background-color: var(--status-completed-bg);
+		color: var(--priority-low);
+	}
+
+	&.priority-medium {
+		background-color: var(--status-in-progress-bg);
+		color: var(--priority-medium);
+	}
+
+	&.priority-high {
+		background-color: var(--status-cancelled-bg);
+		color: var(--priority-high);
+	}
+}
+
+// Стили для статусов
+.status-new {
+	color: var(--blue-color);
+}
+
+.status-progress {
+	color: var(--priority-medium);
+}
+
+.status-completed {
+	color: var(--priority-low);
+}
+
+.status-cancelled {
+	color: var(--delete-color);
+}
+
+// Дополнительные стили для mat-form-field
+::ng-deep {
+	.mat-mdc-form-field-subscript-wrapper {
+		height: 0;
+		margin-top: -20px !important;
+	}
+
+	// Стили для выпадающего меню
+	.mat-mdc-select-panel {
+		background-color: white !important;
+
+		.mat-mdc-option {
+			font-family: var(--font-family-literal), serif !important;
+		}
+	}
+
+	.mat-mdc-select-value-text {
+		font-family: var(--font-family-literal), serif !important;
+	}
+}

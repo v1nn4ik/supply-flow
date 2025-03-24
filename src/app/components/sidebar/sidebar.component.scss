@@ -1,173 +1,257 @@
 @use "../../styles/typography" as *;
 
 .sidebar {
-  width: 250px;
-  height: 100%;
-  background-color: var(--light-color);
-  border-right: 1px solid var(--light-gray-color);
-  padding: 1rem;
+	width: 250px;
+	height: 100%;
+	background-color: var(--light-color);
+	border-right: 1px solid var(--light-gray-color);
+	padding: 1rem;
 }
 
 .logo {
-  @include heading-typography;
-  font-size: 1.5rem;
-  color: var(--dark-color);
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+	@include heading-typography;
+	font-size: 1.5rem;
+	color: var(--dark-color);
+	margin-bottom: 2rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  color: var(--gray-color);
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1rem;
+	color: var(--gray-color);
+	text-decoration: none;
+	border-radius: 4px;
+	transition: all 0.2s ease;
 
-  &:hover {
-    background-color: var(--light-gray-color);
-    color: var(--dark-color);
-  }
+	&:hover {
+		background-color: var(--light-gray-color);
+		color: var(--dark-color);
+	}
 
-  &.active {
-    background-color: var(--blue-color);
-    color: var(--light-color);
-  }
+	&.active {
+		background-color: var(--blue-color);
+		color: var(--light-color);
+	}
 }
 
 .nav-section {
-  margin-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
 
-  .section-title {
-    @include light-typography;
-    font-size: 0.875rem;
-    color: var(--ligher-gray-color);
-    padding: 0 1rem;
-    margin-bottom: 0.5rem;
-  }
+	.section-title {
+		@include light-typography;
+		font-size: 0.875rem;
+		color: var(--ligher-gray-color);
+		padding: 0 1rem;
+		margin-bottom: 0.5rem;
+	}
 }
 
 :host {
-  height: 95vh;
-  padding: 16px;
+	height: 97vh;
+	padding: 16px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 250px;
+	z-index: 1000;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.3s ease, visibility 0.3s ease;
+	background-color: var(--light-color);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+	/* Стилизация скроллбара */
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--light-gray-color);
+		border-radius: 3px;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: var(--gray-color);
+	}
+}
+
+:host.sidebar-hidden {
+	transform: translateX(-100%);
+	visibility: hidden;
+}
+
+:host.sidebar-visible {
+	transform: translateX(0);
+	visibility: visible;
+}
+
+/* Скрытие сайдбара при ширине экрана менее 500px - только начальное состояние */
+@media (max-width: 500px) {
+	:host:not(.sidebar-visible) {
+		transform: translateX(-100%);
+		visibility: hidden;
+	}
 }
 
 .avatar-name {
-  display: flex;
-  gap: 12px;
-  max-height: 72px;
-  align-items: center;
-  margin-bottom: 20px;
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin-bottom: 20px;
+	flex-shrink: 0;
 }
 
 .avatar-container {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  flex-shrink: 0;
-  background-color: var(--light-gray-color);
+	width: 40px;
+	height: 40px;
+	border-radius: 4px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	flex-shrink: 0;
+	background-color: var(--light-gray-color);
 
-  &.has-photo {
-    background-color: #ffffff;
-  }
+	&.has-photo {
+		background-color: var(--light-color);
+	}
 }
 
 .avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 }
 
 .avatar-initials {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--dark-color);
+	font-size: 16px;
+	font-weight: bold;
+	color: var(--dark-color);
 }
 
 .nav-buttons {
-  height: calc(95vh - 72px);
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	flex-grow: 1;
+	overflow-y: auto;
+	min-height: 0;
+	/* Важно для корректной работы flex-контейнера с overflow */
+
+	/* Стилизация скроллбара внутри nav-buttons */
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--light-gray-color);
+		border-radius: 2px;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: var(--gray-color);
+	}
+}
+
+.menu-content {
+	flex-grow: 1;
+	overflow-y: auto;
 }
 
 .sidebar-menu-list {
-  display: flex;
-  padding: 0;
-  flex-direction: column;
-  gap: 8px;
-  list-style: none;
+	display: flex;
+	padding: 0;
+	flex-direction: column;
+	gap: 8px;
+	list-style: none;
 }
 
 .menu-item {
-  display: grid;
-  grid-template-columns: 24px 1fr max-content;
-  grid-gap: 12px;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
+	display: grid;
+	grid-template-columns: 24px 1fr max-content;
+	grid-gap: 12px;
+	align-items: center;
+	padding: 8px 12px;
+	border-radius: 4px;
+	border: none;
+	cursor: pointer;
 
-  &:hover {
-    background-color: var(--light-gray-color);
-    color: var(--dark-color);
+	&:hover {
+		background-color: var(--light-gray-color);
+		color: var(--dark-color);
 
-    svg {
-      color: var(--dark-color);
-    }
-  }
+		svg {
+			color: var(--dark-color);
+		}
+	}
 }
 
 .menu-item:hover.active {
-  background-color: var(--light-gray-color);
-  color: var(--dark-color);
+	background-color: var(--light-gray-color);
+	color: var(--dark-color);
 
-  svg {
-    color: var(--dark-color);
-  }
+	svg {
+		color: var(--dark-color);
+	}
 }
 
 .menu-item.active {
-  background-color: var(--light-gray-color);
-  color: var(--dark-color);
+	background-color: var(--light-gray-color);
+	color: var(--dark-color);
 }
 
 .menu-item__icon {
-  width: 24px;
-  height: 24px;
-  color: var(--dark-color);
+	width: 24px;
+	height: 24px;
+	color: var(--dark-color);
 }
 
 .nav-buttons__bottom {
-  display: flex;
-  gap: 16px;
-  flex-direction: column;
+	display: flex;
+	gap: 16px;
+	flex-direction: column;
+	margin-top: auto;
+	flex-shrink: 0;
+	padding-top: 16px;
 }
 
 .sidebar-bottom-menu-list {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  flex-direction: column;
-  list-style: none;
-  gap: 8px;
+	display: flex;
+	margin: 0;
+	padding: 0;
+	flex-direction: column;
+	list-style: none;
+	gap: 8px;
 }
 
 .sidebar-menu-button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  background: var(--blue-color);
-  color: var(--light-color);
+	width: 100%;
+	padding: 12px;
+	font-size: 16px;
+	border-radius: 4px;
+	background: var(--blue-color);
+	color: var(--light-color);
+	flex-shrink: 0;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background-color: var(--dark-blue-color, #0056b3);
+	}
 }

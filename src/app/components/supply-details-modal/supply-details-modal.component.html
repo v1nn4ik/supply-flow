@@ -1,122 +1,135 @@
 <div class="modal-overlay" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Детали заявки</h2>
-      <button class="close-button" (click)="closeModal()">×</button>
-    </div>
+	<div class="modal-content mat-elevation-z8" (click)="$event.stopPropagation()">
+		<div class="modal-header">
+			<h2 class="mat-headline-5">Детали заявки</h2>
+			<button mat-icon-button class="close-button" (click)="closeModal()">
+				<mat-icon>close</mat-icon>
+			</button>
+		</div>
 
-    <div class="modal-body">
-      <div class="details-section">
-        <div class="detail-row">
-          <span class="detail-label">Название:</span>
-          <span class="detail-value">{{ data.title }}</span>
-        </div>
+		<div class="details-section">
+			<div class="detail-row">
+				<span class="detail-label">Название:</span>
+				<span class="detail-value">{{ data.title }}</span>
+			</div>
 
-        <div class="detail-row">
-          <span class="detail-label">Описание:</span>
-          <p class="detail-value description">{{ data.description }}</p>
-        </div>
+			<div class="detail-row">
+				<span class="detail-label">Описание:</span>
+				<p class="detail-value description">{{ data.description }}</p>
+			</div>
 
-        <div class="detail-row">
-          <span class="detail-label">Предметы:</span>
-          <div class="detail-value items-list">
-            @if (data.status !== 'in_progress') {
-              <div class="status-warning">
-                Для отметки о покупке предметов переведите заявку в статус "В работе"
-              </div>
-            }
-            @for (item of data.items; track $index) {
-              <div class="item">
-                <div class="item-info">
-                  <span class="item-name" [class.purchased]="item.purchased">{{ item.name }}</span>
-                  <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
-                </div>
-                <div class="item-actions">
-                  @if (data.status === 'in_progress') {
-                    <label class="custom-checkbox">
-                      <input type="checkbox" 
-                             [checked]="item.purchased"
-                             (change)="onItemPurchasedChange($index, $event)">
-                      <span class="checkbox-button"></span>
-                    </label>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
+			<div class="detail-row">
+				<span class="detail-label">Приоритет:</span>
+				<div class="priority-indicator">
+					<span class="priority-chip" [ngClass]="getPriorityClass(data.priority)">
+						<mat-icon *ngIf="data.priority === 'low'">arrow_downward</mat-icon>
+						<mat-icon *ngIf="data.priority === 'medium'">remove</mat-icon>
+						<mat-icon *ngIf="data.priority === 'high'">arrow_upward</mat-icon>
+						{{ getPriorityLabel(data.priority) }}
+					</span>
+				</div>
+			</div>
 
-        <div class="detail-row">
-          <span class="detail-label">Приоритет:</span>
-          <span class="detail-value" [class]="getPriorityClass(data.priority)">
-            {{ getPriorityLabel(data.priority) }}
-          </span>
-        </div>
+			<div class="detail-row status-row">
+				<span class="detail-label">Статус:</span>
+				<mat-form-field appearance="outline">
+					<mat-select [value]="data.status" (selectionChange)="onStatusChange($event.value)">
+						@for (status of statuses; track status.value) {
+						<mat-option [value]="status.value" [class]="getStatusClass(status.value)">
+							{{ status.label }}
+						</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+			</div>
 
-        <div class="detail-row">
-          <span class="detail-label">Срок исполнения:</span>
-          <span class="detail-value">{{ data.deadline | date:'dd.MM.yyyy':'UTC' }}</span>
-        </div>
+			<div class="detail-row items-section">
+				<span class="detail-label">Предметы:</span>
+				<div class="detail-value items-list">
+					@if (data.status !== 'in_progress') {
+					<div class="status-warning">
+						<mat-icon>info</mat-icon>
+						Для отметки о покупке предметов переведите заявку в статус "В работе"
+					</div>
+					}
+					<div class="items-card">
+						@for (item of data.items; track $index) {
+						<div class="item">
+							<div class="item-info">
+								<span class="item-name" [class.purchased]="item.purchased">{{ item.name }}</span>
+								<span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+							</div>
+							<div class="item-actions">
+								@if (data.status === 'in_progress') {
+								<mat-checkbox [checked]="item.purchased" (change)="onItemPurchasedChange($index, $event)"
+									color="primary">
+								</mat-checkbox>
+								}
+							</div>
+						</div>
+						@if ($index < data.items.length - 1) { <mat-divider></mat-divider>
+							}
+							}
+					</div>
+				</div>
+			</div>
 
-        <div class="detail-row">
-          <span class="detail-label">Статус:</span>
-          <select [ngModel]="data.status" (ngModelChange)="onStatusChange($event)" class="status-select">
-            @for (status of statuses; track status.value) {
-              <option [value]="status.value" [class]="getStatusClass(status.value)">
-                {{ status.label }}
-              </option>
-            }
-          </select>
-        </div>
+			@if (data.createdBy) {
+			<div class="detail-row">
+				<span class="detail-label">Создатель:</span>
+				<span class="detail-value">{{ data.createdBy.name }}</span>
+			</div>
+			}
 
-        @if (data.createdAt) {
-          <div class="detail-row">
-            <span class="detail-label">Создано:</span>
-            <span class="detail-value">{{ data.createdAt | date:'dd.MM.yyyy HH:mm':'UTC' }}</span>
-          </div>
-        }
+			@if (data.createdAt) {
+			<div class="detail-row">
+				<span class="detail-label">Создано:</span>
+				<span class="detail-value">{{ data.createdAt | date:'dd.MM.yyyy HH:mm':'UTC' }}</span>
+			</div>
+			}
 
-        @if (data.createdBy) {
-          <div class="detail-row">
-            <span class="detail-label">Создатель:</span>
-            <span class="detail-value">{{ data.createdBy.name }}</span>
-          </div>
-        }
+			<div class="detail-row">
+				<span class="detail-label">Срок исполнения:</span>
+				<span class="detail-value">{{ data.deadline | date:'dd.MM.yyyy':'UTC' }}</span>
+			</div>
 
-        @if (data.updatedAt) {
-          <div class="detail-row">
-            <span class="detail-label">Обновлено:</span>
-            <span class="detail-value">{{ data.updatedAt | date:'dd.MM.yyyy HH:mm':'UTC' }}</span>
-          </div>
-        }
-      </div>
+			@if (data.updatedAt) {
+			<div class="detail-row">
+				<span class="detail-label">Обновлено:</span>
+				<span class="detail-value">{{ data.updatedAt | date:'dd.MM.yyyy HH:mm':'UTC' }}</span>
+			</div>
+			}
+		</div>
 
-      <div class="comments-section">
-        <h3>Комментарии</h3>
-        <div class="comments-list">
-          @for (comment of comments; track comment._id) {
-            <div class="comment">
-              <div class="comment-header">
-                <span class="comment-author">{{ comment.userName }}</span>
-                <span class="comment-date">{{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
-              </div>
-              <div class="comment-text">{{ comment.text }}</div>
-            </div>
-          }
-        </div>
-        <div class="comment-input">
-          <textarea 
-            [(ngModel)]="newComment" 
-            placeholder="Введите ваш комментарий..."
-            (keyup.enter)="$event.preventDefault(); addComment()"
-          ></textarea>
-          <button (click)="addComment()" [disabled]="!newComment.trim()">Отправить</button>
-        </div>
-      </div>
-    </div>
+		<div class="comments-section">
+			<h3>Комментарии</h3>
+			<div class="comments-list">
+				@for (comment of comments; track comment._id) {
+				<div class="comment">
+					<div class="comment-header">
+						<span class="comment-author">{{ comment.userName }}</span>
+						<span class="comment-date">{{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+					</div>
+					<div class="comment-text">{{ comment.text }}</div>
+				</div>
+				}
+			</div>
+			<div class="comment-input">
+				<mat-form-field appearance="outline" class="comment-text-field">
+					<mat-label>Введите ваш комментарий</mat-label>
+					<textarea matInput [(ngModel)]="newComment" placeholder="Введите ваш комментарий..."
+						(keyup.enter)="$event.preventDefault(); addComment()"></textarea>
+				</mat-form-field>
+				<button class="action-button view-button" (click)="addComment()" [disabled]="!newComment.trim()">
+					Отправить
+				</button>
+			</div>
+		</div>
 
-    <div class="modal-footer">
-      <button class="close-button" (click)="closeModal()">Закрыть</button>
-    </div>
-  </div>
-</div> 
+		<div class="card-actions">
+			<button class="action-button view-button" (click)="closeModal()">
+				Закрыть
+			</button>
+		</div>
+	</div>
+</div>

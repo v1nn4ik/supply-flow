@@ -1,68 +1,126 @@
 @use "app/styles/typography" as *;
 
 @font-face {
-  font-family: 'Literal';
-  src: url('assets/fonts/Literal-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+	font-family: 'Literal';
+	src: url('assets/fonts/Literal-Regular.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: 'Literal';
-  src: url('assets/fonts/Literal-Light.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+	font-family: 'Literal';
+	src: url('assets/fonts/Literal-Light.otf') format('opentype');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: 'Literal';
-  src: url('assets/fonts/Literal-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+	font-family: 'Literal';
+	src: url('assets/fonts/Literal-Bold.otf') format('opentype');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
 }
 
 :root {
-  --dark-color: #222831;
-  --gray-color: #393E46;
-  --ligher-gray-color: #637587;
-  --light-gray-color: #F0F5F9;
-  --blue-color: #1A80E5;
-  --light-color: #FFFFFF;
-  --font-family: 'Literal', serif;
+	--dark-color: #222831;
+	--gray-color: #393E46;
+	--ligher-gray-color: #637587;
+	--light-gray-color: #F0F5F9;
+	--blue-color: #1A80E5;
+	--blue-dark-color: #0056b3;
+	--light-color: #FFFFFF;
+	--font-family: 'Literal', serif;
+
+	/* Статусы задач */
+	--status-pending-bg: #e3f2fd;
+	--status-pending-border: #90caf9;
+	--status-in-progress-bg: #fff3e0;
+	--status-in-progress-text: #f57c00;
+	--status-in-progress-border: #ffe0b2;
+	--status-completed-bg: #e8f5e9;
+	--status-completed-text: #388e3c;
+	--status-completed-border: #a5d6a7;
+	--status-cancelled-bg: #ffebee;
+	--status-cancelled-text: #d32f2f;
+	--status-cancelled-border: #ef9a9a;
+
+	/* Приоритеты задач */
+	--priority-low: #388e3c;
+	--priority-medium: #f57c00;
+	--priority-high: #d32f2f;
+
+	/* Действия с задачами */
+	--delete-color: #dc3545;
 }
 
-html, body { 
-  height: 100%;
-  @include base-typography;
+html,
+body {
+	height: 100%;
+	@include base-typography;
 }
 
-body { 
-  margin: 0; 
-  background: var(--light-color);
+body {
+	margin: 0;
+	background: var(--light-color);
+}
+
+/* Общие стили для хедеров страниц */
+header,
+.header,
+.page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 32px 0 0;
+	transition: margin-top 0.3s ease;
+}
+
+/* Отступ для хедера при малых экранах */
+@media (max-width: 500px) {
+
+	header,
+	.header,
+	.page-header {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 0;
+	}
+
+	.header h1,
+	.page-header h1,
+	header h1,
+	.header-title {
+		margin-bottom: 15px;
+	}
+
+	.filters-container {
+		width: 100%;
+		margin: 10px 0 !important;
+	}
 }
 
 button {
-  width: fit-content;
-  border: none;
-  border-radius: 12px;
-  padding: 8px 16px;
-  background: var(--light-gray-color);
-  color: var(--dark-color);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+	width: fit-content;
+	border: none;
+	border-radius: 12px;
+	padding: 8px 16px;
+	background: var(--light-gray-color);
+	color: var(--dark-color);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 
-  &:hover {
-    background-color: var(--blue-color);
-    color: var(--light-color);
-  }
+	&:hover {
+		background-color: var(--blue-color);
+		color: var(--light-color);
+	}
 
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
+	&:active {
+		transform: translateY(2px);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	}
 }

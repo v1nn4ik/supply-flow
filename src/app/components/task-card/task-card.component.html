@@ -1,52 +1,64 @@
 <div class="task-card">
-  <div class="task-header">
-    <h3 class="task-title">{{ task.title }}</h3>
-    <div class="task-actions">
-      <select 
-        [ngModel]="task.status" 
-        (ngModelChange)="onStatusChange($event)"
-        class="status-select"
-        [class]="getStatusClass(task.status)"
-      >
-        @for (status of statuses; track status.value) {
-          <option 
-            [value]="status.value" 
-            [class]="getStatusClass(status.value)"
-          >
-            {{ status.label }}
-          </option>
-        }
-      </select>
-      <button class="delete-button" (click)="onDelete()">
-        Удалить
-      </button>
-    </div>
-  </div>
+	<div class="card-content">
+		<div class="card-header">
+			<h3 class="card-title">{{ task.title }}</h3>
+			<mat-select [ngModel]="task.status" (ngModelChange)="onStatusChange($event)" class="status-select"
+				[class]="'status-' + task.status">
+				@for (status of statuses; track status.value) {
+				<mat-option [value]="status.value" [attr.data-status]="status.value">{{ status.label }}</mat-option>
+				}
+			</mat-select>
+		</div>
 
-  <div class="task-content">
-    @if (task.description) {
-      <p class="task-description">{{ task.description }}</p>
-    }
+		<div class="card-body">
+			@if (task.description) {
+			<p class="card-description">{{ task.description }}</p>
+			}
 
-    <div class="task-meta">
-      <div class="meta-item">
-        <span class="meta-label">Приоритет:</span>
-        <span class="meta-value" [class]="getPriorityClass(task.priority)">
-          {{ getPriorityLabel(task.priority) }}
-        </span>
-      </div>
+			<div class="card-meta">
+				<div class="meta-item">
+					<span class="meta-label">Приоритет:</span>
+					<span class="meta-value" [class]="getPriorityClass(task.priority)">
+						{{ getPriorityLabel(task.priority) }}
+					</span>
+				</div>
 
-      <div class="meta-item">
-        <span class="meta-label">Срок:</span>
-        <span class="meta-value">{{ task.dueDate | date:'dd.MM.yyyy HH:mm' }}</span>
-      </div>
+				<div class="meta-item due-date">
+					<span class="meta-label">Срок:</span>
+					<span class="meta-value">{{ task.dueDate | date:'dd.MM.yyyy HH:mm' }}</span>
+				</div>
 
-      @if (task.assignedTo) {
-        <div class="meta-item">
-          <span class="meta-label">Исполнитель:</span>
-          <span class="meta-value">{{ getUserFullName(task.assignedTo) }}</span>
-        </div>
-      }
-    </div>
-  </div>
+				@if (task.assignedTo) {
+				<div class="meta-item">
+					<span class="meta-label">Исполнитель:</span>
+					<span class="meta-value">{{ getUserFullName(task.assignedTo) }}</span>
+				</div>
+				}
+
+				@if (task.estimatedTime) {
+				<div class="meta-item">
+					<span class="meta-label">Оценка времени:</span>
+					<span class="meta-value">{{ task.estimatedTime }} ч.</span>
+				</div>
+				}
+			</div>
+
+			@if (task.tags && task.tags.length > 0) {
+			<div class="tags-container">
+				@for (tag of task.tags; track tag) {
+				<span class="tag">{{ tag }}</span>
+				}
+			</div>
+			}
+		</div>
+	</div>
+
+	<div class="card-actions">
+		<button class="action-button view-button" (click)="showHistory(); $event.stopPropagation()">
+			Подробнее
+		</button>
+		<button class="action-button delete-button" (click)="onDelete(); $event.stopPropagation()">
+			Удалить
+		</button>
+	</div>
 </div>

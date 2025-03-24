@@ -1,213 +1,239 @@
 @use "../../styles/typography" as *;
 
 .task-card {
-  @include base-typography;
-  background: var(--light-color);
-  border: 1px solid var(--light-gray-color);
-  border-radius: 8px;
-  padding: 1rem;
-  transition: all 0.2s ease;
+	background: var(--light-color);
+	border: 1px solid var(--light-gray-color);
+	border-radius: 8px;
+	margin-bottom: 16px;
+	transition: all 0.2s ease;
+	font-family: 'Literal', sans-serif;
 
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+	&:hover {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.card-content {
+		flex: 1;
+	}
+
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+		padding: 16px 16px 0 16px;
+		flex-wrap: wrap;
+
+		.status-select {
+			width: 35%;
+			min-width: 120px;
+			padding: 6px 12px;
+			border-radius: 4px;
+			border: 1px solid var(--light-gray-color);
+			font-size: 0.9rem;
+			font-weight: 500;
+			background-color: var(--light-color);
+			cursor: pointer;
+			font-family: 'Literal', sans-serif;
+
+			&.status-pending {
+				background-color: var(--status-pending-bg);
+				color: var(--blue-color);
+				border-color: var(--status-pending-border);
+
+				::ng-deep .mat-mdc-select-arrow {
+					color: var(--blue-color);
+				}
+			}
+
+			&.status-in_progress {
+				background-color: var(--status-in-progress-bg);
+				color: var(--status-in-progress-text);
+				border-color: var(--status-in-progress-border);
+
+				::ng-deep .mat-mdc-select-arrow {
+					color: var(--status-in-progress-text);
+				}
+
+			}
+
+			&.status-completed {
+				background-color: var(--status-completed-bg);
+				color: var(--status-completed-text);
+				border-color: var(--status-completed-border);
+
+				::ng-deep .mat-mdc-select-arrow {
+					color: var(--status-completed-text);
+				}
+			}
+
+			&.status-cancelled {
+				background-color: var(--status-cancelled-bg);
+				color: var(--status-cancelled-text);
+				border-color: var(--status-cancelled-border);
+
+				::ng-deep .mat-mdc-select-arrow {
+					color: var(--status-cancelled-text);
+				}
+			}
+		}
+
+		.card-title {
+			@include heading-typography;
+			margin: 0 0 8px 0;
+			font-size: 1.1rem;
+			color: var(--dark-color);
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+			word-break: break-word;
+			width: 50%;
+			min-width: 100px;
+			font-family: 'Literal', sans-serif;
+		}
+	}
+
+	.card-body {
+		padding: 0 16px 16px 16px;
+
+		.card-description {
+			@include light-typography;
+			margin: 0 0 16px;
+			color: var(--gray-color);
+			font-size: 0.9rem;
+			line-height: 1.5;
+			font-family: 'Literal', sans-serif;
+		}
+
+		.card-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-bottom: 12px;
+
+			.meta-item {
+				font-size: 0.85rem;
+				font-family: 'Literal', sans-serif;
+
+				&.due-date {
+					width: 100%;
+					margin-top: 0;
+				}
+
+				.meta-label {
+					color: var(--gray-color);
+					margin-right: 4px;
+				}
+
+				.meta-value {
+					color: var(--dark-color);
+
+					&.priority-low {
+						color: var(--priority-low);
+					}
+
+					&.priority-medium {
+						color: var(--priority-medium);
+					}
+
+					&.priority-high {
+						color: var(--priority-high);
+					}
+				}
+			}
+		}
+
+		.tags-container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-top: 12px;
+
+			.tag {
+				background-color: var(--light-gray-color);
+				padding: 4px 8px;
+				border-radius: 16px;
+				font-size: 0.75rem;
+				color: var(--gray-color);
+				font-family: 'Literal', sans-serif;
+			}
+		}
+	}
+
+	.card-actions {
+		padding: 16px;
+		position: relative;
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 16px;
+			right: 16px;
+			height: 1px;
+			background-color: var(--light-gray-color);
+		}
+
+		.action-button {
+			padding: 6px 12px;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-family: 'Literal', sans-serif;
+
+			&.view-button {
+				background-color: var(--light-color);
+				border: 1px solid var(--light-gray-color);
+				color: var(--dark-color);
+
+				&:hover {
+					background-color: var(--light-gray-color);
+				}
+			}
+
+			&.delete-button {
+				background-color: var(--light-color);
+				border: 1px solid var(--delete-color);
+				color: var(--delete-color);
+
+				&:hover {
+					background-color: var(--delete-color);
+					color: var(--light-color);
+				}
+			}
+		}
+	}
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-
-  .title {
-    @include heading-typography;
-    font-size: 1.25rem;
-    color: var(--dark-color);
-    margin: 0;
-  }
+// Стили для вариантов выбора статуса в mat-select
+.mat-mdc-option[data-status="pending"] {
+	background-color: var(--status-pending-bg) !important;
+	color: var(--blue-color) !important;
+	font-family: 'Literal', sans-serif;
 }
 
-.card-content {
-  .description {
-    @include light-typography;
-    color: var(--gray-color);
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-
-  .assignee {
-    @include base-typography;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-
-    .avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background-color: var(--light-gray-color);
-    }
-
-    .name {
-      color: var(--dark-color);
-    }
-  }
+.mat-mdc-option[data-status="in_progress"] {
+	background-color: var(--status-in-progress-bg) !important;
+	color: var(--status-in-progress-text) !important;
+	font-family: 'Literal', sans-serif;
 }
 
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--light-gray-color);
-
-  .deadline {
-    @include light-typography;
-    color: var(--gray-color);
-    font-size: 0.875rem;
-
-    span {
-      @include base-typography;
-      color: var(--dark-color);
-    }
-  }
-
-  .status {
-    @include base-typography;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-
-    &.new {
-      background-color: #e3f2fd;
-      color: #1976d2;
-    }
-
-    &.in-progress {
-      background-color: #fff3e0;
-      color: #f57c00;
-    }
-
-    &.completed {
-      background-color: #e8f5e9;
-      color: #388e3c;
-    }
-
-    &.cancelled {
-      background-color: #ffebee;
-      color: #d32f2f;
-    }
-  }
+.mat-mdc-option[data-status="completed"] {
+	background-color: var(--status-completed-bg) !important;
+	color: var(--status-completed-text) !important;
+	font-family: 'Literal', sans-serif;
 }
 
-.task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-
-  .task-title {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #333;
-  }
-
-  .task-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
+.mat-mdc-option[data-status="cancelled"] {
+	background-color: var(--status-cancelled-bg) !important;
+	color: var(--status-cancelled-text) !important;
+	font-family: 'Literal', sans-serif;
 }
 
-.status-select {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-
-  &.status-pending {
-    color: #f57c00;
-  }
-
-  &.status-in_progress {
-    color: #1976d2;
-  }
-
-  &.status-completed {
-    color: #388e3c;
-  }
-
-  &.status-cancelled {
-    color: #d32f2f;
-  }
-
-  option {
-    &.status-pending {
-      color: #f57c00;
-    }
-
-    &.status-in_progress {
-      color: #1976d2;
-    }
-
-    &.status-completed {
-      color: #388e3c;
-    }
-
-    &.status-cancelled {
-      color: #d32f2f;
-    }
-  }
-}
-
-.delete-button {
-  padding: 6px 12px;
-  background-color: white;
-  border: 1px solid #dc3545;
-  color: #dc3545;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #dc3545;
-    color: white;
-  }
-}
-
-.task-content {
-  .task-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-
-    .meta-item {
-      font-size: 0.85rem;
-
-      .meta-label {
-        color: #666;
-        margin-right: 4px;
-      }
-
-      .meta-value {
-        color: #333;
-
-        &.priority-low {
-          color: #388e3c;
-        }
-
-        &.priority-medium {
-          color: #f57c00;
-        }
-
-        &.priority-high {
-          color: #d32f2f;
-        }
-      }
-    }
-  }
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+	opacity: 0.9 !important;
+	font-family: 'Literal', sans-serif;
 }

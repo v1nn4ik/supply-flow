@@ -1,107 +1,102 @@
-<header>
-  <h1 class="title">
-    Настройки
-  </h1>
-</header>
+<div class="settings-page">
+	<h1 class="mat-headline-4">
+		Настройки
+	</h1>
 
-<div class="settings-container">
-  <h1 class="title">Настройки профиля</h1>
+	<div class="settings-container">
+		<mat-card-content>
+			<h2>Фото профиля</h2>
 
-  <div class="settings-card">
-    <h2>Фото профиля</h2>
+			<div class="profile-photo-container">
+				<div class="profile-photo" [ngClass]="{'has-photo': profilePhoto}">
+					<img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="Фото профиля" class="profile-image">
+					<div *ngIf="!profilePhoto" class="no-photo">
+						{{ getInitials() }}
+					</div>
+				</div>
 
-    <div class="profile-photo-container">
-      <div class="profile-photo" [ngClass]="{'has-photo': profilePhoto}">
-        <img *ngIf="profilePhoto" [src]="serverUrl + profilePhoto" alt="Фото профиля" class="profile-image">
-        <div *ngIf="!profilePhoto" class="no-photo">
-          {{ getInitials() }}
-        </div>
-      </div>
+				<div class="profile-photo-actions">
+					<button mat-button class="blue-button" (click)="fileInput.click()">
+						<mat-icon>{{ profilePhoto ? 'edit' : 'cloud_upload' }}</mat-icon>
+						{{ profilePhoto ? 'Изменить фото' : 'Загрузить фото' }}
+					</button>
+					<input #fileInput type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
 
-      <div class="profile-photo-actions">
-        <label class="photo-upload-button">
-          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
-          {{ profilePhoto ? 'Изменить фото' : 'Загрузить фото' }}
-        </label>
+					<button *ngIf="profilePhoto" mat-button class="delete-button" (click)="deletePhoto()">
+						<mat-icon>delete</mat-icon>
+						Удалить фото
+					</button>
+				</div>
+			</div>
 
-        <button *ngIf="profilePhoto" class="photo-delete-button" (click)="deletePhoto()">
-          Удалить фото
-        </button>
-      </div>
-    </div>
+			<div *ngIf="photoSuccessMessage" class="success-message-container">
+				<div class="success-message">
+					<mat-icon>check_circle</mat-icon>
+					{{ photoSuccessMessage }}
+				</div>
+			</div>
 
-    <div *ngIf="photoSuccessMessage" class="success-message">
-      {{ photoSuccessMessage }}
-    </div>
+			<div *ngIf="photoErrorMessage" class="error-message-container">
+				<div class="error-message">
+					<mat-icon>error</mat-icon>
+					{{ photoErrorMessage }}
+				</div>
+			</div>
 
-    <div *ngIf="photoErrorMessage" class="error-message">
-      {{ photoErrorMessage }}
-    </div>
-  </div>
+			<h2 id="personal-info-title">Личные данные</h2>
 
-  <div class="settings-card">
-    <h2>Личные данные</h2>
+			<form class="personal-info-form">
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Фамилия</mat-label>
+					<input matInput [(ngModel)]="lastName" name="lastName" placeholder="Иванов" required>
+					<mat-icon matSuffix>person</mat-icon>
+				</mat-form-field>
 
-    <div class="form-group">
-      <label for="lastName">Фамилия</label>
-      <input
-        id="lastName"
-        type="text"
-        class="form-input"
-        [(ngModel)]="lastName"
-        placeholder="Иванов"
-      >
-    </div>
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Имя</mat-label>
+					<input matInput [(ngModel)]="firstName" name="firstName" placeholder="Иван" required>
+					<mat-icon matSuffix>person</mat-icon>
+				</mat-form-field>
 
-    <div class="form-group">
-      <label for="firstName">Имя</label>
-      <input
-        id="firstName"
-        type="text"
-        class="form-input"
-        [(ngModel)]="firstName"
-        placeholder="Иван"
-      >
-    </div>
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Отчество</mat-label>
+					<input matInput [(ngModel)]="middleName" name="middleName" placeholder="Иванович">
+					<mat-icon matSuffix>person</mat-icon>
+				</mat-form-field>
 
-    <div class="form-group">
-      <label for="middleName">Отчество</label>
-      <input
-        id="middleName"
-        type="text"
-        class="form-input"
-        [(ngModel)]="middleName"
-        placeholder="Иванович"
-      >
-    </div>
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Дата рождения</mat-label>
+					<input matInput [matDatepicker]="birthDatePicker" [(ngModel)]="birthDate" [max]="maxDate" name="birthDate">
+					<mat-datepicker-toggle matSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+					<mat-datepicker #birthDatePicker></mat-datepicker>
+				</mat-form-field>
+			</form>
+		</mat-card-content>
 
-    <div class="form-group">
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Дата рождения</mat-label>
-        <input matInput [matDatepicker]="birthDatePicker" [(ngModel)]="birthDate" [max]="maxDate">
-        <mat-datepicker-toggle matIconSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #birthDatePicker></mat-datepicker>
-      </mat-form-field>
-    </div>
+		<mat-card-actions class="actions-container">
+			<button mat-button class="blue-button" (click)="saveChanges()">
+				<mat-icon>save</mat-icon>
+				Сохранить изменения
+			</button>
 
-    <div class="button-container">
-      <button class="save-button" (click)="saveChanges()">
-        Сохранить изменения
-      </button>
-    </div>
+			<div *ngIf="successMessage" class="success-message-container">
+				<div class="success-message">
+					<mat-icon>check_circle</mat-icon>
+					{{ successMessage }}
+				</div>
+			</div>
 
-    <div *ngIf="successMessage" class="success-message">
-      {{ successMessage }}
-    </div>
+			<button mat-button class="delete-button" (click)="logout()">
+				<mat-icon>exit_to_app</mat-icon>
+				Выйти из аккаунта
+			</button>
+		</mat-card-actions>
 
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
-  </div>
-
-  <div class="logout-section">
-    <button class="logout-button" (click)="logout()">
-      Выйти из аккаунта
-    </button>
-  </div>
+		<div *ngIf="errorMessage" class="error-message-container">
+			<div class="error-message">
+				<mat-icon>error</mat-icon>
+				{{ errorMessage }}
+			</div>
+		</div>
+	</div>
 </div>

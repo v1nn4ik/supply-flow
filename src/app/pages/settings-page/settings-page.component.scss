@@ -1,240 +1,340 @@
 @use "../../styles/typography" as *;
+@use '@angular/material' as mat;
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 32px 0 32px;
+/* Применяем шрифт Literal ко всем элементам */
+.settings-container,
+.settings-container * {
+  font-family: var(--font-family), serif;
 }
 
-.header-title {
-  @include heading-typography;
-  font-size: 30px;
-  margin: 0;
+.settings-page {
+	padding: 2rem 2rem 2rem 32px;
+	margin-left: 32px;
+}
+
+h1 {
+	padding: 0;
+	margin: 0 0 2rem 0;
+	font-size: 2rem;
+  font-family: var(--font-family), serif;
+}
+
+h2 {
+	margin: 0;
+  font-family: var(--font-family), serif;
 }
 
 .settings-container {
-  padding: 32px;
+	margin: 0;
+	max-width: 960px;
+	padding: 0;
+
+	mat-card-content {
+		font-family: var(--font-family), serif;
+	}
 }
 
-.logout-section {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.logout-button {
-  padding: 12px 24px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #c82333;
-  }
-
-  &:active {
-    background-color: #bd2130;
-  }
-}
-
-.title {
-  @include heading-typography;
-  font-size: 24px;
-  margin-bottom: 24px;
-  color: #333;
-}
-
-.settings-card {
-  background: white;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin-bottom: 24px;
-
-  h2 {
-    @include heading-typography;
-    font-size: 18px;
-    margin-bottom: 24px;
-    color: #333;
-  }
-}
-
-.form-group {
-  margin-bottom: 20px;
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #333;
-  }
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #4285f4;
-  }
-
-  &::placeholder {
-    @include light-typography;
-    color: #999;
-  }
-}
-
-.button-container {
-  margin-top: 32px;
-  text-align: right;
-}
-
-.save-button {
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #3367d6;
-  }
-
-  &:active {
-    background-color: #2850a7;
-  }
-}
-
-.success-message {
-  margin-top: 16px;
-  padding: 12px;
-  background-color: #d4edda;
-  color: #155724;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.error-message {
-  margin-top: 16px;
-  padding: 12px;
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 4px;
-  text-align: center;
-}
-
-/* Стили для фото профиля */
 .profile-photo-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	margin: 16px 0 32px;
 }
 
 .profile-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #e9ecef;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #495057;
-  font-size: 48px;
-  font-weight: bold;
-  position: relative;
+	width: 120px;
+	height: 120px;
+	border-radius: 4px;
+	overflow: hidden;
+	background-color: var(--light-gray-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: var(--dark-color);
+	font-size: 48px;
+	font-weight: 500;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-  &.has-photo {
-    background-color: #ffffff;
-  }
+	&.has-photo {
+		background-color: var(--light-color);
+	}
 
-  .profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+	.profile-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 
-  .no-photo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: #e9ecef;
-  }
+	.no-photo {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .profile-photo-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
 }
 
-.photo-upload-button {
-  background-color: #4285f4;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: inline-block;
-  text-align: center;
-
-  &:hover {
-    background-color: #3367d6;
-  }
+.success-message-container {
+	display: flex;
+	align-items: center;
 }
 
-.photo-delete-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+.success-message {
+	background-color: var(--light-color);
+	border: 1px solid var(--status-completed-text);
+	color: var(--status-completed-text);
+	padding: 0.6rem 12px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 
-  &:hover {
-    background-color: #d32f2f;
-  }
+	mat-icon {
+    font-family: 'Material Icons', serif !important;
+		font-size: 18px;
+		height: 18px;
+		width: 18px;
+		line-height: 18px;
+	}
+}
+
+.error-message-container {
+	margin-top: 1rem;
+	display: flex;
+}
+
+.error-message {
+	background-color: var(--light-color);
+	border: 1px solid var(--delete-color);
+	color: var(--delete-color);
+	padding: 0.6rem 12px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+
+	mat-icon {
+		font-family: 'Material Icons', serif !important;
+		font-size: 18px;
+		height: 18px;
+		width: 18px;
+		line-height: 18px;
+	}
+}
+
+.personal-info-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	font-family: var(--font-family), serif;
+
+	input.mat-mdc-input-element {
+		font-family: var(--font-family), serif !important;
+	}
 }
 
 .full-width {
-  width: 100%;
+	width: 100%;
 }
 
+// Стили для контейнера с кнопками
+.actions-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+// Стили для кнопок в стиле task-card
+.blue-button {
+	background-color: var(--light-color) !important;
+	border: 1px solid var(--blue-color) !important;
+	color: var(--blue-color) !important;
+	padding: 6px 12px !important;
+	border-radius: 4px !important;
+	font-size: 0.9rem !important;
+	transition: all 0.2s !important;
+	box-shadow: none !important;
+
+	&:hover {
+		background-color: var(--blue-color) !important;
+		color: var(--light-color) !important;
+		opacity: 1 !important;
+	}
+}
+
+.delete-button {
+	background-color: var(--light-color) !important;
+	border: 1px solid var(--delete-color) !important;
+	color: var(--delete-color) !important;
+	padding: 6px 12px !important;
+	border-radius: 4px !important;
+	font-size: 0.9rem !important;
+	transition: all 0.2s !important;
+	box-shadow: none !important;
+
+	&:hover {
+		background-color: var(--delete-color) !important;
+		color: var(--light-color) !important;
+	}
+}
+
+#personal-info-title {
+	margin-bottom: 1rem;
+}
+
+/* Стили для Material компонентов */
 ::ng-deep {
-  .mat-mdc-form-field {
-    width: 100%;
-  }
-  
-  .mat-calendar {
-    background-color: white;
-  }
+	.settings-container {
 
-  .mat-calendar-body-selected {
-    background-color: #4285f4;
-    color: white;
-  }
+		/* Явно задаем шрифт Material Icons для всех иконок */
+		mat-icon,
+		.mat-icon,
+		.material-icons {
+			font-family: 'Material Icons', serif !important;
+		}
 
-  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    border-color: #4285f4;
-  }
+		/* Для кнопок с иконками используем шрифт для текста, но не для самих иконок */
+		.mat-icon-button mat-icon {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Кнопка переключения датапикера */
+		.mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Заголовки */
+		.mat-mdc-card-title,
+		.mat-mdc-card-subtitle,
+		.mat-headline-4,
+		.mat-headline-5,
+		.mat-headline-6 {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Поля ввода */
+		.mat-mdc-input-element,
+		.mat-mdc-form-field-label,
+		.mat-mdc-select-value,
+		.mat-mdc-select-arrow,
+		.mat-mdc-form-field,
+		.mat-mdc-form-field-infix,
+		.mat-mdc-form-field-flex,
+		.mat-mdc-form-field-wrapper,
+		.mat-date-value,
+		.mat-date-range-input {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Кнопки и иконки */
+		.mat-mdc-button,
+		.mat-mdc-raised-button,
+		.mat-mdc-outlined-button,
+		.mat-mdc-unelevated-button,
+		.mat-button,
+		.mat-raised-button,
+		.mat-icon-button,
+		.mat-stroked-button,
+		.mat-flat-button,
+		.mat-fab,
+		.mat-mini-fab,
+		.mat-chip {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Другие элементы */
+		.mat-mdc-menu-item,
+		.mat-mdc-option,
+		.mat-mdc-optgroup-label,
+		.mat-mdc-paginator,
+		.mat-mdc-select-panel,
+		.mat-calendar-body-cell-content,
+		.mat-calendar-body-label,
+		.mat-datepicker-content,
+		.mat-datepicker-toggle,
+		.mat-mdc-snack-bar-label,
+		.mat-mdc-simple-snack-bar {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Календарь и выбор даты */
+		.mat-calendar,
+		.mat-calendar-body,
+		.mat-calendar-table,
+		.mat-calendar-header,
+		.mat-calendar-controls,
+		.mat-calendar-arrow,
+		.mat-datepicker-content,
+		.mat-datepicker-toggle,
+		.mat-datepicker-toggle-default-icon,
+		.mat-datepicker-actions,
+		.mat-datepicker-close-button,
+		.mat-date-range-input,
+		.mat-date-range-input-separator {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		/* Календарь в выпадающем окне */
+		.mat-datepicker-content .mat-calendar {
+			font-family: 'Material Icons', serif !important;
+
+			.mat-calendar-body-cell-content,
+			.mat-calendar-body-label,
+			.mat-calendar-table-header,
+			.mat-calendar-period-button,
+			.mat-calendar-previous-button,
+			.mat-calendar-next-button {
+				font-family: 'Material Icons', serif !important;
+			}
+		}
+	}
+
+	/* Обеспечиваем применение шрифта даже к элементам вне .settings-container */
+	.mat-datepicker-content,
+	.cdk-overlay-pane {
+
+		/* Иконки в выпадающих панелях */
+		mat-icon,
+		.mat-icon,
+		.material-icons {
+			font-family: 'Material Icons', serif !important;
+		}
+
+		.mat-calendar,
+		.mat-calendar-body-cell-content,
+		.mat-calendar-body-label,
+		.mat-calendar-table-header,
+		.mat-calendar-period-button,
+		.mat-calendar-previous-button,
+		.mat-calendar-next-button {
+			font-family: 'Material Icons', serif !important;
+		}
+	}
+
+	/* Глобальное правило для всех иконок */
+	mat-icon,
+	.mat-icon,
+	.material-icons,
+	[class^="mat-mdc-icon-"],
+	[class*=" mat-mdc-icon-"] {
+		font-family: 'Material Icons', serif !important;
+	}
+}
+
+/* Применение шрифтов для иконок */
+mat-icon {
+	font-family: 'Material Icons', serif !important;
+	font-size: 18px;
+	height: 18px;
+	width: 18px;
+	line-height: 18px;
 }

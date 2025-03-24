@@ -1,47 +1,62 @@
 <div class="supplies-page">
-  <div class="page-header">
-    <h1>Заявки в снабжение</h1>
-    <button class="create-button" (click)="openCreateModal()">
-      Создать заявку
-    </button>
-  </div>
+	<div class="page-header">
+		<h1>Заявки в снабжение</h1>
+		<div class="filters-container">
+			<div class="filter-group">
+				<label for="statusFilter">Статус:</label>
+				<select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()">
+					<option value="">Все</option>
+					<option value="new">Новая</option>
+					<option value="in_progress">В работе</option>
+					<option value="completed">Выполнена</option>
+					<option value="cancelled">Отменена</option>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="priorityFilter">Приоритет:</label>
+				<select id="priorityFilter" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+					<option value="">Все</option>
+					<option value="low">Низкий</option>
+					<option value="medium">Средний</option>
+					<option value="high">Высокий</option>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="searchFilter">Поиск:</label>
+				<input type="text" id="searchFilter" [(ngModel)]="searchFilter" (input)="applyFilters()"
+					placeholder="Название или описание">
+			</div>
+		</div>
+		<button class="create-button" (click)="openCreateModal()">
+			Создать заявку
+		</button>
+	</div>
 
-  @if (error) {
-    <div class="error-message">
-      {{ error }}
-    </div>
-  }
+	@if (error) {
+	<div class="error-message">
+		{{ error }}
+	</div>
+	}
 
-  <div class="supplies-list">
-    @if (supplies.length > 0) {
-      @for (supply of supplies; track supply.id || $index) {
-        <app-supply-card
-          [data]="supply"
-          (viewDetails)="openDetailsModal($event)"
-          (delete)="handleDeleteSupply($event)"
-        ></app-supply-card>
-      }
-    } @else {
-      <div class="empty-state">
-        <p>Нет активных заявок в снабжение</p>
-      </div>
-    }
-  </div>
+	<div class="supplies-list">
+		@if (filteredSupplies.length > 0) {
+		@for (supply of filteredSupplies; track supply.id || $index) {
+		<app-supply-card [data]="supply" (viewDetails)="openDetailsModal($event)"
+			(delete)="handleDeleteSupply($event)"></app-supply-card>
+		}
+		} @else {
+		<div class="empty-state">
+			<p>Нет активных заявок в снабжение</p>
+		</div>
+		}
+	</div>
 
-  @if (showCreateModal) {
-    <app-create-supply-modal
-      (close)="closeCreateModal()"
-      (create)="handleCreateSupply($event)"
-    ></app-create-supply-modal>
-  }
+	@if (showCreateModal) {
+	<app-create-supply-modal (close)="closeCreateModal()" (create)="handleCreateSupply($event)"></app-create-supply-modal>
+	}
 
-  @if (showDetailsModal && selectedSupply) {
-    <app-supply-details-modal
-      [data]="selectedSupply"
-      (close)="closeDetailsModal()"
-      (statusChange)="handleStatusChange($event)"
-      (itemUpdate)="handleItemUpdate($event)"
-    ></app-supply-details-modal>
-  }
+	@if (showDetailsModal && selectedSupply) {
+	<app-supply-details-modal [data]="selectedSupply" (close)="closeDetailsModal()"
+		(statusChange)="handleStatusChange($event)" (itemUpdate)="handleItemUpdate($event)"></app-supply-details-modal>
+	}
 </div>
-

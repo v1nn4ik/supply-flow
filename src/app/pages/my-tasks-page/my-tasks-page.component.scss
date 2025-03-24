@@ -1,49 +1,199 @@
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 32px 0 0;
+}
+
+.header-title {
+	font-weight: 700;
+	font-size: 30px;
+	margin: 0;
+}
+
 .my-tasks-page {
-  padding: 2rem;
+	padding: 2rem 2rem 2rem 32px;
+	margin-left: 32px;
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+		padding-right: 0;
 
-    h1 {
-      margin: 0;
-      color: #333;
-      font-size: 2rem;
-    }
+		h1 {
+			margin: 0;
+			color: var(--dark-color);
+			font-size: 2rem;
+			text-align: left;
+		}
 
-    .create-task-button {
-      background-color: #4a90e2;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.2s;
+		.filters-container {
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			flex-wrap: wrap;
+			flex: 1;
+			margin: 0 2rem;
 
-      &:hover {
-        background-color: #357abd;
-      }
-    }
-  }
+			.filter-group {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
 
-  .tasks-content {
-    .loading, .error, .no-tasks {
-      text-align: center;
-      padding: 2rem;
-      color: #666;
-    }
+				label {
+					font-size: 0.85rem;
+					color: var(--gray-color);
+				}
 
-    .error {
-      color: #dc3545;
-    }
+				select,
+				input {
+					padding: 0.5rem;
+					border: 1px solid var(--border-color);
+					border-radius: 4px;
+					min-width: 150px;
+					background-color: white;
+					font-family: var(--font-family), serif;
 
-    .tasks-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-  }
+					&:focus {
+						outline: none;
+						border-color: var(--blue-color);
+					}
+
+					option {
+						background-color: white;
+						font-family: var(--font-family), serif;
+					}
+				}
+
+				input {
+					min-width: 200px;
+				}
+			}
+		}
+
+		.create-task-button {
+			background-color: var(--blue-color);
+			color: var(--light-color);
+			border: none;
+			padding: 0.75rem 1.5rem;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 1rem;
+			transition: background-color 0.2s;
+
+			&:hover {
+				background-color: var(--blue-color);
+			}
+		}
+	}
+
+	.tasks-content {
+		margin-left: 0;
+
+		.loading,
+		.error,
+		.no-tasks {
+			text-align: center;
+			padding: 2rem;
+			color: var(--ligher-gray-color);
+		}
+
+		.error {
+			color: var(--delete-color);
+		}
+
+		.tasks-list {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 1.5rem;
+			margin-left: 0;
+			padding-left: 0;
+		}
+	}
+}
+
+@media (max-width: 500px) {
+	.my-tasks-page {
+		padding: 1rem 16px;
+		margin-left: 16px;
+		margin-right: 16px;
+
+		.header {
+			.filters-container {
+				flex-direction: column;
+				align-items: stretch;
+				width: 100%;
+				margin: 15px 0 !important;
+
+				.filter-group {
+					width: 100%;
+
+					select,
+					input {
+						width: 100%;
+						min-width: auto;
+					}
+				}
+
+				/* Статус и приоритет в одной строке */
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				grid-template-areas: "status priority"
+				"search search";
+
+				.filter-group:nth-child(1) {
+					grid-area: status;
+					padding-right: 5px;
+				}
+
+				.filter-group:nth-child(2) {
+					grid-area: priority;
+					padding-left: 5px;
+				}
+
+				.filter-group:nth-child(3) {
+					grid-area: search;
+					margin-top: 10px;
+				}
+			}
+
+			.create-task-button {
+				margin-top: 15px;
+				width: 100%;
+			}
+
+			h1 {
+				width: 100%;
+				text-align: left;
+			}
+		}
+
+		.tasks-content {
+			margin-left: 0;
+
+			.tasks-list {
+				grid-template-columns: 1fr;
+				margin-left: 0;
+				padding-left: 0;
+			}
+		}
+	}
+}
+
+// Стили для приоритетов
+.priority-high {
+	background-color: var(--status-cancelled-bg);
+	color: var(--priority-high);
+}
+
+.priority-medium {
+	background-color: var(--status-in-progress-bg);
+	color: var(--priority-medium);
+}
+
+.priority-low {
+	background-color: var(--status-completed-bg);
+	color: var(--priority-low);
 }

@@ -1,104 +1,109 @@
 <div class="modal-overlay" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Создание заявки в снабжение</h2>
-      <button class="close-button" (click)="closeModal()">×</button>
-    </div>
+	<div class="modal-content mat-elevation-z8" (click)="$event.stopPropagation()">
+		<div class="modal-header">
+			<h2 class="mat-headline-5">Создание заявки в снабжение</h2>
+			<button mat-icon-button class="close-button" (click)="closeModal()">
+				<mat-icon>close</mat-icon>
+			</button>
+		</div>
 
-    <div class="modal-body">
-      <div class="form-group">
-        <label for="title">Название <span class="required">*</span></label>
-        <input
-          id="title"
-          type="text"
-          [(ngModel)]="formData.title"
-          placeholder="Введите название заявки"
-        >
-      </div>
+		<form>
+			<div class="form-group">
+				<mat-form-field appearance="outline" color="primary">
+					<mat-label>Название</mat-label>
+					<input matInput type="text" [(ngModel)]="formData.title" name="title" required
+						placeholder="Введите название заявки">
+					<mat-error *ngIf="!formData.title">Название заявки обязательно</mat-error>
+				</mat-form-field>
+			</div>
 
-      <div class="form-group">
-        <label for="description">Описание</label>
-        <textarea
-          id="description"
-          [(ngModel)]="formData.description"
-          placeholder="Введите описание заявки"
-        ></textarea>
-      </div>
+			<div class="form-group">
+				<mat-form-field appearance="outline" color="primary">
+					<mat-label>Описание</mat-label>
+					<textarea matInput [(ngModel)]="formData.description" name="description" placeholder="Введите описание заявки"
+						rows="6"></textarea>
+				</mat-form-field>
+			</div>
 
-      <div class="form-group">
-        <label for="priority">Приоритет</label>
-        <select id="priority" [(ngModel)]="formData.priority">
-          @for (priority of priorities; track priority.value) {
-            <option [value]="priority.value">{{ priority.label }}</option>
-          }
-        </select>
-      </div>
+			<div class="form-group priority-toggle-group">
+				<label>Приоритет заявки</label>
+				<mat-button-toggle-group [(ngModel)]="formData.priority" name="priority" aria-label="Приоритет заявки"
+					hideSingleSelectionIndicator="true" class="buttons-toggle-group">
+					<mat-button-toggle value="low" class="no-check-icon priority-low">
+						<mat-icon>arrow_downward</mat-icon> Низкий
+					</mat-button-toggle>
+					<mat-button-toggle value="medium" class="no-check-icon priority-medium">
+						<mat-icon>remove</mat-icon> Средний
+					</mat-button-toggle>
+					<mat-button-toggle value="high" class="no-check-icon priority-high">
+						<mat-icon>arrow_upward</mat-icon> Высокий
+					</mat-button-toggle>
+				</mat-button-toggle-group>
+			</div>
 
-      <div class="form-group">
-        <label for="deadline">Срок исполнения <span class="required">*</span></label>
-        <mat-form-field appearance="outline" class="date-field">
-          <input 
-            matInput 
-            [matDatepicker]="deadlinePicker" 
-            [(ngModel)]="formData.deadline" 
-            [min]="minDate"
-            [matDatepickerFilter]="filterDate"
-            placeholder="Выберите дату"
-          >
-          <mat-datepicker-toggle matIconSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
-          <mat-datepicker #deadlinePicker></mat-datepicker>
-        </mat-form-field>
-      </div>
+			<div class="form-group deadline-form-group">
+				<mat-form-field appearance="outline" color="primary">
+					<mat-label>Срок исполнения</mat-label>
+					<input matInput [matDatepicker]="deadlinePicker" [(ngModel)]="formData.deadline" [min]="minDate"
+						[matDatepickerFilter]="filterDate" placeholder="Выберите дату" name="deadline" required>
+					<mat-datepicker-toggle matIconSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+					<mat-datepicker #deadlinePicker></mat-datepicker>
+					<mat-error *ngIf="!formData.deadline">Срок исполнения обязателен</mat-error>
+				</mat-form-field>
+			</div>
 
-      <div class="items-section">
-        <h3>Предметы <span class="required">*</span></h3>
-        
-        <div class="items-list">
-          @for (item of formData.items; track $index) {
-            <div class="item-row">
-              <span class="item-name">{{ item.name }}</span>
-              <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
-              <button class="remove-item" (click)="removeItem($index)">×</button>
-            </div>
-          }
-        </div>
+			<div class="items-section">
+				<h3>Предметы <span class="required">*</span></h3>
 
-        <div class="add-item-form">
-          <div class="form-group">
-            <input
-              type="text"
-              [(ngModel)]="newItem.name"
-              placeholder="Название предмета"
-            >
-          </div>
-          <div class="form-group">
-            <input
-              type="number"
-              [(ngModel)]="newItem.quantity"
-              min="1"
-              placeholder="Количество"
-            >
-          </div>
-          <div class="form-group">
-            <select [(ngModel)]="newItem.unit">
-              @for (unit of units; track unit.value) {
-                <option [value]="unit.value">{{ unit.label }}</option>
-              }
-            </select>
-          </div>
-          <button class="add-item-button" (click)="addItem()">Добавить</button>
-        </div>
-      </div>
-    </div>
+				<div class="items-list">
+					@for (item of formData.items; track $index) {
+					<div class="item-row">
+						<span class="item-name">{{ item.name }}</span>
+						<span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+						<button mat-icon-button color="warn" class="remove-item" (click)="removeItem($index)" type="button">
+							<mat-icon>close</mat-icon>
+						</button>
+					</div>
+					}
+				</div>
 
-    <div class="modal-footer">
-      <button 
-        class="create-button" 
-        (click)="createSupply()"
-        [disabled]="!isFormValid"
-      >
-        Создать заявку
-      </button>
-    </div>
-  </div>
-</div> 
+				<div class="add-item-form">
+					<div class="form-group">
+						<mat-form-field appearance="outline" color="primary">
+							<mat-label>Название предмета</mat-label>
+							<input matInput type="text" [(ngModel)]="newItem.name" name="itemName"
+								placeholder="Введите название предмета">
+						</mat-form-field>
+					</div>
+					<div class="form-group">
+						<mat-form-field appearance="outline" color="primary">
+							<mat-label>Кол-во</mat-label>
+							<input matInput type="number" [(ngModel)]="newItem.quantity" name="itemQuantity" min="1"
+								placeholder="Количество">
+						</mat-form-field>
+					</div>
+					<div class="form-group">
+						<mat-form-field appearance="outline" color="primary">
+
+							<mat-select [(ngModel)]="newItem.unit" name="itemUnit">
+								@for (unit of units; track unit.value) {
+								<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+					</div>
+					<button mat-mini-fab color="primary" class="add-item-button" (click)="addItem()" type="button">
+						<mat-icon>add</mat-icon>
+					</button>
+				</div>
+			</div>
+
+			<div class="button-group">
+				<button type="button" class="cancel-button" (click)="closeModal()">Отмена</button>
+				<button type="button" class="create-button" (click)="createSupply()" [disabled]="!isFormValid">
+					Создать
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
