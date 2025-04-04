@@ -5,6 +5,7 @@ export interface UserData {
   middleName?: string;
   email: string;
   profilePhoto?: string;
+  birthDate?: string;
   role: string;
   createdAt: string;
   updatedAt: string;

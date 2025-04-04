@@ -2,16 +2,10 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { UserData as ModelUserData } from '../models/user.model';
 
-export interface UserData {
-	lastName: string;
-	firstName: string;
-	middleName: string;
-	birthDate?: string;
-	profilePhoto?: string | null;
-	hasCompletedRegistration?: boolean;
-	role?: string;
-}
+// Алиас для совместимости с существующим кодом
+export type UserData = ModelUserData;
 
 export interface User {
 	_id: string;
@@ -135,7 +129,7 @@ export class UserService {
 				next: () => {
 					const currentUserData = this.userData.value;
 					if (currentUserData) {
-						currentUserData.profilePhoto = null;
+						currentUserData.profilePhoto = undefined;
 						this.userData.next(currentUserData);
 					}
 					resolve();

@@ -6,6 +6,7 @@ import { NgIf, NgClass } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { ModalService, ModalType } from '../../services/modal.service';
 import { UserRoles } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 interface menuItem {
 	label: string;
@@ -46,7 +47,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	constructor(private router: Router,
 		private activatedRoute: ActivatedRoute,
 		private userService: UserService,
-		private modalService: ModalService) {
+		private modalService: ModalService,
+		private authService: AuthService) {
 	}
 
 	menuItems: menuItem[] = [
@@ -109,6 +111,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
+		// Загрузить пользователя, если его нет
+		if (!this.authService.getCurrentUser()) {
+			this.authService.loadCurrentUser();
+		}
+		
 		this.routerSubscription = this.router.events.pipe(
 			filter(event => event instanceof NavigationEnd)
 		).subscribe((event: any) => {
@@ -122,6 +129,34 @@ export class SidebarComponent implements OnInit, OnDestroy {
 				this.firstName = userData.firstName;
 				this.profilePhoto = userData.profilePhoto || null;
 				this.userRole = userData.role || null;
+				
+				// Обновляем пользователя в authService, если он не установлен
+				if (!this.authService.getCurrentUser() && userData && userData.role) {
+					// Создаем новый объект с необходимыми полями из models/user.model.ts
+					const authUser = {
+						_id: userData._id || 'temp-id',
+						firstName: userData.firstName,
+						lastName: userData.lastName,
+						middleName: userData.middleName,
+						email: userData.email || '',
+						profilePhoto: userData.profilePhoto,
+						birthDate: userData.birthDate,
+						role: userData.role,
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString()
+					};
+					this.authService.setCurrentUser(authUser);
+				}
+			} else {
+				// Попробуем получить пользователя из authService
+				const authUser = this.authService.getCurrentUser();
+				if (authUser) {
+					this.userName = `${authUser.lastName} ${authUser.firstName} ${authUser.middleName || ''}`.trim();
+					this.lastName = authUser.lastName;
+					this.firstName = authUser.firstName;
+					this.profilePhoto = authUser.profilePhoto || null;
+					this.userRole = authUser.role || null;
+				}
 			}
 		});
 	}

@@ -89,12 +89,20 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 		}
 
 		try {
+			// Получаем текущие данные пользователя
+			const currentUserData = this.userService.getUserData();
+			if (!currentUserData) {
+				this.errorMessage = 'Не удалось получить данные пользователя';
+				return;
+			}
+
+			// Обновляем только необходимые поля, сохраняя остальные
 			const updatedUserData = {
+				...currentUserData,
 				lastName: this.capitalizeFirstLetter(this.lastName.trim()),
 				firstName: this.capitalizeFirstLetter(this.firstName.trim()),
 				middleName: this.middleName.trim() ? this.capitalizeFirstLetter(this.middleName.trim()) : '',
-				birthDate: this.birthDate,
-				profilePhoto: this.profilePhoto
+				birthDate: this.birthDate
 			};
 
 			this.userService.setUserData(updatedUserData);
@@ -104,7 +112,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 			// Обновляем значения полей отформатированными данными
 			this.lastName = updatedUserData.lastName;
 			this.firstName = updatedUserData.firstName;
-			this.middleName = updatedUserData.middleName;
+			this.middleName = updatedUserData.middleName || '';
 		} catch (error) {
 			this.errorMessage = 'Произошла ошибка при сохранении данных';
 			this.successMessage = '';

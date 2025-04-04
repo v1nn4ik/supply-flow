@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UserData } from '../models/user.model';
 
 interface UserDataResponse {
   hasUserData: boolean;
@@ -18,7 +19,14 @@ const API_URL = 'http://localhost:3000/api';
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  private currentUser: UserData | null = null;
+
+  constructor(private http: HttpClient) {
+    // Загрузить пользователя при создании сервиса, если есть токен
+    if (this.getToken()) {
+      this.loadCurrentUser();
+    }
+  }
 
   checkUserData(phone: string): Observable<UserDataResponse> {
     return this.http.post<UserDataResponse>(`${API_URL}/auth/check-user`, { phone });
@@ -50,5 +58,32 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');
+    this.currentUser = null;
+  }
+
+  getCurrentUser(): UserData | null {
+    return this.currentUser;
+  }
+
+  setCurrentUser(user: UserData): void {
+    this.currentUser = user;
+  }
+  
+  loadCurrentUser(): void {
+    const token = this.getToken();
+    if (!token) return;
+    
+    this.http.get<UserData>(`${API_URL}/auth/user/data`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
+      next: (userData) => {
+        this.currentUser = userData;
+      },
+      error: () => {
+        this.currentUser = null;
+      }
+    });
   }
 } 

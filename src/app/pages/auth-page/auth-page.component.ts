@@ -185,7 +185,9 @@ export class AuthPageComponent implements OnInit, OnDestroy {
 		this.authService.verifyCode(verificationData).subscribe({
 			next: (response) => {
 				this.authService.setToken(response.token);
+				// Загружаем данные пользователя в оба сервиса
 				this.userService.loadUserData();
+				this.authService.loadCurrentUser();
 				this.router.navigate(['/app']);
 			},
 			error: (error) => {
