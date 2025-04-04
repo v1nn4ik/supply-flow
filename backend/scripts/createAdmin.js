@@ -19,6 +19,7 @@ const createAdmin = async (phoneNumber) => {
         console.log('Admin user created successfully');
         console.log('Phone:', phoneNumber);
         console.log('Role:', ROLES.ADMIN);
+        console.log('Available roles:', Object.values(ROLES).join(', '));
     } catch (error) {
         console.error('Error creating admin:', error);
     } finally {

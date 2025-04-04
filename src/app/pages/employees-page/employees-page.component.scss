@@ -1,0 +1,444 @@
+@use "../../styles/typography" as *;
+@use '@angular/material' as mat;
+
+/* Применяем шрифт ко всем элементам */
+.employees-container,
+.employees-container * {
+  font-family: var(--font-family), serif;
+}
+
+.employees-page {
+  padding: 2rem 2rem 2rem 32px;
+  margin-left: 32px;
+  background-color: transparent;
+}
+
+h1 {
+  padding: 0;
+  margin: 0 0 2rem 0;
+  font-size: 2rem;
+  font-family: var(--font-family), serif;
+}
+
+h2 {
+  margin: 0;
+  font-family: var(--font-family), serif;
+}
+
+.employees-container {
+  margin: 0;
+  max-width: 1200px;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+
+  mat-card-content {
+    font-family: var(--font-family), serif;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.refresh-button {
+  height: 40px;
+}
+
+.users-table-container {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    color: var(--dark-color);
+    font-weight: 500;
+    text-align: left;
+    padding: 12px 16px;
+    font-family: var(--font-family), serif;
+    border-bottom: 1px solid var(--light-gray-color);
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--light-gray-color);
+    font-family: var(--font-family), serif;
+  }
+
+  tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .photo-cell {
+    width: 50px;
+    padding: 8px;
+  }
+  
+  .profile-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--light-gray-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--dark-color);
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &.has-photo {
+      background-color: var(--light-color);
+    }
+
+    .profile-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .no-photo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .current-role {
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+    
+    &.role-text-EMPLOYEE {
+      color: var(--blue-color);
+    }
+    
+    &.role-text-SUPPLY_SPECIALIST {
+      color: #ff8a3d;
+    }
+    
+    &.role-text-MANAGER {
+      color: #2ea01c;
+    }
+    
+    &.role-text-ADMIN {
+      color: #8044c2;
+    }
+  }
+
+  .role-select {
+    width: auto;
+    min-width: 150px;
+    max-width: 200px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--light-gray-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: var(--light-color);
+    cursor: pointer;
+    font-family: var(--font-family), serif;
+    position: relative;
+    
+    ::ng-deep .mat-mdc-select-trigger {
+      height: 24px;
+      padding: 0;
+    }
+    
+    ::ng-deep .mat-mdc-select-value {
+      padding: 0;
+      font-family: var(--font-family), serif;
+    }
+    
+    ::ng-deep .mat-mdc-select-placeholder {
+      color: rgba(0, 0, 0, 0.6);
+      font-family: var(--font-family), serif;
+      font-size: 0.9rem;
+    }
+    
+    ::ng-deep .mat-mdc-select-arrow-wrapper {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    ::ng-deep .mat-mdc-select-arrow {
+      color: inherit;
+      width: 10px;
+      height: 10px;
+    }
+    
+    &.role-EMPLOYEE {
+      background-color: #edf6ff;
+      color: var(--blue-color);
+      border-color: #c1d9f5;
+      
+      ::ng-deep .mat-mdc-select-arrow {
+        color: var(--blue-color);
+      }
+    }
+    
+    &.role-SUPPLY_SPECIALIST {
+      background-color: #fff1e6;
+      color: #ff8a3d;
+      border-color: #ffd1b0;
+      
+      ::ng-deep .mat-mdc-select-arrow {
+        color: #ff8a3d;
+      }
+    }
+    
+    &.role-MANAGER {
+      background-color: #ebf9e8;
+      color: #2ea01c;
+      border-color: #c3e6bc;
+      
+      ::ng-deep .mat-mdc-select-arrow {
+        color: #2ea01c;
+      }
+    }
+    
+    &.role-ADMIN {
+      background-color: #f5e9ff;
+      color: #8044c2;
+      border-color: #dbbdf7;
+      
+      ::ng-deep .mat-mdc-select-arrow {
+        color: #8044c2;
+      }
+    }
+  }
+}
+
+.no-data, .loading {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--secondary-text-color);
+  font-family: var(--font-family), serif;
+}
+
+.blue-button {
+  background-color: var(--light-color) !important;
+  border: 1px solid var(--blue-color) !important;
+  color: var(--blue-color) !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s !important;
+  box-shadow: none !important;
+  font-family: var(--font-family), serif !important;
+
+  &:hover {
+    background-color: var(--blue-color) !important;
+    color: var(--light-color) !important;
+    opacity: 1 !important;
+  }
+
+  &:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+.role-button {
+  background-color: var(--light-color) !important;
+  border: 1px solid var(--blue-color) !important;
+  color: var(--blue-color) !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s !important;
+  box-shadow: none !important;
+  font-family: var(--font-family), serif !important;
+  min-width: 170px !important;
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    
+    mat-icon:first-child {
+      margin-right: 4px;
+    }
+    
+    mat-icon:last-child {
+      margin-left: 4px;
+    }
+  }
+
+  &:hover {
+    background-color: var(--blue-color) !important;
+    color: var(--light-color) !important;
+    opacity: 1 !important;
+  }
+
+  &:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+/* Стили для Material компонентов */
+::ng-deep {
+  .employees-container {
+    .mat-mdc-input-element,
+    .mat-mdc-form-field-label,
+    .mat-mdc-select-value,
+    .mat-mdc-select-arrow,
+    .mat-mdc-form-field,
+    .mat-mdc-form-field-infix,
+    .mat-mdc-form-field-flex,
+    .mat-mdc-form-field-wrapper {
+      font-family: var(--font-family), serif !important;
+    }
+
+    /* Кнопки и иконки */
+    .mat-mdc-button,
+    .mat-mdc-raised-button,
+    .mat-mdc-outlined-button,
+    .mat-mdc-unelevated-button,
+    .mat-button,
+    .mat-raised-button,
+    .mat-icon-button,
+    .mat-stroked-button,
+    .mat-flat-button,
+    .mat-fab,
+    .mat-mini-fab,
+    .mat-chip {
+      font-family: var(--font-family), serif !important;
+    }
+
+    /* Другие элементы */
+    .mat-mdc-menu-item,
+    .mat-mdc-option,
+    .mat-mdc-optgroup-label,
+    .mat-mdc-paginator,
+    .mat-mdc-select-panel {
+      font-family: var(--font-family), serif !important;
+    }
+  }
+  
+  /* Стили для меню ролей */
+  .role-menu {
+    .role-menu-header {
+      padding: 8px 16px;
+      color: var(--secondary-text-color);
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--light-gray-color);
+      font-family: var(--font-family), serif !important;
+    }
+    
+    .mat-mdc-menu-content {
+      padding: 0 !important;
+    }
+    
+    .mat-mdc-menu-item {
+      font-family: var(--font-family), serif !important;
+      height: 40px;
+    }
+    
+    .role-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      
+      &.active-role {
+        color: var(--blue-color);
+        font-weight: 500;
+      }
+      
+      mat-icon {
+        margin-left: 8px;
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        color: var(--blue-color);
+      }
+    }
+  }
+
+  /* Глобальное правило для всех иконок */
+  mat-icon,
+  .mat-icon,
+  .material-icons,
+  [class^="mat-mdc-icon-"],
+  [class*=" mat-mdc-icon-"] {
+    font-family: 'Material Icons', serif !important;
+  }
+
+  /* Скрываем стрелку выпадающего списка */
+  .mat-mdc-select[hiddenIndicator] .mat-mdc-select-arrow-wrapper {
+    display: none;
+  }
+  
+  // Стили для элементов списка mat-option
+  .mat-mdc-option {
+    min-height: 36px !important;
+    padding: 6px 12px !important;
+    font-family: var(--font-family), serif !important;
+  }
+  
+  /* Стили для вариантов выбора роли в mat-select */
+  .mat-mdc-option[data-role="EMPLOYEE"] {
+    background-color: #edf6ff !important;
+    color: var(--blue-color) !important;
+    font-family: var(--font-family), serif;
+  }
+  
+  .mat-mdc-option[data-role="SUPPLY_SPECIALIST"] {
+    background-color: #fff1e6 !important;
+    color: #ff8a3d !important;
+    font-family: var(--font-family), serif;
+  }
+  
+  .mat-mdc-option[data-role="MANAGER"] {
+    background-color: #ebf9e8 !important;
+    color: #2ea01c !important;
+    font-family: var(--font-family), serif;
+  }
+  
+  .mat-mdc-option[data-role="ADMIN"] {
+    background-color: #f5e9ff !important;
+    color: #8044c2 !important;
+    font-family: var(--font-family), serif;
+  }
+  
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+    opacity: 0.9 !important;
+  }
+  
+  /* Убираем границы и тени стандартного mat-select */
+  .mat-mdc-select-panel {
+    border-radius: 4px !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Применение шрифтов для иконок */
+mat-icon {
+  font-family: 'Material Icons', serif !important;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+} 

@@ -8,6 +8,13 @@ const checkRole = (allowedRoles) => {
 
         const userRole = req.user.role;
         
+        // Если роль отсутствует, временно используем EMPLOYEE
+        if (!userRole) {
+            req.user.role = ROLES.EMPLOYEE;
+            next();
+            return;
+        }
+        
         if (!allowedRoles.includes(userRole)) {
             return res.status(403).json({ message: 'Нет доступа' });
         }
@@ -17,12 +24,18 @@ const checkRole = (allowedRoles) => {
 };
 
 const isAdmin = checkRole([ROLES.ADMIN]);
-const isLevel2OrAdmin = checkRole([ROLES.LEVEL_2, ROLES.ADMIN]);
-const isAnyRole = checkRole([ROLES.LEVEL_1, ROLES.LEVEL_2, ROLES.ADMIN]);
+const isManager = checkRole([ROLES.MANAGER]);
+const isManagerOrAdmin = checkRole([ROLES.MANAGER, ROLES.ADMIN]);
+const isSupplySpecialist = checkRole([ROLES.SUPPLY_SPECIALIST]);
+const isSupplySpecialistOrHigher = checkRole([ROLES.SUPPLY_SPECIALIST, ROLES.MANAGER, ROLES.ADMIN]);
+const isAnyRole = checkRole([ROLES.EMPLOYEE, ROLES.SUPPLY_SPECIALIST, ROLES.MANAGER, ROLES.ADMIN]);
 
 module.exports = {
     checkRole,
     isAdmin,
-    isLevel2OrAdmin,
+    isManager,
+    isManagerOrAdmin,
+    isSupplySpecialist,
+    isSupplySpecialistOrHigher,
     isAnyRole
 }; 

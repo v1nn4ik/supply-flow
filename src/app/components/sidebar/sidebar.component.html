@@ -10,7 +10,7 @@
 	<div class="menu-content">
 		<nav>
 			<ul class="sidebar-menu-list">
-				@for (item of menuItems.slice(0, menuItems.length - 2); track item) {
+				@for (item of filteredMenuItems.slice(0, 3); track item) {
 				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
 					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
 					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">
@@ -29,7 +29,7 @@
 		</button>
 		<nav>
 			<ul class="sidebar-bottom-menu-list">
-				@for (item of menuItems.slice(menuItems.length - 2); track item) {
+				@for (item of filteredMenuItems.slice(3); track item) {
 				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
 					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
 					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">

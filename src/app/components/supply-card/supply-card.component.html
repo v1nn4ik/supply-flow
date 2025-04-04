@@ -31,7 +31,7 @@
 				<div class="meta-item full-width">
 					<span class="meta-label">Создано:</span>
 					<span class="meta-value">
-						{{ data.createdAt | date:'dd.MM.yyyy':'UTC' }}
+						{{ data.createdAt | date:'dd.MM.yyyy' }}
 					</span>
 				</div>
 				}
@@ -39,7 +39,7 @@
 				<div class="meta-item due-date">
 					<span class="meta-label">Срок:</span>
 					<span class="meta-value">
-						{{ data.deadline | date:'dd.MM.yyyy':'UTC' }}
+						{{ data.deadline | date:'dd.MM.yyyy' }}
 					</span>
 				</div>
 
@@ -57,8 +57,10 @@
 		<button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
 			Подробнее
 		</button>
-		<button class="action-button delete-button" (click)="onDelete($event)">
-			Удалить
-		</button>
+		@if (canManageSupply) {
+			<button class="action-button delete-button" (click)="onDelete($event)">
+				Удалить
+			</button>
+		}
 	</div>
 </div>

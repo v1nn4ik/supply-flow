@@ -8,4 +8,11 @@ export interface UserData {
   role: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export enum UserRoles {
+  EMPLOYEE = 'EMPLOYEE',
+  SUPPLY_SPECIALIST = 'SUPPLY_SPECIALIST',
+  MANAGER = 'MANAGER',
+  ADMIN = 'ADMIN'
 } 

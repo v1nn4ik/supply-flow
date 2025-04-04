@@ -5,12 +5,21 @@ import { environment } from '../../environments/environment';
 
 const API_URL = environment.apiUrl;
 
+export interface CommentAttachment {
+  name: string;
+  originalName?: string;
+  url: string;
+  type?: string;
+  size?: number;
+}
+
 export interface Comment {
   _id: string;
   supplyId: string;
   userId: string;
   userName: string;
   text: string;
+  attachment?: CommentAttachment;
   createdAt: string;
 }
 
@@ -38,5 +47,17 @@ export class CommentService {
       supplyId,
       text
     }, this.getHeaders());
+  }
+
+  addCommentWithAttachment(supplyId: string, file: File, text: string = ''): Observable<Comment> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('supplyId', supplyId);
+    
+    if (text.trim()) {
+      formData.append('text', text);
+    }
+
+    return this.http.post<Comment>(`${API_URL}/comments/attachment`, formData, this.getHeaders());
   }
 } 

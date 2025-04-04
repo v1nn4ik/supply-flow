@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupplyRequest } from '../../services/supply.service';
+import { UserRoles } from '../../models/user.model';
 
 @Component({
 	selector: 'app-supply-card',
@@ -11,8 +12,19 @@ import { SupplyRequest } from '../../services/supply.service';
 })
 export class SupplyCardComponent {
 	@Input() data!: SupplyRequest;
+	@Input() userRole: string | null = null;
 	@Output() viewDetails = new EventEmitter<SupplyRequest>();
 	@Output() delete = new EventEmitter<string>();
+
+	get isEmployee(): boolean {
+		return this.userRole === UserRoles.EMPLOYEE;
+	}
+
+	get canManageSupply(): boolean {
+		return this.userRole === UserRoles.ADMIN || 
+			this.userRole === UserRoles.MANAGER || 
+			this.userRole === UserRoles.SUPPLY_SPECIALIST;
+	}
 
 	getPriorityLabel(priority: string): string {
 		const labels: { [key: string]: string } = {
@@ -28,6 +40,7 @@ export class SupplyCardComponent {
 			'new': 'Новая',
 			'in_progress': 'В работе',
 			'completed': 'Выполнена',
+			'finalized': 'Завершена',
 			'cancelled': 'Отменена'
 		};
 		return labels[status] || status;

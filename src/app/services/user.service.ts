@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface UserData {
 	lastName: string;
@@ -9,6 +10,7 @@ export interface UserData {
 	birthDate?: string;
 	profilePhoto?: string | null;
 	hasCompletedRegistration?: boolean;
+	role?: string;
 }
 
 export interface User {
@@ -17,9 +19,11 @@ export interface User {
 	lastName: string;
 	middleName?: string;
 	email: string;
+	role?: string;
+	phone?: string;
 }
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = environment.apiUrl;
 
 @Injectable({
 	providedIn: 'root'
@@ -109,6 +113,7 @@ export class UserService {
 					resolve(response.profilePhoto);
 				},
 				error: (error) => {
+					console.error('Ошибка при загрузке фото:', error);
 					reject(error?.error?.message || 'Ошибка загрузки фото');
 				}
 			});
@@ -161,5 +166,14 @@ export class UserService {
 
 	getFullName(user: User): string {
 		return `${user.lastName} ${user.firstName}${user.middleName ? ' ' + user.middleName : ''}`;
+	}
+
+	updateUserRole(userId: string, role: string): Observable<any> {
+		const token = localStorage.getItem('token');
+		return this.http.put<any>(`${API_URL}/auth/user/role`, { userId, role }, {
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
 	}
 }

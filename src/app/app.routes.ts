@@ -6,7 +6,10 @@ import { SuppliesPageComponent } from './pages/supplies-page/supplies-page.compo
 import { SettingsPageComponent } from './pages/settings-page/settings-page.component';
 import { HelpPageComponent } from './pages/help-page/help-page.component';
 import { AuthPageComponent } from './pages/auth-page/auth-page.component';
+import { EmployeesPageComponent } from './pages/employees-page/employees-page.component';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
+import { UserRoles } from './models/user.model';
 
 export const routes: Routes = [
   {
@@ -39,6 +42,12 @@ export const routes: Routes = [
       {
         path: 'supplies',
         component: SuppliesPageComponent
+      },
+      {
+        path: 'employees',
+        component: EmployeesPageComponent,
+        canActivate: [roleGuard],
+        data: { roles: [UserRoles.ADMIN, UserRoles.MANAGER] }
       },
       {
         path: 'settings',

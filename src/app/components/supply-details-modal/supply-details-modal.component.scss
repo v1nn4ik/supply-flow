@@ -179,10 +179,6 @@ mat-form-field {
 	}
 }
 
-mat-divider {
-	margin: 0 0 24px 0;
-}
-
 .comments-section {
 	margin-bottom: 24px;
 
@@ -232,56 +228,116 @@ mat-divider {
 				color: var(--dark-color);
 				line-height: 1.5;
 				white-space: pre-wrap;
+				margin-bottom: 8px;
+			}
+			
+			.comment-attachment {
+				margin-top: 8px;
+				background-color: rgba(0, 0, 0, 0.05);
+				padding: 8px;
+				border-radius: 4px;
+				
+				.attachment-link {
+					display: flex;
+					align-items: center;
+					text-decoration: none;
+					color: inherit;
+					transition: background-color 0.2s;
+					
+					&:hover {
+						background-color: rgba(0, 0, 0, 0.02);
+					}
+					
+					.attachment-icon {
+						margin-right: 8px;
+						color: #1976d2;
+					}
+					
+					.attachment-name {
+						flex: 1;
+						font-weight: 500;
+						color: #1976d2;
+						margin-right: 8px;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+					
+					.attachment-size {
+						font-size: 12px;
+						color: #777;
+					}
+				}
 			}
 		}
 	}
 
 	.comment-input {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
+		flex-direction: column;
 
-		.action-button {
-			padding: 6px 12px;
-			border-radius: 4px;
-			font-size: 0.9rem;
-			cursor: pointer;
-			transition: all 0.2s;
-			height: 40px;
-			margin: 0;
-			align-self: center;
+		.comment-text-field {
+			width: 100%;
+			margin-bottom: 8px;
+		}
+		
+		.comment-actions {
 			display: flex;
-			align-items: center;
-			justify-content: center;
-
-			.send-icon {
-				font-size: 18px;
-				width: 18px;
-				height: 18px;
-				margin-right: 4px;
-			}
-
-			&.view-button {
-				background-color: var(--light-color);
-				border: 1px solid var(--light-gray-color);
-				color: var(--dark-color);
-
-				&:hover:not(:disabled) {
-					background-color: var(--blue-color);
-					color: var(--light-color);
-				}
-			}
-
-			&:disabled {
-				opacity: 0.5;
-				cursor: not-allowed;
-
+			margin-top: 20px;
+			justify-content: flex-end;
+			gap: 12px;
+			.attach-button {
+				color: var(--gray-color);
 				&:hover {
-					background-color: var(--light-color);
-					color: var(--dark-color);
+					background: none;
 				}
 			}
+			
+			.action-button {
+				padding: 6px 12px;
+				border-radius: 4px;
+				font-size: 0.9rem;
+				cursor: pointer;
+				transition: all 0.2s;
+				height: 40px;
+				margin: 0;
+				align-self: center;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				.send-icon {
+					font-size: 18px;
+					width: 18px;
+					height: 18px;
+					margin-right: 4px;
+				}
+
+				&.view-button {
+					background-color: var(--light-color);
+					border: 1px solid var(--light-gray-color);
+					color: var(--dark-color);
+
+					&:hover:not(:disabled) {
+						background-color: var(--blue-color);
+						color: var(--light-color);
+					}
+				}
+
+				&:disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+
+					&:hover {
+						background-color: var(--light-color);
+						color: var(--dark-color);
+					}
+				}
+			}
+		}
+		
+		.comment-upload-progress {
+			margin-top: 8px;
 		}
 	}
 }
@@ -373,6 +429,10 @@ mat-divider {
 
 .status-completed {
 	color: var(--priority-low);
+}
+
+.status-finalized {
+	color: #6a329f; /* Фиолетовый цвет для статуса "Завершена" */
 }
 
 .status-cancelled {

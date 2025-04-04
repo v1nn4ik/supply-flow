@@ -41,8 +41,12 @@
 	<div class="supplies-list">
 		@if (filteredSupplies.length > 0) {
 		@for (supply of filteredSupplies; track supply.id || $index) {
-		<app-supply-card [data]="supply" (viewDetails)="openDetailsModal($event)"
-			(delete)="handleDeleteSupply($event)"></app-supply-card>
+		<app-supply-card 
+			[data]="supply" 
+			[userRole]="userRole"
+			(viewDetails)="openDetailsModal($event)"
+			(delete)="handleDeleteSupply($event)">
+		</app-supply-card>
 		}
 		} @else {
 		<div class="empty-state">
@@ -56,7 +60,12 @@
 	}
 
 	@if (showDetailsModal && selectedSupply) {
-	<app-supply-details-modal [data]="selectedSupply" (close)="closeDetailsModal()"
-		(statusChange)="handleStatusChange($event)" (itemUpdate)="handleItemUpdate($event)"></app-supply-details-modal>
+	<app-supply-details-modal 
+		[data]="selectedSupply" 
+		[userRole]="userRole"
+		(close)="closeDetailsModal()"
+		(statusChange)="handleStatusChange($event)" 
+		(itemUpdate)="handleItemUpdate($event)">
+	</app-supply-details-modal>
 	}
 </div>

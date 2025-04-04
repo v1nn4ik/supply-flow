@@ -5,6 +5,7 @@ import { filter, Subscription } from 'rxjs';
 import { NgIf, NgClass } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { ModalService, ModalType } from '../../services/modal.service';
+import { UserRoles } from '../../models/user.model';
 
 interface menuItem {
 	label: string;
@@ -12,6 +13,7 @@ interface menuItem {
 	link: string;
 	hideButton?: boolean;
 	buttonText?: string;
+	roles?: string[]; // Разрешенные роли для этого пункта меню
 }
 
 @Component({
@@ -36,6 +38,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	showButton = true;
 	serverUrl: string = 'http://localhost:3000'; // URL сервера для полного пути к изображениям
 	currentMenuItem: menuItem | null = null;
+	userRole: string | null = null;
 
 	private userDataSubscription?: Subscription;
 	private routerSubscription?: Subscription;
@@ -69,6 +72,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
 			buttonText: 'Создать задачу'
 		},
 		{
+			label: 'Сотрудники',
+			icon: 'users',
+			link: '/app/employees',
+			hideButton: true,
+			roles: [UserRoles.ADMIN, UserRoles.MANAGER]
+		},
+		{
 			label: 'Настройки',
 			icon: 'settings',
 			link: '/app/settings',
@@ -81,6 +91,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
 			hideButton: true
 		}
 	];
+
+	// Фильтруем меню только если роль - сотрудник и нам нужно скрыть какие-то пункты
+	get filteredMenuItems(): menuItem[] {
+		if (!this.userRole) {
+			return this.menuItems;
+		}
+		
+		return this.menuItems.filter(item => {
+			// Если у пункта меню не указаны роли, показываем его всем
+			if (!item.roles) {
+				return true;
+			}
+			// Если указаны роли, проверяем доступ
+			return item.roles.includes(this.userRole!);
+		});
+	}
 
 	ngOnInit(): void {
 		this.routerSubscription = this.router.events.pipe(
@@ -95,6 +121,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 				this.lastName = userData.lastName;
 				this.firstName = userData.firstName;
 				this.profilePhoto = userData.profilePhoto || null;
+				this.userRole = userData.role || null;
 			}
 		});
 	}
@@ -110,7 +137,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	}
 
 	private updateCurrentMenuItem(url: string): void {
-		const currentMenuItem = this.menuItems.find(item => url === item.link);
+		const currentMenuItem = this.filteredMenuItems.find(item => url === item.link);
 		this.currentMenuItem = currentMenuItem || null;
 		this.showButton = !currentMenuItem?.hideButton;
 		if (currentMenuItem?.buttonText) {

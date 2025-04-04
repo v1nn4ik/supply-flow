@@ -21,6 +21,33 @@ const supplyItemSchema = new mongoose.Schema({
   }
 });
 
+// Схема для вложений
+const attachmentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String
+  },
+  size: {
+    type: Number
+  },
+  uploadedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  uploadedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const supplySchema = new mongoose.Schema({
   title: {
     type: String,
@@ -32,6 +59,11 @@ const supplySchema = new mongoose.Schema({
   items: {
     type: [supplyItemSchema],
     required: true,
+    default: []
+  },
+  // Добавляем поле для хранения вложений
+  attachments: {
+    type: [attachmentSchema],
     default: []
   },
   priority: {

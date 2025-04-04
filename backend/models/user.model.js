@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: Object.values(ROLES),
-    default: ROLES.LEVEL_1
+    default: ROLES.EMPLOYEE
   },
   verificationCode: {
     type: String,

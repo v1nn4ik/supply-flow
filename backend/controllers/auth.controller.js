@@ -20,7 +20,7 @@ class AuthController {
 
 	static _createToken(user) {
 		return jwt.sign(
-			{ userId: user._id, phone: user.phone },
+			{ userId: user._id, phone: user.phone, role: user.role },
 			process.env.JWT_SECRET,
 			{ expiresIn: JWT_EXPIRATION }
 		);
@@ -51,7 +51,7 @@ class AuthController {
 		try {
 			const users = await User.find(
 				{ hasCompletedRegistration: true },
-				'firstName lastName middleName email'
+				'firstName lastName middleName email role phone profilePhoto'
 			);
 			res.json(users);
 		} catch (error) {
@@ -63,8 +63,9 @@ class AuthController {
 		try {
 			const { phone } = req.body;
 
-			// Проверка на админский номер
-			if (phone === '79999999999') {
+			// Проверка на специальные номера для быстрого входа без СМС
+			if (phone === '79999999999' || phone === '77777777777') {
+				// Для админов
 				const adminUser = await User.findOne({ phone });
 				if (adminUser) {
 					const token = AuthController._createToken(adminUser);
@@ -84,8 +85,30 @@ class AuthController {
 						isAdmin: true
 					});
 				}
+			} else if (phone === '78888888888') {
+				// Для специалиста снабжения - также без СМС
+				const specialistUser = await User.findOne({ phone });
+				if (specialistUser) {
+					const token = AuthController._createToken(specialistUser);
+					return res.json({
+						token,
+						user: {
+							id: specialistUser._id,
+							phone: specialistUser.phone,
+							role: specialistUser.role,
+							lastName: specialistUser.lastName,
+							firstName: specialistUser.firstName,
+							middleName: specialistUser.middleName,
+							birthDate: specialistUser.birthDate,
+							profilePhoto: specialistUser.profilePhoto,
+							hasCompletedRegistration: specialistUser.hasCompletedRegistration
+						},
+						isSpecialist: true // Добавляем флаг для клиента
+					});
+				}
 			}
 
+			// Обычная авторизация с отправкой кода для всех остальных
 			const existingUser = await User.findOne({ phone });
 			if (existingUser && existingUser.verificationCodeExpires > new Date()) {
 				const timeLeft = Math.ceil((existingUser.verificationCodeExpires - new Date()) / 1000);
@@ -198,17 +221,14 @@ class AuthController {
 
 			await user.save();
 
-			const token = jwt.sign(
-				{ userId: user._id, phone: user.phone },
-				process.env.JWT_SECRET,
-				{ expiresIn: '7d' }
-			);
+			const token = AuthController._createToken(user);
 
 			res.json({
 				token,
 				user: {
 					id: user._id,
 					phone: user.phone,
+					role: user.role,
 					lastName: user.lastName,
 					firstName: user.firstName,
 					middleName: user.middleName,
@@ -262,7 +282,8 @@ class AuthController {
 				middleName: user.middleName,
 				birthDate: user.birthDate,
 				profilePhoto: user.profilePhoto,
-				hasCompletedRegistration: user.hasCompletedRegistration
+				hasCompletedRegistration: user.hasCompletedRegistration,
+				role: user.role
 			});
 		} catch (error) {
 			AuthController._handleServerError(res, error);
@@ -389,6 +410,99 @@ class AuthController {
 			res.json({ message: 'Фото профиля успешно удалено' });
 		} catch (error) {
 			this._handleServerError(res, error);
+		}
+	}
+
+	// Метод для создания тестового пользователя с ролью специалиста снабжения
+	static async createSupplySpecialist(req, res) {
+		try {
+			const ROLES = require('../constants/roles');
+			// Проверяем, существует ли пользователь с указанным номером
+			let user = await User.findOne({ phone: '78888888888' });
+
+			if (user) {
+				// Если пользователь существует, обновляем его роль
+				user.role = ROLES.SUPPLY_SPECIALIST;
+				user.isVerified = true;
+				user.hasCompletedRegistration = true;
+				user.lastName = 'Петров';
+				user.firstName = 'Сергей';
+				user.middleName = 'Иванович';
+				console.log('Updating existing user with SUPPLY_SPECIALIST role');
+			} else {
+				// Если пользователь не существует, создаем нового
+				user = new User({
+					phone: '78888888888',
+					role: ROLES.SUPPLY_SPECIALIST,
+					isVerified: true,
+					hasCompletedRegistration: true,
+					lastName: 'Петров',
+					firstName: 'Сергей',
+					middleName: 'Иванович'
+				});
+				console.log('Creating new user with SUPPLY_SPECIALIST role');
+			}
+
+			await user.save();
+			
+			res.json({
+				success: true,
+				message: 'Supply specialist user created/updated successfully',
+				user: {
+					phone: user.phone,
+					role: user.role,
+					name: `${user.lastName} ${user.firstName} ${user.middleName}`
+				}
+			});
+		} catch (error) {
+			AuthController._handleServerError(res, error);
+		}
+	}
+
+	static async updateUserRole(req, res) {
+		try {
+			// Получаем userId либо из параметров URL, либо из тела запроса
+			const userId = req.params.userId || req.body.userId;
+			// Получаем роль из тела запроса
+			const { role } = req.body;
+			
+			if (!userId) {
+				return res.status(400).json({ message: 'Не указан ID пользователя' });
+			}
+			
+			// Проверяем допустимость роли
+			const ROLES = require('../constants/roles');
+			if (!Object.values(ROLES).includes(role)) {
+				return res.status(400).json({ message: 'Некорректная роль' });
+			}
+			
+			// Находим пользователя
+			const user = await User.findById(userId);
+			if (!user) {
+				return res.status(404).json({ message: 'Пользователь не найден' });
+			}
+			
+			// Запрещаем менеджерам изменять роли администраторов
+			if (req.user.role === ROLES.MANAGER && user.role === ROLES.ADMIN) {
+				return res.status(403).json({ message: 'У вас нет прав изменять роль администратора' });
+			}
+			
+			// Запрещаем изменять роль самому себе
+			if (req.user.userId && req.user.userId.toString() === userId) {
+				return res.status(403).json({ message: 'Вы не можете изменять свою собственную роль' });
+			}
+			
+			// Обновляем роль
+			user.role = role;
+			await user.save();
+			
+			console.log(`Роль пользователя ${userId} изменена на ${role}`);
+			
+			res.json({ message: 'Роль пользователя успешно обновлена' });
+			
+		} catch (error) {
+			console.error('Ошибка при обновлении роли:', error);
+			AuthController._handleServerError(res, error);
 		}
 	}
 }

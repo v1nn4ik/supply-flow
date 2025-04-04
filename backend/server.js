@@ -10,7 +10,7 @@ const supplyRoutes = require('./routes/supply.routes');
 const taskRoutes = require('./routes/taskRoutes');
 const commentRoutes = require('./routes/comment.routes');
 
-dotenv.config({ path: './.env' });
+dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
@@ -18,7 +18,7 @@ const httpServer = createServer(app);
 // Настройка Socket.IO до middleware
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:4200',
+    origin: ['http://localhost:4200', 'https://supplyflow.ru', 'http://89.111.169.226'],
     methods: ['GET', 'POST'],
     credentials: true
   },
@@ -27,7 +27,7 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:4200',
+  origin: ['http://localhost:4200', 'https://supplyflow.ru', 'http://89.111.169.226'],
   credentials: true
 }));
 app.use(express.json());
@@ -36,16 +36,41 @@ app.use(express.urlencoded({ extended: true }));
 // Настраиваем статические файлы для доступа к загруженным изображениям
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Дополнительно выводим информацию о пути к директории с загруженными файлами
+console.log(`Статические файлы (uploads) доступны по пути: ${path.join(__dirname, 'uploads')}`);
+
+// Добавляем обработчик для отладки запросов к статическим файлам
+app.use((req, res, next) => {
+  if (req.url.startsWith('/uploads')) {
+    console.log(`Запрос к статическому файлу: ${req.url}`);
+  }
+  next();
+});
+
 // Подключение к MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Подключение к MongoDB успешно установлено'))
   .catch((err) => console.error('Ошибка подключения к MongoDB:', err));
 
-// Маршруты
+// Маршруты API
 app.use('/api/auth', authRoutes);
 app.use('/api/supply', supplyRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);
+
+// Путь к собранным файлам Angular
+const angularDistPath = path.join(__dirname, '../dist/supply-flow/browser');
+
+// Настройка статических файлов Angular
+app.use(express.static(angularDistPath));
+
+// Все остальные маршруты направляем на Angular
+app.get('*', (req, res) => {
+  // Исключаем API-запросы
+  if (!req.url.startsWith('/api/')) {
+    res.sendFile(path.join(angularDistPath, 'index.html'));
+  }
+});
 
 // Socket.IO обработчики
 io.on('connection', (socket) => {

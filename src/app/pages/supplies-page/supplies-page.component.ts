@@ -7,6 +7,8 @@ import { SupplyDetailsModalComponent } from '../../components/supply-details-mod
 import { SupplyService, SupplyRequest, SupplyStatus, SupplyItem } from '../../services/supply.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { ModalService, ModalType } from '../../services/modal.service';
+import { UserService } from '../../services/user.service';
+import { UserRoles } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -29,6 +31,8 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 	filteredSupplies: SupplyRequest[] = [];
 	selectedSupply: SupplyRequest | null = null;
 	error: string | null = null;
+	userRole: string | null = null;
+	isEmployee = false;
 
 	// Фильтры
 	statusFilter: string = '';
@@ -37,16 +41,18 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 
 	private supplyUpdateSubscription?: Subscription;
 	private modalSubscription?: Subscription;
+	private userSubscription?: Subscription;
 
 	constructor(
 		private supplyService: SupplyService,
 		private websocketService: WebsocketService,
 		private modalService: ModalService,
+		private userService: UserService,
 		private zone: NgZone
 	) { }
 
 	ngOnInit() {
-		this.loadSupplies();
+		this.subscribeToUserData();
 		this.setupWebSocket();
 		this.subscribeToModalEvents();
 	}
@@ -58,6 +64,19 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 		if (this.modalSubscription) {
 			this.modalSubscription.unsubscribe();
 		}
+		if (this.userSubscription) {
+			this.userSubscription.unsubscribe();
+		}
+	}
+
+	private subscribeToUserData() {
+		this.userSubscription = this.userService.userData$.subscribe(userData => {
+			if (userData) {
+				this.userRole = userData.role || null;
+				this.isEmployee = userData.role === UserRoles.EMPLOYEE;
+				this.loadSupplies();
+			}
+		});
 	}
 
 	// Метод применения фильтров
@@ -246,9 +265,11 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 
 	private loadSupplies() {
 		this.clearError();
+		
+		// Загружаем все заявки для всех ролей
 		this.supplyService.getSupplyRequests().subscribe({
 			next: (supplies) => {
-				this.supplies = supplies.map(supply => this.cloneSupply(supply));
+				this.supplies = supplies;
 				this.applyFilters();
 			},
 			error: () => this.setError('load')

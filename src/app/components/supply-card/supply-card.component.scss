@@ -57,6 +57,11 @@
 				color: var(--status-completed-text);
 			}
 
+			&.status-finalized {
+				background-color: #f3e5f5; /* Светло-фиолетовый фон */
+				color: #6a329f; /* Фиолетовый текст */
+			}
+
 			&.status-cancelled {
 				background-color: var(--status-cancelled-bg);
 				color: var(--status-cancelled-text);

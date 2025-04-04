@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const AuthController = require('../controllers/auth.controller');
 const { validatePhoneNumber, verifyToken } = require('../middleware/auth.middleware');
+const { isManagerOrAdmin } = require('../middleware/authRole');
 
 const router = express.Router();
 
@@ -67,10 +68,20 @@ router.delete('/user/photo', verifyToken, AuthController.deleteProfilePhoto);
 // Маршрут для получения списка всех пользователей (защищенный)
 router.get('/users', verifyToken, AuthController.getAllUsers);
 
+// Маршрут для обновления роли пользователя (только для админов и менеджеров)
+router.post('/users/:userId/role', verifyToken, isManagerOrAdmin, AuthController.updateUserRole);
+// Альтернативный маршрут для обновления роли пользователя
+router.put('/user/role', verifyToken, isManagerOrAdmin, AuthController.updateUserRole);
+
 // Маршрут для проверки пользователя
 router.post('/check-user', AuthController.checkUser);
 
 // Маршрут для получения статуса верификации
 router.get('/check-verification', AuthController.checkVerificationStatus);
+
+// Маршрут для создания тестового пользователя-специалиста снабжения (только в dev-окружении)
+if (process.env.NODE_ENV !== 'production') {
+    router.get('/create-supply-specialist', AuthController.createSupplySpecialist);
+}
 
 module.exports = router;

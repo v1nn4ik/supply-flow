@@ -218,7 +218,7 @@ h2 {
 		.mat-headline-4,
 		.mat-headline-5,
 		.mat-headline-6 {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 
 		/* Поля ввода */
@@ -232,7 +232,7 @@ h2 {
 		.mat-mdc-form-field-wrapper,
 		.mat-date-value,
 		.mat-date-range-input {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 
 		/* Кнопки и иконки */
@@ -248,7 +248,7 @@ h2 {
 		.mat-fab,
 		.mat-mini-fab,
 		.mat-chip {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 
 		/* Другие элементы */
@@ -263,7 +263,7 @@ h2 {
 		.mat-datepicker-toggle,
 		.mat-mdc-snack-bar-label,
 		.mat-mdc-simple-snack-bar {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 
 		/* Календарь и выбор даты */
@@ -280,12 +280,12 @@ h2 {
 		.mat-datepicker-close-button,
 		.mat-date-range-input,
 		.mat-date-range-input-separator {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 
 		/* Календарь в выпадающем окне */
 		.mat-datepicker-content .mat-calendar {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 
 			.mat-calendar-body-cell-content,
 			.mat-calendar-body-label,
@@ -293,7 +293,7 @@ h2 {
 			.mat-calendar-period-button,
 			.mat-calendar-previous-button,
 			.mat-calendar-next-button {
-				font-family: 'Material Icons', serif !important;
+				font-family: var(--font-family), serif !important;
 			}
 		}
 	}
@@ -316,7 +316,7 @@ h2 {
 		.mat-calendar-period-button,
 		.mat-calendar-previous-button,
 		.mat-calendar-next-button {
-			font-family: 'Material Icons', serif !important;
+			font-family: var(--font-family), serif !important;
 		}
 	}
 
