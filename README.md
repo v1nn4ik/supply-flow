@@ -1,59 +1,81 @@
 # SupplyFlow
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.1.
+Система управления заявками на поставку для предприятий. SupplyFlow помогает автоматизировать и упростить процесс создания, отслеживания и обработки заявок на поставку материалов и оборудования.
 
-## Development server
+## Функциональные возможности
 
-To start a local development server, run:
+- **Управление заявками**: создание, редактирование и отслеживание заявок на поставку
+- **Ролевая система**: разграничение доступа между сотрудниками, специалистами снабжения и администраторами
+- **Комментарии**: обсуждение заявок с помощью комментариев в реальном времени
+- **Вложения**: прикрепление файлов и документов к заявкам
+- **Задачи**: создание и назначение задач для исполнителей
+- **Мобильная версия**: адаптивный дизайн для работы на различных устройствах
 
-```bash
-ng serve
+## Технический стек
+
+### Фронтенд
+
+- Angular 19
+- Angular Material
+- RxJS
+- Socket.IO Client
+
+### Бэкенд
+
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT для аутентификации
+- Socket.IO для реал-тайм функционала
+- Multer для работы с файлами
+
+### Развертывание
+
+- Docker
+- Docker Compose
+- Nginx
+- Ubuntu 24.04
+
+## Архитектура системы
+
+Приложение построено на основе микросервисной архитектуры:
+
+- **Фронтенд**: SPA на Angular, работающее в контейнере с Nginx
+- **Бэкенд**: REST API на Express, обрабатывающее запросы от клиента
+- **База данных**: MongoDB для хранения данных
+- **Веб-сокеты**: Socket.IO для обновлений в реальном времени
+
+## Установка и запуск
+
+### Требования
+
+- Docker и Docker Compose
+- Node.js 18+
+- MongoDB
+
+## Структура проекта
+
 ```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+supply-flow/
+├── backend/               # Бэкенд на Node.js/Express
+│   ├── controllers/       # Контроллеры API
+│   ├── middlewares/       # Промежуточное ПО (авторизация и т.д.)
+│   ├── models/            # Mongoose модели
+│   ├── routes/            # Маршруты API
+│   ├── scripts/           # Скрипты для создания тестовых данных
+│   ├── services/          # Бизнес-логика
+│   └── server.js          # Точка входа
+├── src/                   # Фронтенд на Angular
+│   ├── app/               # Компоненты приложения
+│   │   ├── components/    # Переиспользуемые компоненты
+│   │   ├── models/        # Интерфейсы и типы
+│   │   ├── pages/         # Страницы приложения
+│   │   └── services/      # Сервисы для работы с API
+│   ├── assets/            # Статические ресурсы
+│   └── environments/      # Конфигурация окружений
+├── docker-compose.yml     # Конфигурация Docker Compose
+├── Dockerfile.frontend    # Dockerfile для фронтенда
+├── nginx.conf             # Конфигурация Nginx
+└── README.md              # Документация проекта
 ```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
