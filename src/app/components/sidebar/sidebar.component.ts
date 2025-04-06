@@ -7,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { ModalService, ModalType } from '../../services/modal.service';
 import { UserRoles } from '../../models/user.model';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface menuItem {
 	label: string;
@@ -37,7 +38,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	profilePhoto: string | null = null;
 	buttonText = 'Создать заявку';
 	showButton = true;
-	serverUrl: string = 'http://localhost:3000'; // URL сервера для полного пути к изображениям
+	serverUrl: string = environment.apiUrl.replace('/api', ''); // URL сервера для полного пути к изображениям
 	currentMenuItem: menuItem | null = null;
 	userRole: string | null = null;
 

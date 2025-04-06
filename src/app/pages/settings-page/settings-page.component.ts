@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
 
 @Component({
 	selector: 'app-settings-page',
@@ -47,7 +48,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 	photoSuccessMessage: string = '';
 	photoErrorMessage: string = '';
 
-	serverUrl: string = 'http://localhost:3000'; // URL сервера для полного пути к изображениям
+	serverUrl: string = environment.apiUrl.replace('/api', ''); // URL сервера для полного пути к изображениям
 	private userDataSubscription?: Subscription;
 
 	constructor(

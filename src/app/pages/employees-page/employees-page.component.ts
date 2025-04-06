@@ -13,6 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserService, User } from '../../services/user.service';
 import { UserRoles } from '../../models/user.model';
 import { interval, Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-employees-page',
@@ -40,7 +41,7 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   roles = Object.values(UserRoles);
   isLoading: boolean = false;
-  serverUrl: string = 'http://localhost:3000'; // URL сервера для полного пути к изображениям
+  serverUrl: string = environment.apiUrl.replace('/api', ''); // URL сервера для полного пути к изображениям
   private refreshSubscription: Subscription | null = null;
 
   constructor(

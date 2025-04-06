@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserData } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 interface UserDataResponse {
   hasUserData: boolean;
@@ -13,7 +14,7 @@ interface UserDataResponse {
   };
 }
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = environment.apiUrl;
 
 @Injectable({
   providedIn: 'root'

@@ -79,7 +79,7 @@ router.post('/check-user', AuthController.checkUser);
 // Маршрут для получения статуса верификации
 router.get('/check-verification', AuthController.checkVerificationStatus);
 
-// Маршрут для создания тестового пользователя-специалиста снабжения (только в dev-окружении)
+// Маршрут для создания тестового пользователя-специалиста снабжения
 if (process.env.NODE_ENV !== 'production') {
     router.get('/create-supply-specialist', AuthController.createSupplySpecialist);
 }
