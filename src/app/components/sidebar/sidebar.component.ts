@@ -60,20 +60,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
 			hideButton: false,
 			buttonText: 'Создать заявку'
 		},
-		{
-			label: 'Все задачи',
-			icon: 'tasks',
-			link: '/app/tasks',
-			hideButton: false,
-			buttonText: 'Создать задачу'
-		},
-		{
-			label: 'Мои задачи',
-			icon: 'my-tasks',
-			link: '/app/tasks/my',
-			hideButton: false,
-			buttonText: 'Создать задачу'
-		},
+		// {
+		// 	label: 'Все задачи',
+		// 	icon: 'tasks',
+		// 	link: '/app/tasks',
+		// 	hideButton: false,
+		// 	buttonText: 'Создать задачу'
+		// },
+		// {
+		// 	label: 'Мои задачи',
+		// 	icon: 'my-tasks',
+		// 	link: '/app/tasks/my',
+		// 	hideButton: false,
+		// 	buttonText: 'Создать задачу'
+		// },
 		{
 			label: 'Сотрудники',
 			icon: 'users',
@@ -175,30 +175,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	private updateCurrentMenuItem(url: string): void {
 		const currentMenuItem = this.filteredMenuItems.find(item => url === item.link);
 		this.currentMenuItem = currentMenuItem || null;
-		this.showButton = !currentMenuItem?.hideButton;
-		if (currentMenuItem?.buttonText) {
-			this.buttonText = currentMenuItem.buttonText;
-		}
+		// Всегда показываем кнопку "Создать заявку"
+		this.showButton = true;
+		this.buttonText = 'Создать заявку';
 	}
 
 	onMenuItemClick(item: menuItem): void {
 		this.currentMenuItem = item;
-		this.showButton = !item.hideButton;
-		if (item.buttonText) {
-			this.buttonText = item.buttonText;
-		}
+		// Всегда показываем кнопку "Создать заявку"
+		this.showButton = true;
+		this.buttonText = 'Создать заявку';
 	}
 
 	onButtonClick(): void {
-		if (!this.currentMenuItem || !this.currentMenuItem.buttonText) {
-			return;
-		}
-
-		if (this.currentMenuItem.link.includes('/supplies')) {
-			this.modalService.openModal(ModalType.CREATE_SUPPLY);
-		} else if (this.currentMenuItem.link.includes('/tasks')) {
-			this.modalService.openModal(ModalType.CREATE_TASK);
-		}
+		this.modalService.openModal(ModalType.CREATE_SUPPLY);
 	}
 
 	switchIcon(item: menuItem): string {
