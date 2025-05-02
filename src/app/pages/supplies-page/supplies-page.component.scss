@@ -71,18 +71,7 @@ header {
 		}
 
 		.create-button {
-			background-color: var(--blue-color);
-			color: var(--light-color);
-			border: none;
-			padding: 0.75rem 1.5rem;
-			border-radius: 4px;
-			cursor: pointer;
-			font-size: 1rem;
-			transition: background-color 0.2s;
-
-			&:hover {
-				background-color: #1563b3;
-			}
+			display: none;
 		}
 	}
 
@@ -207,6 +196,11 @@ header {
 
 		.error-message {
 			margin-left: 0;
+		}
+
+		.phantom-card {
+			aspect-ratio: 5/1;
+			height: auto;
 		}
 	}
 }
