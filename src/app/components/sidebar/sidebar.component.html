@@ -10,7 +10,7 @@
 	<div class="menu-content">
 		<nav>
 			<ul class="sidebar-menu-list">
-				@for (item of filteredMenuItems.slice(0, 3); track item) {
+				@for (item of filteredMenuItems; track item) {
 				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
 					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
 					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">
@@ -27,18 +27,5 @@
 		<button class="sidebar-menu-button" *ngIf="showButton" (click)="onButtonClick()">
 			{{ buttonText }}
 		</button>
-		<nav>
-			<ul class="sidebar-bottom-menu-list">
-				@for (item of filteredMenuItems.slice(3); track item) {
-				<li class="menu-item" [routerLink]="[item.link]" routerLinkActive="active"
-					[routerLinkActiveOptions]="{exact: true}" (click)="onMenuItemClick(item)"
-					(keydown.enter)="onMenuItemClick(item)" tabindex="0" role="menuitem">
-					<svg [icon]="switchIcon(item)" class="menu-item__icon">
-					</svg>
-					{{ item.label }}
-				</li>
-				}
-			</ul>
-		</nav>
 	</div>
 </div>

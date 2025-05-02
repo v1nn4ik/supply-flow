@@ -39,6 +39,13 @@
 	}
 
 	<div class="supplies-list">
+		<div class="phantom-card" (click)="openCreateModal()">
+			<div class="phantom-card-content">
+				<svg class="plus-icon" viewBox="0 0 24 24">
+					<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+				</svg>
+			</div>
+		</div>
 		@if (filteredSupplies.length > 0) {
 		@for (supply of filteredSupplies; track supply.id || $index) {
 		<app-supply-card 
@@ -48,10 +55,6 @@
 			(delete)="handleDeleteSupply($event)">
 		</app-supply-card>
 		}
-		} @else {
-		<div class="empty-state">
-			<p>Нет активных заявок в снабжение</p>
-		</div>
 		}
 	</div>
 

@@ -11,10 +11,15 @@
 			<p class="card-description">{{ data.description }}</p>
 
 			<div class="items-list">
-				@for (item of data.items; track $index) {
+				@for (item of data.items.slice(0, 3); track $index) {
 				<div class="item" [class.purchased]="item.purchased">
 					<span class="item-name">{{ item.name }}</span>
 					<span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+				</div>
+				}
+				@if (data.items.length > 3) {
+				<div class="items-more">
+					+{{ data.items.length - 3 }}
 				</div>
 				}
 			</div>

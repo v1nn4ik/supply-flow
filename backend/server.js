@@ -48,9 +48,21 @@ app.use((req, res, next) => {
 });
 
 // Подключение к MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Подключение к MongoDB успешно установлено'))
-  .catch((err) => console.error('Ошибка подключения к MongoDB:', err));
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
+  .then(() => {
+    console.log('Connected to MongoDB');
+    httpServer.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
 
 // Маршруты API
 app.use('/api/auth', authRoutes);
@@ -136,14 +148,3 @@ app.set('emitTaskDelete', emitTaskDelete);
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
-
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    httpServer.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });

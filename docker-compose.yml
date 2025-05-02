@@ -9,6 +9,7 @@ services:
       - mongodb_data:/data/db
     ports:
       - "27017:27017"
+    command: mongod --wiredTigerCacheSizeGB 1.5 --bind_ip_all
     networks:
       - app-network
 
@@ -52,4 +53,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data: 
+  mongodb_data:
+    driver: local 
