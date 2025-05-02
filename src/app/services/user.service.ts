@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, map, interval, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { UserData as ModelUserData } from '../models/user.model';
@@ -18,16 +18,28 @@ export interface User {
 }
 
 const API_URL = environment.apiUrl;
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
 
 @Injectable({
 	providedIn: 'root'
 })
-export class UserService {
+export class UserService implements OnDestroy {
 	private userData = new BehaviorSubject<UserData | null>(null);
 	userData$ = this.userData.asObservable();
+	private refreshSubscription: Subscription;
 
 	constructor(private http: HttpClient) {
 		this.loadUserData();
+		// Устанавливаем интервал обновления данных
+		this.refreshSubscription = interval(REFRESH_INTERVAL).subscribe(() => {
+			this.loadUserData();
+		});
+	}
+
+	ngOnDestroy(): void {
+		if (this.refreshSubscription) {
+			this.refreshSubscription.unsubscribe();
+		}
 	}
 
 	loadUserData(): void {
