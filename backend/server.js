@@ -48,21 +48,76 @@ app.use((req, res, next) => {
 });
 
 // Подключение к MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-})
-  .then(() => {
-    console.log('Connected to MongoDB');
-    httpServer.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+const connectToMongoDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      retryWrites: true,
+      retryReads: true,
+      maxPoolSize: 10,
+      minPoolSize: 5
     });
-  })
-  .catch((error) => {
+    console.log('Connected to MongoDB');
+
+    // Проверяем состояние базы данных
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    console.log('Коллекции в базе данных:', collections.map(c => c.name));
+
+    // Проверяем количество документов в каждой коллекции
+    for (const collection of collections) {
+      const count = await db.collection(collection.name).countDocuments();
+      console.log(`Количество документов в ${collection.name}: ${count}`);
+    }
+  } catch (error) {
     console.error('MongoDB connection error:', error);
+    // Пробуем переподключиться через 5 секунд
+    setTimeout(connectToMongoDB, 5000);
+  }
+};
+
+// Обработчики событий MongoDB
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected. Attempting to reconnect...');
+  setTimeout(connectToMongoDB, 5000);
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB reconnected');
+});
+
+// Мониторинг состояния базы данных
+const monitorDatabase = async () => {
+  try {
+    const db = mongoose.connection.db;
+    const stats = await db.stats();
+    console.log('Статистика базы данных:', {
+      collections: stats.collections,
+      documents: stats.objects,
+      dataSize: `${(stats.dataSize / 1024 / 1024).toFixed(2)} MB`,
+      storageSize: `${(stats.storageSize / 1024 / 1024).toFixed(2)} MB`
+    });
+  } catch (error) {
+    console.error('Ошибка при получении статистики базы данных:', error);
+  }
+};
+
+// Запускаем мониторинг каждые 5 минут
+setInterval(monitorDatabase, 5 * 60 * 1000);
+
+// Подключаемся к MongoDB
+connectToMongoDB().then(() => {
+  httpServer.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
+});
 
 // Маршруты API
 app.use('/api/auth', authRoutes);

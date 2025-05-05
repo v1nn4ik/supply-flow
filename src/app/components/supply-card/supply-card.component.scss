@@ -22,25 +22,41 @@
 		align-items: flex-start;
 		margin-bottom: 1rem;
 		padding: 16px 16px 0 16px;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
+
+		.card-title-wrapper {
+			flex: 1 1 auto;
+			min-width: 0;
+			margin-right: 12px;
+			display: flex;
+			align-items: flex-start;
+		}
 
 		.card-title {
 			@include heading-typography;
-			margin: 0 0 8px 0;
+			margin: 0;
 			font-size: 1.1rem;
 			color: var(--dark-color);
 			word-wrap: break-word;
 			overflow-wrap: break-word;
 			word-break: break-word;
-			width: 50%;
-			min-width: 100px;
+			max-width: 100%;
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: normal;
 		}
 
 		.card-status {
+			flex: 0 0 auto;
+			margin-left: 0;
 			padding: 4px 8px;
 			border-radius: 4px;
 			font-size: 0.8rem;
 			font-weight: 500;
+			background: var(--status-pending-bg);
 
 			&.status-new {
 				background-color: var(--status-pending-bg);
@@ -58,8 +74,10 @@
 			}
 
 			&.status-finalized {
-				background-color: #f3e5f5; /* Светло-фиолетовый фон */
-				color: #6a329f; /* Фиолетовый текст */
+				background-color: #f3e5f5;
+				/* Светло-фиолетовый фон */
+				color: #6a329f;
+				/* Фиолетовый текст */
 			}
 
 			&.status-cancelled {
@@ -83,7 +101,8 @@
 			-webkit-box-orient: vertical;
 			overflow: hidden;
 			text-overflow: ellipsis;
-			max-height: 3em; /* 2 строки * 1.5 (line-height) */
+			max-height: 3em;
+			/* 2 строки * 1.5 (line-height) */
 			word-wrap: break-word;
 			white-space: normal;
 			word-break: break-word;

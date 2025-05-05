@@ -188,7 +188,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 	}
 
 	onButtonClick(): void {
-		this.modalService.openModal(ModalType.CREATE_SUPPLY);
+			this.modalService.openModal(ModalType.CREATE_SUPPLY);
 	}
 
 	switchIcon(item: menuItem): string {
