@@ -12,282 +12,284 @@ import { UserRoles } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
 @Component({
-	selector: 'app-supplies-page',
-	imports: [
-		CommonModule,
-		FormsModule,
-		SupplyCardComponent,
-		CreateSupplyModalComponent,
-		SupplyDetailsModalComponent
-	],
-	templateUrl: './supplies-page.component.html',
-	standalone: true,
-	styleUrl: './supplies-page.component.scss'
+  selector: 'app-supplies-page',
+  imports: [
+    CommonModule,
+    FormsModule,
+    SupplyCardComponent,
+    CreateSupplyModalComponent,
+    SupplyDetailsModalComponent
+  ],
+  templateUrl: './supplies-page.component.html',
+  standalone: true,
+  styleUrl: './supplies-page.component.scss'
 })
 export class SuppliesPageComponent implements OnInit, OnDestroy {
-	showCreateModal = false;
-	showDetailsModal = false;
-	supplies: SupplyRequest[] = [];
-	filteredSupplies: SupplyRequest[] = [];
-	selectedSupply: SupplyRequest | null = null;
-	error: string | null = null;
-	userRole: string | null = null;
-	isEmployee = false;
+  showCreateModal = false;
+  showDetailsModal = false;
+  supplies: SupplyRequest[] = [];
+  filteredSupplies: SupplyRequest[] = [];
+  selectedSupply: SupplyRequest | null = null;
+  duplicateData: SupplyRequest | null = null;
+  error: string | null = null;
+  userRole: string | null = null;
+  isEmployee = false;
 
-	// Фильтры
-	statusFilter: string = '';
-	priorityFilter: string = '';
-	searchFilter: string = '';
+  // Фильтры
+  statusFilter: string = '';
+  priorityFilter: string = '';
+  searchFilter: string = '';
 
-	private supplyUpdateSubscription?: Subscription;
-	private modalSubscription?: Subscription;
-	private userSubscription?: Subscription;
+  private supplyUpdateSubscription?: Subscription;
+  private modalSubscription?: Subscription;
+  private userSubscription?: Subscription;
 
-	constructor(
-		private supplyService: SupplyService,
-		private websocketService: WebsocketService,
-		private modalService: ModalService,
-		private userService: UserService,
-		private zone: NgZone
-	) { }
+  constructor(
+    private supplyService: SupplyService,
+    private websocketService: WebsocketService,
+    private modalService: ModalService,
+    private userService: UserService,
+    private zone: NgZone
+  ) { }
 
-	ngOnInit() {
-		this.subscribeToUserData();
-		this.setupWebSocket();
-		this.subscribeToModalEvents();
-	}
+  ngOnInit() {
+    this.subscribeToUserData();
+    this.setupWebSocket();
+    this.subscribeToModalEvents();
+  }
 
-	ngOnDestroy() {
-		if (this.supplyUpdateSubscription) {
-			this.supplyUpdateSubscription.unsubscribe();
-		}
-		if (this.modalSubscription) {
-			this.modalSubscription.unsubscribe();
-		}
-		if (this.userSubscription) {
-			this.userSubscription.unsubscribe();
-		}
-	}
+  ngOnDestroy() {
+    if (this.supplyUpdateSubscription) {
+      this.supplyUpdateSubscription.unsubscribe();
+    }
+    if (this.modalSubscription) {
+      this.modalSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
+  }
 
-	private subscribeToUserData() {
-		this.userSubscription = this.userService.userData$.subscribe(userData => {
-			if (userData) {
-				this.userRole = userData.role || null;
-				this.isEmployee = userData.role === UserRoles.EMPLOYEE;
-				this.loadSupplies();
-			}
-		});
-	}
+  private subscribeToUserData() {
+    this.userSubscription = this.userService.userData$.subscribe(userData => {
+      if (userData) {
+        this.userRole = userData.role || null;
+        this.isEmployee = userData.role === UserRoles.EMPLOYEE;
+        this.loadSupplies();
+      }
+    });
+  }
 
-	// Метод применения фильтров
-	applyFilters() {
-		this.filteredSupplies = this.supplies.filter(supply => {
-			// Фильтр по статусу
-			if (this.statusFilter && supply.status !== this.statusFilter) {
-				return false;
-			}
+  // Метод применения фильтров
+  applyFilters() {
+    this.filteredSupplies = this.supplies.filter(supply => {
+      // Фильтр по статусу
+      if (this.statusFilter && supply.status !== this.statusFilter) {
+        return false;
+      }
 
-			// Фильтр по приоритету
-			if (this.priorityFilter && supply.priority !== this.priorityFilter) {
-				return false;
-			}
+      // Фильтр по приоритету
+      if (this.priorityFilter && supply.priority !== this.priorityFilter) {
+        return false;
+      }
 
-			// Поисковый фильтр
-			if (this.searchFilter) {
-				const searchTerm = this.searchFilter.toLowerCase();
-				const titleMatch = supply.title.toLowerCase().includes(searchTerm);
-				const descMatch = supply.description.toLowerCase().includes(searchTerm);
-				if (!titleMatch && !descMatch) {
-					return false;
-				}
-			}
+      // Поисковый фильтр
+      if (this.searchFilter) {
+        const searchTerm = this.searchFilter.toLowerCase();
+        const titleMatch = supply.title.toLowerCase().includes(searchTerm);
+        const descMatch = supply.description.toLowerCase().includes(searchTerm);
+        if (!titleMatch && !descMatch) {
+          return false;
+        }
+      }
 
-			return true;
-		});
-	}
+      return true;
+    });
+  }
 
-	private setupWebSocket() {
-		this.supplyUpdateSubscription = this.websocketService.onSupplyUpdate().subscribe({
-			next: (updatedSupply) => {
-				if (updatedSupply.deleted) {
-					// Удаляем заявку из списка
-					this.supplies = this.supplies.filter(s =>
-						this.getSupplyId(s) !== this.getSupplyId(updatedSupply)
-					);
-					// Если удалена текущая открытая заявка, закрываем модальное окно
-					if (this.selectedSupply &&
-						this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
-						this.closeDetailsModal();
-					}
-				} else {
-					// Обновляем или добавляем заявку в список
-					const index = this.supplies.findIndex(s =>
-						this.getSupplyId(s) === this.getSupplyId(updatedSupply)
-					);
-					if (index !== -1) {
-						this.supplies[index] = updatedSupply;
-					} else {
-						this.supplies = [updatedSupply, ...this.supplies];
-					}
-					// Если это текущая открытая заявка, обновляем её
-					if (this.selectedSupply &&
-						this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
-						this.selectedSupply = updatedSupply;
-					}
-				}
-				// Применяем фильтры после обновления списка заявок
-				this.applyFilters();
-			},
-			error: (error) => {
-				console.error('Ошибка при получении обновлений заявок:', error);
-			}
-		});
-	}
+  private setupWebSocket() {
+    this.supplyUpdateSubscription = this.websocketService.onSupplyUpdate().subscribe({
+      next: (updatedSupply) => {
+        if (updatedSupply.deleted) {
+          // Удаляем заявку из списка
+          this.supplies = this.supplies.filter(s =>
+            this.getSupplyId(s) !== this.getSupplyId(updatedSupply)
+          );
+          // Если удалена текущая открытая заявка, закрываем модальное окно
+          if (this.selectedSupply &&
+            this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
+            this.closeDetailsModal();
+          }
+        } else {
+          // Обновляем или добавляем заявку в список
+          const index = this.supplies.findIndex(s =>
+            this.getSupplyId(s) === this.getSupplyId(updatedSupply)
+          );
+          if (index !== -1) {
+            this.supplies[index] = updatedSupply;
+          } else {
+            this.supplies = [updatedSupply, ...this.supplies];
+          }
+          // Если это текущая открытая заявка, обновляем её
+          if (this.selectedSupply &&
+            this.getSupplyId(this.selectedSupply) === this.getSupplyId(updatedSupply)) {
+            this.selectedSupply = updatedSupply;
+          }
+        }
+        // Применяем фильтры после обновления списка заявок
+        this.applyFilters();
+      },
+      error: (error) => {
+        console.error('Ошибка при получении обновлений заявок:', error);
+      }
+    });
+  }
 
-	private subscribeToModalEvents() {
-		this.modalSubscription = this.modalService.modalOpen$.subscribe(modalType => {
-			if (modalType === ModalType.CREATE_SUPPLY) {
-				this.openCreateModal();
-			}
-		});
-	}
+  private subscribeToModalEvents() {
+    this.modalSubscription = this.modalService.modalOpen$.subscribe(modalType => {
+      if (modalType === ModalType.CREATE_SUPPLY) {
+        this.openCreateModal();
+      }
+    });
+  }
 
-	// Методы для работы с модальными окнами
-	openCreateModal() {
-		this.showCreateModal = true;
-		this.clearError();
-	}
+  // Методы для работы с модальными окнами
+  openCreateModal(supplyToDuplicate?: SupplyRequest) {
+    this.duplicateData = supplyToDuplicate || null;
+    this.showCreateModal = true;
+  }
 
-	closeCreateModal() {
-		this.showCreateModal = false;
-	}
+  closeCreateModal() {
+    this.showCreateModal = false;
+    this.duplicateData = null;
+  }
 
-	openDetailsModal(supply: SupplyRequest) {
-		this.selectedSupply = this.cloneSupply(supply);
-		this.showDetailsModal = true;
-		this.clearError();
-	}
+  openDetailsModal(supply: SupplyRequest) {
+    this.selectedSupply = this.cloneSupply(supply);
+    this.showDetailsModal = true;
+    this.clearError();
+  }
 
-	closeDetailsModal() {
-		this.showDetailsModal = false;
-		this.selectedSupply = null;
-	}
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedSupply = null;
+  }
 
-	// Обработчики событий
-	handleCreateSupply(supplyData: Omit<SupplyRequest, 'id'>) {
-		this.clearError();
-		this.supplyService.createSupplyRequest(supplyData).subscribe({
-			next: () => {
-				this.closeCreateModal();
-				this.loadSupplies();
-			},
-			error: () => this.setError('create')
-		});
-	}
+  // Обработчики событий
+  handleCreateSupply(supplyData: Omit<SupplyRequest, 'id'>) {
+    this.clearError();
+    this.supplyService.createSupplyRequest(supplyData).subscribe({
+      next: () => {
+        this.closeCreateModal();
+        this.loadSupplies();
+      },
+      error: () => this.setError('create')
+    });
+  }
 
-	handleStatusChange(event: { id: string, status: SupplyStatus }) {
-		this.clearError();
-		this.supplyService.updateSupplyRequest(event.id, { status: event.status }).subscribe({
-			next: (updatedSupply) => {
-				this.updateSupplyInList(updatedSupply);
-				this.applyFilters();
-			},
-			error: () => this.setError('status')
-		});
-	}
+  handleStatusChange(event: { id: string, status: SupplyStatus }) {
+    this.clearError();
+    this.supplyService.updateSupplyRequest(event.id, { status: event.status }).subscribe({
+      next: (updatedSupply) => {
+        this.updateSupplyInList(updatedSupply);
+        this.applyFilters();
+      },
+      error: () => this.setError('status')
+    });
+  }
 
-	handleDeleteSupply(id: string) {
-		this.clearError();
-		this.supplyService.deleteSupplyRequest(id).subscribe({
-			next: () => {
-				this.zone.run(() => {
-					this.removeSupplyFromList(id);
-					this.applyFilters();
-				});
-			},
-			error: () => {
-				this.zone.run(() => this.setError('delete'));
-			}
-		});
-	}
+  handleDeleteSupply(id: string) {
+    this.clearError();
+    this.supplyService.deleteSupplyRequest(id).subscribe({
+      next: () => {
+        this.zone.run(() => {
+          this.removeSupplyFromList(id);
+          this.applyFilters();
+        });
+      },
+      error: () => {
+        this.zone.run(() => this.setError('delete'));
+      }
+    });
+  }
 
-	handleItemUpdate(event: { id: string, items: SupplyItem[], callback?: (success: boolean) => void }) {
-		this.clearError();
-		this.supplyService.updateSupplyRequest(event.id, { items: event.items }).subscribe({
-			next: (updatedSupply) => {
-				this.updateSupplyInList(updatedSupply);
-				this.applyFilters();
-				event.callback?.(true);
-			},
-			error: (error) => {
-				console.error('Error updating supply items:', error);
-				this.setError('items');
-				event.callback?.(false);
-			}
-		});
-	}
+  handleItemUpdate(event: { id: string, items: SupplyItem[], callback?: (success: boolean) => void }) {
+    this.clearError();
+    this.supplyService.updateSupplyRequest(event.id, { items: event.items }).subscribe({
+      next: (updatedSupply) => {
+        this.updateSupplyInList(updatedSupply);
+        this.applyFilters();
+        event.callback?.(true);
+      },
+      error: (error) => {
+        console.error('Error updating supply items:', error);
+        this.setError('items');
+        event.callback?.(false);
+      }
+    });
+  }
 
-	// Вспомогательные методы
-	private getSupplyId(supply: SupplyRequest): string {
-		return supply.id || supply._id || '';
-	}
+  // Вспомогательные методы
+  private getSupplyId(supply: SupplyRequest): string {
+    return supply.id || supply._id || '';
+  }
 
-	private cloneSupply(supply: SupplyRequest): SupplyRequest {
-		return {
-			...supply,
-			items: supply.items.map(item => ({
-				name: item.name,
-				quantity: item.quantity,
-				unit: item.unit,
-				purchased: item.purchased
-			}))
-		};
-	}
+  private cloneSupply(supply: SupplyRequest): SupplyRequest {
+    return {
+      ...supply,
+      items: supply.items.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        unit: item.unit,
+        purchased: item.purchased
+      }))
+    };
+  }
 
-	private updateSupplyInList(updatedSupply: SupplyRequest) {
-		const updatedId = this.getSupplyId(updatedSupply);
-		this.supplies = this.supplies.map(supply =>
-			this.getSupplyId(supply) === updatedId ? this.cloneSupply(updatedSupply) : this.cloneSupply(supply)
-		);
+  private updateSupplyInList(updatedSupply: SupplyRequest) {
+    const updatedId = this.getSupplyId(updatedSupply);
+    this.supplies = this.supplies.map(supply =>
+      this.getSupplyId(supply) === updatedId ? this.cloneSupply(updatedSupply) : this.cloneSupply(supply)
+    );
 
-		if (this.selectedSupply && this.getSupplyId(this.selectedSupply) === updatedId) {
-			this.selectedSupply = this.cloneSupply(updatedSupply);
-		}
-	}
+    if (this.selectedSupply && this.getSupplyId(this.selectedSupply) === updatedId) {
+      this.selectedSupply = this.cloneSupply(updatedSupply);
+    }
+  }
 
-	private removeSupplyFromList(id: string) {
-		this.supplies = this.supplies.filter(supply => this.getSupplyId(supply) !== id);
+  private removeSupplyFromList(id: string) {
+    this.supplies = this.supplies.filter(supply => this.getSupplyId(supply) !== id);
 
-		if (this.selectedSupply && this.getSupplyId(this.selectedSupply) === id) {
-			this.closeDetailsModal();
-		}
-	}
+    if (this.selectedSupply && this.getSupplyId(this.selectedSupply) === id) {
+      this.closeDetailsModal();
+    }
+  }
 
-	private loadSupplies() {
-		this.clearError();
-		
-		// Загружаем все заявки для всех ролей
-		this.supplyService.getSupplyRequests().subscribe({
-			next: (supplies) => {
-				this.supplies = supplies;
-				this.applyFilters();
-			},
-			error: () => this.setError('load')
-		});
-	}
+  private loadSupplies() {
+    this.clearError();
 
-	private clearError() {
-		this.error = null;
-	}
+    // Загружаем все заявки для всех ролей
+    this.supplyService.getSupplyRequests().subscribe({
+      next: (supplies) => {
+        this.supplies = supplies;
+        this.applyFilters();
+      },
+      error: () => this.setError('load')
+    });
+  }
 
-	private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load') {
-		const errorMessages = {
-			create: 'Произошла ошибка при создании заявки.',
-			status: 'Произошла ошибка при обновлении статуса.',
-			delete: 'Произошла ошибка при удалении заявки.',
-			items: 'Произошла ошибка при обновлении статуса закупки.',
-			load: 'Произошла ошибка при загрузке заявок. Пожалуйста, обновите страницу.'
-		};
-		this.error = errorMessages[type] + ' Пожалуйста, попробуйте снова.';
-	}
+  private clearError() {
+    this.error = null;
+  }
+
+  private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load') {
+    const errorMessages = {
+      create: 'Произошла ошибка при создании заявки.',
+      status: 'Произошла ошибка при обновлении статуса.',
+      delete: 'Произошла ошибка при удалении заявки.',
+      items: 'Произошла ошибка при обновлении статуса закупки.',
+      load: 'Произошла ошибка при загрузке заявок. Пожалуйста, обновите страницу.'
+    };
+    this.error = errorMessages[type] + ' Пожалуйста, попробуйте снова.';
+  }
 }

@@ -2,460 +2,478 @@
 @use "../../styles/typography" as *;
 
 .modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 1000;
-	font-family: var(--font-family), serif !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: var(--font-family), serif !important;
 
-	* {
-		font-family: var(--font-family), serif !important;
-	}
+  * {
+    font-family: var(--font-family), serif !important;
+  }
 
-	.mat-icon {
-		font-family: 'Material Icons', serif !important;
-	}
+  .mat-icon {
+    font-family: 'Material Icons', serif !important;
+  }
 }
 
 .modal-content {
-	background: var(--light-color);
-	padding: 2rem;
-	border-radius: 8px;
-	width: 90%;
-	max-width: 700px;
-	max-height: 90vh;
-	overflow-y: auto;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-	font-family: var(--font-family), serif !important;
+  background: var(--light-color);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: var(--font-family), serif !important;
 
-	* {
-		font-family: var(--font-family), serif !important;
-	}
+  * {
+    font-family: var(--font-family), serif !important;
+  }
 
-	.mat-icon {
-		font-family: 'Material Icons', serif !important;
-	}
+  .mat-icon {
+    font-family: 'Material Icons', serif !important;
+  }
 }
 
 .modal-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 
-	h2 {
-		margin: 0;
-		color: var(--dark-color);
-		font-size: 1.5rem;
-		font-weight: 500;
-	}
+  h2 {
+    margin: 0;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
 
-	.close-button {
-		color: var(--gray-color);
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 
-		&:hover {
-			color: var(--dark-color);
-			background-color: var(--light-gray-color);
-		}
-	}
+    button {
+      color: var(--gray-color);
+
+      &:hover {
+        color: var(--dark-color);
+        background-color: var(--light-gray-color);
+      }
+    }
+  }
+
+  .close-button {
+    color: var(--gray-color);
+
+    &:hover {
+      color: var(--dark-color);
+      background-color: var(--light-gray-color);
+    }
+  }
 }
 
 .details-section {
-	margin-bottom: 24px;
+  margin-bottom: 24px;
 
-	.detail-row {
-		margin-bottom: 16px;
+  .detail-row {
+    margin-bottom: 16px;
 
-		&:last-child {
-			margin-bottom: 0;
-		}
+    &:last-child {
+      margin-bottom: 0;
+    }
 
-		&.status-row {
-			margin-bottom: 8px;
+    &.status-row {
+      margin-bottom: 8px;
 
-			// Скрываем подложку для статуса, которая добавляет лишнее расстояние
-			::ng-deep .mat-mdc-form-field-subscript-wrapper {
-				display: none;
-			}
+      // Скрываем подложку для статуса, которая добавляет лишнее расстояние
+      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
 
-			// Стиль для mat-select и выпадающего меню
-			::ng-deep mat-select {
-				font-family: var(--font-family-literal), serif !important;
-			}
-		}
+      // Стиль для mat-select и выпадающего меню
+      ::ng-deep mat-select {
+        font-family: var(--font-family-literal), serif !important;
+      }
+    }
 
-		mat-form-field {
-			margin-bottom: 0;
-		}
-	}
+    mat-form-field {
+      margin-bottom: 0;
+    }
+  }
 
-	.detail-label {
-		@include heading-typography;
-		display: block;
-		color: var(--gray-color);
-		margin-bottom: 4px;
-		font-size: 0.9rem;
-	}
+  .detail-label {
+    @include heading-typography;
+    display: block;
+    color: var(--gray-color);
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
 
-	.detail-value {
-		color: var(--dark-color);
+  .detail-value {
+    color: var(--dark-color);
 
-		&.description {
-			white-space: pre-wrap;
-			line-height: 1.5;
-			margin-top: 4px;
-		}
-	}
+    &.description {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+  }
 }
 
 .items-section {
-	.status-warning {
-		display: flex;
-		align-items: center;
-		background-color: var(--status-in-progress-bg);
-		color: var(--status-in-progress-text);
-		padding: 12px;
-		border-radius: 4px;
-		margin-bottom: 12px;
-		font-size: 0.9rem;
+  .status-warning {
+    display: flex;
+    align-items: center;
+    background-color: var(--status-in-progress-bg);
+    color: var(--status-in-progress-text);
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
 
-		mat-icon {
-			margin-right: 8px;
-			font-size: 20px;
-			height: 20px;
-			width: 20px;
-		}
-	}
+    mat-icon {
+      margin-right: 8px;
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+  }
 }
 
 .items-card {
-	padding: 0;
-	box-shadow: none !important;
-	border: 1px solid var(--light-gray-color);
-	border-radius: 8px;
+  padding: 0;
+  box-shadow: none !important;
+  border: 1px solid var(--light-gray-color);
+  border-radius: 8px;
 
-	.item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px;
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
 
-		.item-info {
-			flex: 1;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-right: 16px;
+    .item-info {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-right: 16px;
 
-			.item-name {
-				font-weight: 500;
+      .item-name {
+        font-weight: 500;
 
-				&.purchased {
-					text-decoration: line-through;
-					color: var(--ligher-gray-color);
-				}
-			}
+        &.purchased {
+          text-decoration: line-through;
+          color: var(--ligher-gray-color);
+        }
+      }
 
-			.item-quantity {
-				@include light-typography;
-				color: var(--gray-color);
-			}
-		}
-	}
+      .item-quantity {
+        @include light-typography;
+        color: var(--gray-color);
+      }
+    }
+  }
 }
 
 mat-form-field {
-	width: 100%;
+  width: 100%;
 
-	&.comment-text-field {
-		width: 100%;
-		margin-right: 0;
-	}
+  &.comment-text-field {
+    width: 100%;
+    margin-right: 0;
+  }
 }
 
 .comments-section {
-	margin-bottom: 24px;
+  margin-bottom: 24px;
 
-	h3 {
-		@include heading-typography;
-		margin: 0 0 16px;
-		font-size: 1.1rem;
-		color: var(--dark-color);
-		font-weight: 500;
-	}
+  h3 {
+    @include heading-typography;
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    color: var(--dark-color);
+    font-weight: 500;
+  }
 
-	.comments-list {
-		max-height: 300px;
-		overflow-y: auto;
-		margin-bottom: 16px;
+  .comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 16px;
 
-		.comment {
-			background-color: var(--light-gray-color);
-			margin-bottom: 12px;
-			padding: 12px 16px;
-			box-shadow: none !important;
-			border-radius: 8px;
+    .comment {
+      background-color: var(--light-gray-color);
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      box-shadow: none !important;
+      border-radius: 8px;
 
-			&:last-child {
-				margin-bottom: 0;
-			}
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-			.comment-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 8px;
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
 
-				.comment-author {
-					font-weight: 500;
-					color: var(--dark-color);
-				}
+        .comment-author {
+          font-weight: 500;
+          color: var(--dark-color);
+        }
 
-				.comment-date {
-					@include light-typography;
-					font-size: 0.875rem;
-					color: var(--ligher-gray-color);
-				}
-			}
+        .comment-date {
+          @include light-typography;
+          font-size: 0.875rem;
+          color: var(--ligher-gray-color);
+        }
+      }
 
-			.comment-text {
-				color: var(--dark-color);
-				line-height: 1.5;
-				white-space: pre-wrap;
-				margin-bottom: 8px;
-			}
-			
-			.comment-attachment {
-				margin-top: 8px;
-				background-color: rgba(0, 0, 0, 0.05);
-				padding: 8px;
-				border-radius: 4px;
-				
-				.attachment-link {
-					display: flex;
-					align-items: center;
-					text-decoration: none;
-					color: inherit;
-					transition: background-color 0.2s;
-					
-					&:hover {
-						background-color: rgba(0, 0, 0, 0.02);
-					}
-					
-					.attachment-icon {
-						margin-right: 8px;
-						color: #1976d2;
-					}
-					
-					.attachment-name {
-						flex: 1;
-						font-weight: 500;
-						color: #1976d2;
-						margin-right: 8px;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
-					
-					.attachment-size {
-						font-size: 12px;
-						color: #777;
-					}
-				}
-			}
-		}
-	}
+      .comment-text {
+        color: var(--dark-color);
+        line-height: 1.5;
+        white-space: pre-wrap;
+        margin-bottom: 8px;
+      }
 
-	.comment-input {
-		display: flex;
-		flex-direction: column;
+      .comment-attachment {
+        margin-top: 8px;
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 8px;
+        border-radius: 4px;
 
-		.comment-text-field {
-			width: 100%;
-			margin-bottom: 8px;
-		}
-		
-		.comment-actions {
-			display: flex;
-			margin-top: 20px;
-			justify-content: flex-end;
-			gap: 12px;
-			.attach-button {
-				color: var(--gray-color);
-				&:hover {
-					background: none;
-				}
-			}
-			
-			.action-button {
-				padding: 6px 12px;
-				border-radius: 4px;
-				font-size: 0.9rem;
-				cursor: pointer;
-				transition: all 0.2s;
-				height: 40px;
-				margin: 0;
-				align-self: center;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+        .attachment-link {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          color: inherit;
+          transition: background-color 0.2s;
 
-				.send-icon {
-					font-size: 18px;
-					width: 18px;
-					height: 18px;
-					margin-right: 4px;
-				}
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+          }
 
-				&.view-button {
-					background-color: var(--light-color);
-					border: 1px solid var(--light-gray-color);
-					color: var(--dark-color);
+          .attachment-icon {
+            margin-right: 8px;
+            color: #1976d2;
+          }
 
-					&:hover:not(:disabled) {
-						background-color: var(--blue-color);
-						color: var(--light-color);
-					}
-				}
+          .attachment-name {
+            flex: 1;
+            font-weight: 500;
+            color: #1976d2;
+            margin-right: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
 
-				&:disabled {
-					opacity: 0.5;
-					cursor: not-allowed;
+          .attachment-size {
+            font-size: 12px;
+            color: #777;
+          }
+        }
+      }
+    }
+  }
 
-					&:hover {
-						background-color: var(--light-color);
-						color: var(--dark-color);
-					}
-				}
-			}
-		}
-		
-		.comment-upload-progress {
-			margin-top: 8px;
-		}
-	}
+  .comment-input {
+    display: flex;
+    flex-direction: column;
+
+    .comment-text-field {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .comment-actions {
+      display: flex;
+      margin-top: 20px;
+      justify-content: flex-end;
+      gap: 12px;
+
+      .attach-button {
+        color: var(--gray-color);
+
+        &:hover {
+          background: none;
+        }
+      }
+
+      .action-button {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 40px;
+        margin: 0;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .send-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          margin-right: 4px;
+        }
+
+        &.view-button {
+          background-color: var(--light-color);
+          border: 1px solid var(--light-gray-color);
+          color: var(--dark-color);
+
+          &:hover:not(:disabled) {
+            background-color: var(--blue-color);
+            color: var(--light-color);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+
+          &:hover {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+          }
+        }
+      }
+    }
+
+    .comment-upload-progress {
+      margin-top: 8px;
+    }
+  }
 }
 
 .card-actions {
-	padding: 16px 0 0 0;
-	position: relative;
-	display: flex;
-	justify-content: flex-end;
-	gap: 10px;
+  padding: 16px 0 0 0;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 
-	.action-button {
-		padding: 6px 12px;
-		border-radius: 4px;
-		font-size: 0.9rem;
-		cursor: pointer;
-		transition: all 0.2s;
+  .action-button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
 
-		&.view-button {
-			background-color: var(--light-color);
-			border: 1px solid var(--light-gray-color);
-			color: var(--dark-color);
+    &.view-button {
+      background-color: var(--light-color);
+      border: 1px solid var(--light-gray-color);
+      color: var(--dark-color);
 
-			&:hover {
-				background-color: var(--blue-color);
-				color: var(--light-color);
-			}
-		}
+      &:hover {
+        background-color: var(--blue-color);
+        color: var(--light-color);
+      }
+    }
 
-		&.delete-button {
-			background-color: var(--light-color);
-			border: 1px solid var(--delete-color);
-			color: var(--delete-color);
+    &.delete-button {
+      background-color: var(--light-color);
+      border: 1px solid var(--delete-color);
+      color: var(--delete-color);
 
-			&:hover {
-				background-color: var(--delete-color);
-				color: var(--light-color);
-			}
-		}
-	}
+      &:hover {
+        background-color: var(--delete-color);
+        color: var(--light-color);
+      }
+    }
+  }
 }
 
 // Стили для приоритета
 .priority-indicator {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .priority-chip {
-	display: inline-flex;
-	align-items: center;
-	padding: 4px 12px;
-	border-radius: 4px;
-	font-size: 0.9rem;
-	font-weight: 500;
-	transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
 
-	mat-icon {
-		font-size: 18px;
-		width: 18px;
-		height: 18px;
-		margin-right: 4px;
-	}
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
 
-	&.priority-low {
-		background-color: var(--status-completed-bg);
-		color: var(--priority-low);
-	}
+  &.priority-low {
+    background-color: var(--status-completed-bg);
+    color: var(--priority-low);
+  }
 
-	&.priority-medium {
-		background-color: var(--status-in-progress-bg);
-		color: var(--priority-medium);
-	}
+  &.priority-medium {
+    background-color: var(--status-in-progress-bg);
+    color: var(--priority-medium);
+  }
 
-	&.priority-high {
-		background-color: var(--status-cancelled-bg);
-		color: var(--priority-high);
-	}
+  &.priority-high {
+    background-color: var(--status-cancelled-bg);
+    color: var(--priority-high);
+  }
 }
 
 // Стили для статусов
 .status-new {
-	color: var(--blue-color);
+  color: var(--blue-color);
 }
 
 .status-progress {
-	color: var(--priority-medium);
+  color: var(--priority-medium);
 }
 
 .status-completed {
-	color: var(--priority-low);
+  color: var(--priority-low);
 }
 
 .status-finalized {
-	color: #6a329f; /* Фиолетовый цвет для статуса "Завершена" */
+  color: #6a329f;
+  /* Фиолетовый цвет для статуса "Завершена" */
 }
 
 .status-cancelled {
-	color: var(--delete-color);
+  color: var(--delete-color);
 }
 
 // Дополнительные стили для mat-form-field
 ::ng-deep {
-	.mat-mdc-form-field-subscript-wrapper {
-		height: 0;
-		margin-top: -20px !important;
-	}
+  .mat-mdc-form-field-subscript-wrapper {
+    height: 0;
+    margin-top: -20px !important;
+  }
 
-	// Стили для выпадающего меню
-	.mat-mdc-select-panel {
-		background-color: white !important;
+  // Стили для выпадающего меню
+  .mat-mdc-select-panel {
+    background-color: white !important;
 
-		.mat-mdc-option {
-			font-family: var(--font-family-literal), serif !important;
-		}
-	}
+    .mat-mdc-option {
+      font-family: var(--font-family-literal), serif !important;
+    }
+  }
 
-	.mat-mdc-select-value-text {
-		font-family: var(--font-family-literal), serif !important;
-	}
+  .mat-mdc-select-value-text {
+    font-family: var(--font-family-literal), serif !important;
+  }
 }

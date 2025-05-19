@@ -1,71 +1,67 @@
 <div class="supplies-page">
-	<div class="page-header">
-		<h1>Заявки в снабжение</h1>
-		<div class="filters-container">
-			<div class="filter-group">
-				<label for="statusFilter">Статус:</label>
-				<select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()">
-					<option value="">Все</option>
-					<option value="new">Новая</option>
-					<option value="in_progress">В работе</option>
-					<option value="completed">Выполнена</option>
-					<option value="cancelled">Отменена</option>
-				</select>
-			</div>
-			<div class="filter-group">
-				<label for="priorityFilter">Приоритет:</label>
-				<select id="priorityFilter" [(ngModel)]="priorityFilter" (change)="applyFilters()">
-					<option value="">Все</option>
-					<option value="low">Низкий</option>
-					<option value="medium">Средний</option>
-					<option value="high">Высокий</option>
-				</select>
-			</div>
-			<div class="filter-group">
-				<label for="searchFilter">Поиск:</label>
-				<input type="text" id="searchFilter" [(ngModel)]="searchFilter" (input)="applyFilters()"
-					placeholder="Название или описание">
-			</div>
-		</div>
-	</div>
+  <div class="page-header">
+    <h1>Заявки в снабжение</h1>
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="statusFilter">Статус:</label>
+        <select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="">Все</option>
+          <option value="new">Новая</option>
+          <option value="in_progress">В работе</option>
+          <option value="completed">Выполнена</option>
+          <option value="cancelled">Отменена</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="priorityFilter">Приоритет:</label>
+        <select id="priorityFilter" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+          <option value="">Все</option>
+          <option value="low">Низкий</option>
+          <option value="medium">Средний</option>
+          <option value="high">Высокий</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="searchFilter">Поиск:</label>
+        <input type="text" id="searchFilter" [(ngModel)]="searchFilter" (input)="applyFilters()"
+          placeholder="Название или описание">
+      </div>
+    </div>
+  </div>
 
-	@if (error) {
-	<div class="error-message">
-		{{ error }}
-	</div>
-	}
+  @if (error) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+  }
 
-	<div class="supplies-list">
-		<div class="phantom-card" (click)="openCreateModal()">
-			<div class="phantom-card-content">
-				<svg class="plus-icon" viewBox="0 0 24 24">
-					<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-				</svg>
-			</div>
-		</div>
-		@if (filteredSupplies.length > 0) {
-		@for (supply of filteredSupplies; track supply.id || $index) {
-		<app-supply-card 
-			[data]="supply" 
-			[userRole]="userRole"
-			(viewDetails)="openDetailsModal($event)"
-			(delete)="handleDeleteSupply($event)">
-		</app-supply-card>
-		}
-		}
-	</div>
+  <div class="supplies-list">
+    <div class="phantom-card" (click)="openCreateModal()">
+      <div class="phantom-card-content">
+        <svg class="plus-icon" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+    </div>
+    @if (filteredSupplies.length > 0) {
+    @for (supply of filteredSupplies; track supply.id || $index) {
+    <app-supply-card [data]="supply" [userRole]="userRole" (viewDetails)="openDetailsModal($event)"
+      (delete)="handleDeleteSupply($event)">
+    </app-supply-card>
+    }
+    }
+  </div>
 
-	@if (showCreateModal) {
-	<app-create-supply-modal (close)="closeCreateModal()" (create)="handleCreateSupply($event)"></app-create-supply-modal>
-	}
+  @if (showCreateModal) {
+  <app-create-supply-modal [duplicateData]="duplicateData" (close)="closeCreateModal()"
+    (create)="handleCreateSupply($event)">
+  </app-create-supply-modal>
+  }
 
-	@if (showDetailsModal && selectedSupply) {
-	<app-supply-details-modal 
-		[data]="selectedSupply" 
-		[userRole]="userRole"
-		(close)="closeDetailsModal()"
-		(statusChange)="handleStatusChange($event)" 
-		(itemUpdate)="handleItemUpdate($event)">
-	</app-supply-details-modal>
-	}
+  @if (showDetailsModal && selectedSupply) {
+  <app-supply-details-modal [data]="selectedSupply" [userRole]="userRole" (close)="closeDetailsModal()"
+    (statusChange)="handleStatusChange($event)" (itemUpdate)="handleItemUpdate($event)"
+    (duplicate)="openCreateModal($event)">
+  </app-supply-details-modal>
+  }
 </div>
