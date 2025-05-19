@@ -21,6 +21,18 @@
           <option value="high">Высокий</option>
         </select>
       </div>
+      <div class="filter-group" *ngIf="isSuppliesLoaded">
+        <label for="deadlineSort">Срок:</label>
+        <select id="deadlineSort" [(ngModel)]="deadlineSort" (change)="applyFilters()">
+          <option value="created_desc">Сначала новые</option>
+          <option value="created_asc">Сначала старые</option>
+          <option value="deadline_asc">По возрастанию срока</option>
+          <option value="deadline_desc">По убыванию срока</option>
+          <option value="overdue">Просроченные заявки</option>
+          <option value="this_week">Заявки на текущую неделю</option>
+          <option value="this_month">Заявки на текущий месяц</option>
+        </select>
+      </div>
       <div class="filter-group">
         <label for="searchFilter">Поиск:</label>
         <input type="text" id="searchFilter" [(ngModel)]="searchFilter" (input)="applyFilters()"
@@ -45,8 +57,8 @@
     </div>
     @if (filteredSupplies.length > 0) {
     @for (supply of filteredSupplies; track supply.id || $index) {
-    <app-supply-card [data]="supply" [userRole]="userRole" (viewDetails)="openDetailsModal($event)"
-      (delete)="handleDeleteSupply($event)">
+    <app-supply-card [data]="supply" [userRole]="userRole" [currentUserId]="currentUserId"
+      (viewDetails)="openDetailsModal($event)" (delete)="handleDeleteSupply($event)">
     </app-supply-card>
     }
     }

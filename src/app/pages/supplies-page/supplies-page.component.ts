@@ -34,15 +34,20 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   error: string | null = null;
   userRole: string | null = null;
   isEmployee = false;
+  currentUserId: string | null = null;
 
   // Фильтры
   statusFilter: string = '';
   priorityFilter: string = '';
   searchFilter: string = '';
 
+  deadlineSort: string = 'deadline_asc';
+
   private supplyUpdateSubscription?: Subscription;
   private modalSubscription?: Subscription;
   private userSubscription?: Subscription;
+
+  isSuppliesLoaded = false;
 
   constructor(
     private supplyService: SupplyService,
@@ -72,9 +77,12 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 
   private subscribeToUserData() {
     this.userSubscription = this.userService.userData$.subscribe(userData => {
+      console.log('userData из userService:', userData);
       if (userData) {
         this.userRole = userData.role || null;
         this.isEmployee = userData.role === UserRoles.EMPLOYEE;
+        this.currentUserId = userData._id || null;
+        console.log('Текущий пользователь:', this.currentUserId, userData);
         this.loadSupplies();
       }
     });
@@ -83,17 +91,12 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   // Метод применения фильтров
   applyFilters() {
     this.filteredSupplies = this.supplies.filter(supply => {
-      // Фильтр по статусу
       if (this.statusFilter && supply.status !== this.statusFilter) {
         return false;
       }
-
-      // Фильтр по приоритету
       if (this.priorityFilter && supply.priority !== this.priorityFilter) {
         return false;
       }
-
-      // Поисковый фильтр
       if (this.searchFilter) {
         const searchTerm = this.searchFilter.toLowerCase();
         const titleMatch = supply.title.toLowerCase().includes(searchTerm);
@@ -102,9 +105,65 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
           return false;
         }
       }
-
       return true;
     });
+
+    // Фильтрация по сроку, если выбран специальный пункт сортировки
+    const now = new Date();
+    if (this.deadlineSort === 'overdue') {
+      this.filteredSupplies = this.filteredSupplies.filter(supply => {
+        const deadline = supply.deadline ? new Date(supply.deadline) : null;
+        return deadline && deadline < now;
+      });
+    } else if (this.deadlineSort === 'this_week') {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 7);
+      endOfWeek.setHours(23, 59, 59, 999);
+      this.filteredSupplies = this.filteredSupplies.filter(supply => {
+        const deadline = supply.deadline ? new Date(supply.deadline) : null;
+        return deadline && deadline >= startOfWeek && deadline <= endOfWeek;
+      });
+    } else if (this.deadlineSort === 'this_month') {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      this.filteredSupplies = this.filteredSupplies.filter(supply => {
+        const deadline = supply.deadline ? new Date(supply.deadline) : null;
+        return deadline && deadline >= startOfMonth && deadline <= endOfMonth;
+      });
+    }
+
+    this.applySort();
+  }
+
+  applySort() {
+    if (this.deadlineSort === 'created_desc') {
+      this.filteredSupplies.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+    } else if (this.deadlineSort === 'created_asc') {
+      this.filteredSupplies.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateA - dateB;
+      });
+    } else if (this.deadlineSort === 'deadline_asc') {
+      this.filteredSupplies.sort((a, b) => {
+        const dateA = a.deadline ? new Date(a.deadline).getTime() : 0;
+        const dateB = b.deadline ? new Date(b.deadline).getTime() : 0;
+        return dateA - dateB;
+      });
+    } else if (this.deadlineSort === 'deadline_desc') {
+      this.filteredSupplies.sort((a, b) => {
+        const dateA = a.deadline ? new Date(a.deadline).getTime() : 0;
+        const dateB = b.deadline ? new Date(b.deadline).getTime() : 0;
+        return dateB - dateA;
+      });
+    }
   }
 
   private setupWebSocket() {
@@ -268,11 +327,11 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 
   private loadSupplies() {
     this.clearError();
-
-    // Загружаем все заявки для всех ролей
     this.supplyService.getSupplyRequests().subscribe({
       next: (supplies) => {
         this.supplies = supplies;
+        this.deadlineSort = 'created_desc';
+        this.isSuppliesLoaded = true;
         this.applyFilters();
       },
       error: () => this.setError('load')

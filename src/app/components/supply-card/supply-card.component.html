@@ -1,73 +1,56 @@
-<div class="supply-card">
-	<div class="card-content" (click)="onViewDetails()">
-		<div class="card-header">
-			<div class="card-title-wrapper">
-				<h3 class="card-title">{{ data.title }}</h3>
-			</div>
-			<div class="card-status" [class]="getStatusClass(data.status || 'new')">
-				{{ getStatusLabel(data.status || 'new') }}
-			</div>
-		</div>
+<div class="supply-card" [ngClass]="{ 'own-supply': isCreatedByCurrentUser }">
+  <div class="card-content" (click)="onViewDetails()">
+    <div class="card-header">
+      <div class="card-title-wrapper">
+        <h3 class="card-title">{{ data.title }}</h3>
+      </div>
+      <div class="card-status" [class]="getStatusClass(data.status || 'new')">
+        {{ getStatusLabel(data.status || 'new') }}
+      </div>
+    </div>
 
-		<div class="card-body">
-			<p class="card-description">{{ data.description }}</p>
+    <div class="card-body">
+      <p class="card-description">{{ data.description }}</p>
 
-			<div class="items-list">
-				@for (item of data.items.slice(0, 3); track $index) {
-				<div class="item" [class.purchased]="item.purchased">
-					<span class="item-name">{{ item.name }}</span>
-					<span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
-				</div>
-				}
-				@if (data.items.length > 3) {
-				<div class="items-more">
-					+{{ data.items.length - 3 }}
-				</div>
-				}
-			</div>
+      <div class="items-list">
+        @for (item of data.items.slice(0, 2); track $index) {
+        <div class="item" [class.purchased]="item.purchased">
+          <span class="item-name">{{ item.name }}</span>
+          <span class="item-quantity">{{ item.quantity }} {{ item.unit }}</span>
+        </div>
+        }
+        @if (data.items.length > 2) {
+        <div class="items-more">
+          +{{ data.items.length - 2 }}
+        </div>
+        }
+      </div>
 
-			<div class="card-meta">
-				<div class="meta-item">
-					<span class="meta-label">Приоритет:</span>
-					<span class="meta-value" [class]="getPriorityClass(data.priority)">
-						{{ getPriorityLabel(data.priority) }}
-					</span>
-				</div>
+      <div class="card-meta">
+        <div class="meta-item">
+          <span class="meta-label">Приоритет:</span>
+          <span class="meta-value" [class]="getPriorityClass(data.priority)">
+            {{ getPriorityLabel(data.priority) }}
+          </span>
+        </div>
+        <div class="meta-item due-date">
+          <span class="meta-label">Срок:</span>
+          <span class="meta-value">
+            {{ data.deadline | date:'dd.MM.yyyy' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-				@if (data.createdAt) {
-				<div class="meta-item full-width">
-					<span class="meta-label">Создано:</span>
-					<span class="meta-value">
-						{{ data.createdAt | date:'dd.MM.yyyy' }}
-					</span>
-				</div>
-				}
-
-				<div class="meta-item due-date">
-					<span class="meta-label">Срок:</span>
-					<span class="meta-value">
-						{{ data.deadline | date:'dd.MM.yyyy' }}
-					</span>
-				</div>
-
-				@if (data.createdBy) {
-				<div class="meta-item full-width">
-					<span class="meta-label">Создатель:</span>
-					<span class="meta-value">{{ data.createdBy.name }}</span>
-				</div>
-				}
-			</div>
-		</div>
-	</div>
-
-	<div class="card-actions">
-		<button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
-			Подробнее
-		</button>
-		@if (canManageSupply) {
-		<button class="action-button delete-button" (click)="onDelete($event)">
-			Удалить
-		</button>
-		}
-	</div>
+  <div class="card-actions">
+    <button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
+      Подробнее
+    </button>
+    @if (canManageSupply) {
+    <button class="action-button delete-button" (click)="onDelete($event)">
+      Удалить
+    </button>
+    }
+  </div>
 </div>
