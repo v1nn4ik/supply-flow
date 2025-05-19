@@ -157,6 +157,7 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   openCreateModal(supplyToDuplicate?: SupplyRequest) {
     this.duplicateData = supplyToDuplicate || null;
     this.showCreateModal = true;
+    this.showDetailsModal = false;
   }
 
   closeCreateModal() {

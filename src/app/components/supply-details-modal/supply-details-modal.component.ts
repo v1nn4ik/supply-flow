@@ -131,9 +131,6 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
     if (this.supplyUpdateSubscription) {
       this.supplyUpdateSubscription.unsubscribe();
     }
-
-    this.duplicateSupply();
-    this.editSupply();
   }
 
   private scrollToBottom() {
