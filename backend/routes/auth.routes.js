@@ -13,36 +13,36 @@ const uploadsDir = path.join(__dirname, '../uploads');
 
 // Создаем директорию, если она не существует
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, uploadsDir);
-    },
-    filename: function(req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, 'profile-' + uniqueSuffix + ext);
-    }
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'profile-' + uniqueSuffix + ext);
+  }
 });
 
 // Фильтр для проверки типа файла
 const fileFilter = (req, file, cb) => {
-    // Разрешаем только изображения
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('Разрешены только изображения'), false);
-    }
+  // Разрешаем только изображения
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Разрешены только изображения'), false);
+  }
 };
 
 const upload = multer({
-    storage,
-    fileFilter,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // ограничение 5MB
-    }
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // ограничение 5MB
+  }
 });
 
 // Маршрут для запроса авторизации (отправка SMS)
@@ -81,7 +81,10 @@ router.get('/check-verification', AuthController.checkVerificationStatus);
 
 // Маршрут для создания тестового пользователя-специалиста снабжения
 if (process.env.NODE_ENV !== 'production') {
-    router.get('/create-supply-specialist', AuthController.createSupplySpecialist);
+  router.get('/create-supply-specialist', AuthController.createSupplySpecialist);
 }
+
+// Маршрут для создания нового пользователя (защищенный)
+router.post('/users', verifyToken, AuthController.createUser);
 
 module.exports = router;

@@ -1,25 +1,26 @@
 @use "../../styles/typography" as *;
 @use '@angular/material' as mat;
+@use "sass:color";
 
 /* Применяем шрифт ко всем элементам */
 .employees-container,
 .employees-container * {
   font-family: var(--font-family), serif;
-  background: none !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
+  // background: none;
+  // background-color: transparent;
+  box-shadow: none;
 }
 
 .employees-container mat-card-content {
-  background: none !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
+  background: none;
+  // background-color: transparent;
+  box-shadow: none;
 }
 
 .employees-page {
   padding: 2rem 2rem 2rem 32px;
   margin-left: 32px;
-  background-color: transparent;
+  // background-color: transparent;
 }
 
 h1 {
@@ -38,12 +39,12 @@ h2 {
   margin: 0;
   max-width: 1200px;
   padding: 0;
-  background-color: transparent;
+  // background-color: transparent;
   box-shadow: none;
 
   mat-card-content {
     font-family: var(--font-family), serif;
-    background-color: transparent;
+    // background-color: transparent;
     box-shadow: none;
     padding: 0;
   }
@@ -58,23 +59,49 @@ h2 {
 
 .header-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 1rem;
   gap: 1rem;
   width: 100%;
 }
 
 .add-employee-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  padding: 8px 16px;
+  background-color: #2196f3;
+  border-radius: 4px;
+  color: #ffffff;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
   height: 40px;
-  font-family: var(--font-family), serif;
-  white-space: nowrap;
+  min-width: 180px;
+  font-family: inherit;
 
-  mat-icon {
-    margin-right: 4px;
+  &:hover {
+    background-color: #1976d2;
+    background-image: none;
+    /* Убираем и при наведении */
+    border-color: #1565c0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    background-color: #1976d2;
+    background-image: none;
+    /* Убираем и при активности */
+    border-color: #0d47a1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .button-icon {
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    /* Черный цвет иконки */
   }
 }
 
@@ -98,6 +125,7 @@ h2 {
 
 .users-table {
   width: 100%;
+  background: none;
   border-collapse: separate;
   border-spacing: 0 8px;
 

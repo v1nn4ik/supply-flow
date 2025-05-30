@@ -1,196 +1,99 @@
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-add-employee-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatIconModule,
-    MatSnackBarModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="dialog-container">
-      <h2 mat-dialog-title>Добавить сотрудника</h2>
-      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
-        <mat-dialog-content>
-          <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Фамилия</mat-label>
-              <input matInput formControlName="lastName" required>
-              <mat-error *ngIf="employeeForm.get('lastName')?.hasError('required')">
-                Фамилия обязательна
-              </mat-error>
-            </mat-form-field>
+    <div class="dialog-overlay" (click)="onClose()">
+      <div class="dialog-container" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h2>Добавить сотрудника</h2>
+          <button class="close-button" (click)="onClose()">×</button>
+        </div>
+        
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+          <div class="dialog-content">
+            <div class="form-row">
+              <div class="form-field">
+                <label>Фамилия</label>
+                <input type="text" formControlName="lastName" required>
+                <div class="error" *ngIf="employeeForm.get('lastName')?.hasError('required') && employeeForm.get('lastName')?.touched">
+                  Фамилия обязательна
+                </div>
+              </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Имя</mat-label>
-              <input matInput formControlName="firstName" required>
-              <mat-error *ngIf="employeeForm.get('firstName')?.hasError('required')">
-                Имя обязательно
-              </mat-error>
-            </mat-form-field>
+              <div class="form-field">
+                <label>Имя</label>
+                <input type="text" formControlName="firstName" required>
+                <div class="error" *ngIf="employeeForm.get('firstName')?.hasError('required') && employeeForm.get('firstName')?.touched">
+                  Имя обязательно
+                </div>
+              </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Отчество</mat-label>
-              <input matInput formControlName="middleName">
-            </mat-form-field>
-          </div>
+              <div class="form-field">
+                <label>Отчество</label>
+                <input type="text" formControlName="middleName">
+              </div>
+            </div>
 
-          <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Телефон</mat-label>
-              <input matInput formControlName="phone" required>
-              <mat-error *ngIf="employeeForm.get('phone')?.hasError('required')">
-                Телефон обязателен
-              </mat-error>
-              <mat-error *ngIf="employeeForm.get('phone')?.hasError('pattern')">
-                Неверный формат телефона
-              </mat-error>
-            </mat-form-field>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Телефон</label>
+                <input type="tel" formControlName="phone" required placeholder="7XXXXXXXXXX">
+                <div class="error" *ngIf="employeeForm.get('phone')?.hasError('required') && employeeForm.get('phone')?.touched">
+                  Телефон обязателен
+                </div>
+                <div class="error" *ngIf="employeeForm.get('phone')?.hasError('pattern') && employeeForm.get('phone')?.touched">
+                  Неверный формат телефона
+                </div>
+              </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Дата рождения</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="birthDate" required>
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              <mat-error *ngIf="employeeForm.get('birthDate')?.hasError('required')">
-                Дата рождения обязательна
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="photo-upload">
-            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
-            <button type="button" mat-stroked-button (click)="fileInput.click()">
-              <mat-icon>photo_camera</mat-icon>
-              {{ selectedFile ? 'Изменить фото' : 'Добавить фото' }}
-            </button>
-            <div *ngIf="selectedFile" class="preview-container">
-              <img [src]="previewUrl" alt="Preview" class="preview-image">
-              <button type="button" mat-icon-button (click)="removePhoto()" class="remove-photo">
-                <mat-icon>close</mat-icon>
-              </button>
+              <div class="form-field">
+                <label>Дата рождения</label>
+                <input type="date" formControlName="birthDate" required>
+                <div class="error" *ngIf="employeeForm.get('birthDate')?.hasError('required') && employeeForm.get('birthDate')?.touched">
+                  Дата рождения обязательна
+                </div>
+              </div>
             </div>
           </div>
-        </mat-dialog-content>
 
-        <mat-dialog-actions align="end">
-          <button mat-button type="button" (click)="onCancel()">Отмена</button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="employeeForm.invalid || isSubmitting">
-            {{ isSubmitting ? 'Сохранение...' : 'Сохранить' }}
-          </button>
-        </mat-dialog-actions>
-      </form>
+          <div class="dialog-footer">
+            <button type="button" class="cancel-button" (click)="onClose()">Отмена</button>
+            <button type="submit" class="submit-button" [disabled]="employeeForm.invalid || isSubmitting">
+              {{ isSubmitting ? 'Сохранение...' : 'Сохранить' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   `,
-  styles: [`
-    .dialog-container {
-      padding: 20px;
-      max-width: 600px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-
-      mat-form-field {
-        flex: 1;
-      }
-    }
-
-    .photo-upload {
-      margin: 16px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-
-    .preview-container {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .preview-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .remove-photo {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-    }
-
-    mat-dialog-actions {
-      padding: 16px 0 0;
-      margin: 0;
-    }
-  `]
+  styleUrls: ['./add-employee-dialog.component.scss']
 })
 export class AddEmployeeDialogComponent {
+  @Output() submit = new EventEmitter<any>();
+
   employeeForm: FormGroup;
-  selectedFile: File | null = null;
-  previewUrl: string | null = null;
   isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AddEmployeeDialogComponent>,
     private userService: UserService,
-    private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    private dialogRef: MatDialogRef<AddEmployeeDialogComponent>
   ) {
     this.employeeForm = this.fb.group({
-      lastName: ['', Validators.required],
-      firstName: ['', Validators.required],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
       middleName: [''],
       phone: ['', [Validators.required, Validators.pattern(/^7\d{10}$/)]],
       birthDate: ['', Validators.required]
     });
-  }
-
-  onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.previewUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  removePhoto(): void {
-    this.selectedFile = null;
-    this.previewUrl = null;
   }
 
   onSubmit(): void {
@@ -201,36 +104,26 @@ export class AddEmployeeDialogComponent {
       // Добавляем все поля формы
       Object.keys(this.employeeForm.value).forEach(key => {
         if (key === 'birthDate') {
-          formData.append(key, this.employeeForm.value[key].toISOString());
+          formData.append(key, this.employeeForm.value[key]);
         } else {
           formData.append(key, this.employeeForm.value[key]);
         }
       });
 
-      // Добавляем фото, если оно было выбрано
-      if (this.selectedFile) {
-        formData.append('profilePhoto', this.selectedFile);
-      }
-
       this.userService.createUser(formData).subscribe({
-        next: () => {
-          this.snackBar.open('Сотрудник успешно добавлен', 'Закрыть', {
-            duration: 3000
-          });
-          this.dialogRef.close(true);
+        next: (response) => {
+          this.submit.emit(response);
+          this.onClose();
         },
         error: (error) => {
           console.error('Ошибка при создании сотрудника:', error);
-          this.snackBar.open('Не удалось добавить сотрудника', 'Закрыть', {
-            duration: 3000
-          });
           this.isSubmitting = false;
         }
       });
     }
   }
 
-  onCancel(): void {
+  onClose(): void {
     this.dialogRef.close();
   }
 } 

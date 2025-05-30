@@ -506,6 +506,52 @@ class AuthController {
       AuthController._handleServerError(res, error);
     }
   }
+
+  static async createUser(req, res) {
+    try {
+      const { lastName, firstName, middleName, phone, birthDate, role } = req.body;
+
+      // Проверяем обязательные поля
+      if (!lastName || !firstName || !phone) {
+        return res.status(400).json({ message: 'Необходимо указать фамилию, имя и телефон' });
+      }
+
+      // Проверяем, существует ли пользователь с таким телефоном
+      const existingUser = await User.findOne({ phone });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Пользователь с таким номером телефона уже существует' });
+      }
+
+      // Создаем нового пользователя
+      const user = new User({
+        phone,
+        lastName,
+        firstName,
+        middleName: middleName || '',
+        birthDate: birthDate || '',
+        role: role || ROLES.EMPLOYEE,
+        isVerified: true,
+        hasCompletedRegistration: true
+      });
+
+      await user.save();
+
+      res.status(201).json({
+        message: 'Пользователь успешно создан',
+        user: {
+          _id: user._id,
+          lastName: user.lastName,
+          firstName: user.firstName,
+          middleName: user.middleName,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      AuthController._handleServerError(res, error);
+    }
+  }
 }
 
 module.exports = AuthController;

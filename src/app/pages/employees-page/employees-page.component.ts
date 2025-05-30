@@ -243,7 +243,7 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
   openAddEmployeeDialog(): void {
     const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
       width: '600px',
-      disableClose: true
+      disableClose: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
