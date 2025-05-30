@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const supplyRoutes = require('./routes/supply.routes');
 const taskRoutes = require('./routes/taskRoutes');
 const commentRoutes = require('./routes/comment.routes');
+const userRoutes = require('./routes/user.routes');
 
 dotenv.config();
 
@@ -124,6 +125,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/supply', supplyRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/users', userRoutes);
 
 // Путь к собранным файлам Angular
 const angularDistPath = path.join(__dirname, '../dist/supply-flow/browser');
