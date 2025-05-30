@@ -44,6 +44,9 @@
   </div>
 
   <div class="card-actions">
+    <span *ngIf="isCreatedByCurrentUser" class="my-star" matTooltip="Моя заявка">
+      <mat-icon>person</mat-icon>
+    </span>
     <button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
       Подробнее
     </button>

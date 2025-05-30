@@ -5,6 +5,15 @@
 .employees-container,
 .employees-container * {
   font-family: var(--font-family), serif;
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.employees-container mat-card-content {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .employees-page {
@@ -47,8 +56,31 @@ h2 {
   gap: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  width: 100%;
+}
+
+.add-employee-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  font-family: var(--font-family), serif;
+  white-space: nowrap;
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
 .search-field {
   flex: 1;
+  max-width: 600px;
 }
 
 .refresh-button {
@@ -58,11 +90,16 @@ h2 {
 .users-table-container {
   margin-top: 1rem;
   overflow-x: auto;
+  border-radius: 8px;
+  padding: 16px;
+  background: none;
+  background-color: transparent;
 }
 
 .users-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
 
   th {
     color: var(--dark-color);
@@ -70,24 +107,42 @@ h2 {
     text-align: left;
     padding: 12px 16px;
     font-family: var(--font-family), serif;
-    border-bottom: 1px solid var(--light-gray-color);
+    border-bottom: none;
   }
 
   td {
     padding: 12px 16px;
-    border-bottom: 1px solid var(--light-gray-color);
+    border: none;
     font-family: var(--font-family), serif;
+    background-color: transparent;
   }
 
-  tr:hover {
-    background-color: rgba(0, 0, 0, 0.02);
+  tr {
+    box-shadow: none;
+    border-radius: 0;
+    transition: none;
+
+    &:hover {
+      box-shadow: none;
+      background: none;
+    }
+
+    td:first-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    td:last-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
   }
-  
+
   .photo-cell {
     width: 50px;
     padding: 8px;
   }
-  
+
   .profile-photo {
     width: 40px;
     height: 40px;
@@ -125,19 +180,19 @@ h2 {
     font-weight: 500;
     margin-bottom: 4px;
     font-size: 0.95rem;
-    
+
     &.role-text-EMPLOYEE {
       color: var(--blue-color);
     }
-    
+
     &.role-text-SUPPLY_SPECIALIST {
       color: #ff8a3d;
     }
-    
+
     &.role-text-MANAGER {
       color: #2ea01c;
     }
-    
+
     &.role-text-ADMIN {
       color: #8044c2;
     }
@@ -156,71 +211,71 @@ h2 {
     cursor: pointer;
     font-family: var(--font-family), serif;
     position: relative;
-    
+
     ::ng-deep .mat-mdc-select-trigger {
       height: 24px;
       padding: 0;
     }
-    
+
     ::ng-deep .mat-mdc-select-value {
       padding: 0;
       font-family: var(--font-family), serif;
     }
-    
+
     ::ng-deep .mat-mdc-select-placeholder {
       color: rgba(0, 0, 0, 0.6);
       font-family: var(--font-family), serif;
       font-size: 0.9rem;
     }
-    
+
     ::ng-deep .mat-mdc-select-arrow-wrapper {
       position: absolute;
       right: 8px;
       top: 50%;
       transform: translateY(-50%);
     }
-    
+
     ::ng-deep .mat-mdc-select-arrow {
       color: inherit;
       width: 10px;
       height: 10px;
     }
-    
+
     &.role-EMPLOYEE {
       background-color: #edf6ff;
       color: var(--blue-color);
       border-color: #c1d9f5;
-      
+
       ::ng-deep .mat-mdc-select-arrow {
         color: var(--blue-color);
       }
     }
-    
+
     &.role-SUPPLY_SPECIALIST {
       background-color: #fff1e6;
       color: #ff8a3d;
       border-color: #ffd1b0;
-      
+
       ::ng-deep .mat-mdc-select-arrow {
         color: #ff8a3d;
       }
     }
-    
+
     &.role-MANAGER {
       background-color: #ebf9e8;
       color: #2ea01c;
       border-color: #c3e6bc;
-      
+
       ::ng-deep .mat-mdc-select-arrow {
         color: #2ea01c;
       }
     }
-    
+
     &.role-ADMIN {
       background-color: #f5e9ff;
       color: #8044c2;
       border-color: #dbbdf7;
-      
+
       ::ng-deep .mat-mdc-select-arrow {
         color: #8044c2;
       }
@@ -228,7 +283,8 @@ h2 {
   }
 }
 
-.no-data, .loading {
+.no-data,
+.loading {
   text-align: center;
   padding: 2rem 0;
   color: var(--secondary-text-color);
@@ -275,11 +331,11 @@ h2 {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    
+
     mat-icon:first-child {
       margin-right: 4px;
     }
-    
+
     mat-icon:last-child {
       margin-left: 4px;
     }
@@ -300,6 +356,7 @@ h2 {
 /* Стили для Material компонентов */
 ::ng-deep {
   .employees-container {
+
     .mat-mdc-input-element,
     .mat-mdc-form-field-label,
     .mat-mdc-select-value,
@@ -336,7 +393,7 @@ h2 {
       font-family: var(--font-family), serif !important;
     }
   }
-  
+
   /* Стили для меню ролей */
   .role-menu {
     .role-menu-header {
@@ -346,27 +403,27 @@ h2 {
       border-bottom: 1px solid var(--light-gray-color);
       font-family: var(--font-family), serif !important;
     }
-    
+
     .mat-mdc-menu-content {
       padding: 0 !important;
     }
-    
+
     .mat-mdc-menu-item {
       font-family: var(--font-family), serif !important;
       height: 40px;
     }
-    
+
     .role-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      
+
       &.active-role {
         color: var(--blue-color);
         font-weight: 500;
       }
-      
+
       mat-icon {
         margin-left: 8px;
         font-size: 18px;
@@ -390,43 +447,43 @@ h2 {
   .mat-mdc-select[hiddenIndicator] .mat-mdc-select-arrow-wrapper {
     display: none;
   }
-  
+
   // Стили для элементов списка mat-option
   .mat-mdc-option {
     min-height: 36px !important;
     padding: 6px 12px !important;
     font-family: var(--font-family), serif !important;
   }
-  
+
   /* Стили для вариантов выбора роли в mat-select */
   .mat-mdc-option[data-role="EMPLOYEE"] {
     background-color: #edf6ff !important;
     color: var(--blue-color) !important;
     font-family: var(--font-family), serif;
   }
-  
+
   .mat-mdc-option[data-role="SUPPLY_SPECIALIST"] {
     background-color: #fff1e6 !important;
     color: #ff8a3d !important;
     font-family: var(--font-family), serif;
   }
-  
+
   .mat-mdc-option[data-role="MANAGER"] {
     background-color: #ebf9e8 !important;
     color: #2ea01c !important;
     font-family: var(--font-family), serif;
   }
-  
+
   .mat-mdc-option[data-role="ADMIN"] {
     background-color: #f5e9ff !important;
     color: #8044c2 !important;
     font-family: var(--font-family), serif;
   }
-  
+
   .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
     opacity: 0.9 !important;
   }
-  
+
   /* Убираем границы и тени стандартного mat-select */
   .mat-mdc-select-panel {
     border-radius: 4px !important;
@@ -441,4 +498,4 @@ mat-icon {
   height: 18px;
   width: 18px;
   line-height: 18px;
-} 
+}

@@ -223,6 +223,15 @@
     gap: 10px;
     margin-top: auto;
 
+    .my-star {
+      display: flex;
+      align-items: center;
+      margin-right: auto;
+      color: #1976d2;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
     &::before {
       content: '';
       position: absolute;
@@ -270,9 +279,4 @@
   height: 420px !important;
   min-height: 420px !important;
   max-height: 420px !important;
-}
-
-.supply-card.own-supply {
-  background: linear-gradient(0deg, #e8fbe8 0%, #f6fff6 100%);
-  border-color: #b6eab6;
 }

@@ -10,10 +10,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UserService, User } from '../../services/user.service';
 import { UserRoles } from '../../models/user.model';
 import { interval, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AddEmployeeDialogComponent } from './add-employee-dialog/add-employee-dialog.component';
 
 @Component({
   selector: 'app-employees-page',
@@ -29,7 +31,8 @@ import { environment } from '../../../environments/environment';
     MatIconModule,
     MatInputModule,
     MatSnackBarModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule
   ],
   templateUrl: './employees-page.component.html',
   styleUrls: ['./employees-page.component.scss']
@@ -46,7 +49,8 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -130,7 +134,7 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
   }
 
   translateRole(role: string): string {
-    const roleTranslations: {[key: string]: string} = {
+    const roleTranslations: { [key: string]: string } = {
       [UserRoles.EMPLOYEE]: 'Сотрудник',
       [UserRoles.SUPPLY_SPECIALIST]: 'Специалист снабжения',
       [UserRoles.MANAGER]: 'Менеджер',
@@ -170,8 +174,8 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
       // Проверяем, является ли текущий пользователь этим администратором
       // сравнивая имя, фамилию и отчество
       if (currentUserData.firstName === user.firstName &&
-          currentUserData.lastName === user.lastName &&
-          currentUserData.middleName === user.middleName) {
+        currentUserData.lastName === user.lastName &&
+        currentUserData.middleName === user.middleName) {
         return false;
       }
     }
@@ -222,7 +226,7 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
 
   // Получаем класс CSS для роли
   getRoleClass(role: string): string {
-    switch(role) {
+    switch (role) {
       case UserRoles.EMPLOYEE:
         return 'role-EMPLOYEE';
       case UserRoles.SUPPLY_SPECIALIST:
@@ -234,5 +238,18 @@ export class EmployeesPageComponent implements OnInit, OnDestroy {
       default:
         return 'role-EMPLOYEE';
     }
+  }
+
+  openAddEmployeeDialog(): void {
+    const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
+      width: '600px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers();
+      }
+    });
   }
 }

@@ -2,11 +2,17 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupplyRequest } from '../../services/supply.service';
 import { UserRoles } from '../../models/user.model';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-supply-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatTooltipModule
+  ],
   templateUrl: './supply-card.component.html',
   styleUrls: ['./supply-card.component.scss']
 })
