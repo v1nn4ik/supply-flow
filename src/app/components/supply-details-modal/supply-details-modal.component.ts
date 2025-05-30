@@ -86,6 +86,7 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log('SupplyDetailsModalComponent ngOnInit', { data: this.data, userRole: this.userRole });
     this.loadComments();
     this.currentUser = this.userService.getUserData();
 
@@ -448,7 +449,25 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   }
 
   editSupply() {
+    console.log('Edit supply clicked', this.data);
     this.edit.emit(this.data);
-    this.closeModal();
+  }
+
+  onEdit() {
+    console.log('onEdit called', this.data);
+    this.edit.emit(this.data);
+  }
+
+  get canEdit(): boolean {
+    // Проверяем, есть ли данные о текущем пользователе и данные заявки
+    if (!this.currentUser || !this.data || !this.data.createdBy) {
+      return false;
+    }
+    // Разрешаем редактирование, если пользователь - администратор, менеджер или специалист снабжения (старая логика)
+    // ИЛИ если пользователь является создателем заявки (новая логика)
+    return this.userRole === 'admin' ||
+      this.userRole === 'manager' ||
+      this.userRole === 'supply_specialist' ||
+      this.currentUser.userId === this.data.createdBy.userId;
   }
 }

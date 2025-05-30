@@ -99,16 +99,7 @@ export class AddEmployeeDialogComponent {
   onSubmit(): void {
     if (this.employeeForm.valid) {
       this.isSubmitting = true;
-      const formData = new FormData();
-
-      // Добавляем все поля формы
-      Object.keys(this.employeeForm.value).forEach(key => {
-        if (key === 'birthDate') {
-          formData.append(key, this.employeeForm.value[key]);
-        } else {
-          formData.append(key, this.employeeForm.value[key]);
-        }
-      });
+      const formData = this.employeeForm.value;
 
       this.userService.createUser(formData).subscribe({
         next: (response) => {
@@ -117,6 +108,9 @@ export class AddEmployeeDialogComponent {
         },
         error: (error) => {
           console.error('Ошибка при создании сотрудника:', error);
+          if (error.error && error.error.message) {
+            console.error('Сообщение от сервера:', error.error.message);
+          }
           this.isSubmitting = false;
         }
       });

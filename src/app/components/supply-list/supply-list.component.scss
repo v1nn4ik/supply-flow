@@ -1,61 +1,144 @@
 @use "../../styles/typography" as *;
 
 .supply-list {
-	display: grid;
-	gap: 1rem;
-	padding: 1rem;
+  padding: 20px;
+}
+
+.supply-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .supply-item {
-	@include base-typography;
-	padding: 1rem;
-	border: 1px solid var(--light-gray-color);
-	border-radius: 4px;
-	cursor: pointer;
-	transition: all 0.3s ease;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 
-	&:hover {
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
 
-	h3 {
-		@include heading-typography;
-		margin: 0 0 0.5rem 0;
-		font-size: 1.2rem;
-	}
+.supply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
 
-	p {
-		@include light-typography;
-		margin: 0;
-		color: var(--gray-color);
-	}
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.supply-description {
+  margin: 0 0 16px;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.supply-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.priority-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &.high {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+
+  &.medium {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+
+  &.low {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &.new {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.in_progress {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+
+  &.completed {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+
+  &.finalized {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+}
+
+.date {
+  color: #999;
 }
 
 .supply-status {
-	@include base-typography;
-	display: inline-block;
-	padding: 0.25rem 0.5rem;
-	border-radius: 4px;
-	font-size: 0.875rem;
-	margin-top: 0.5rem;
+  @include base-typography;
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 .status-new {
-	background-color: var(--status-pending-bg);
-	color: var(--blue-color);
+  background-color: var(--status-pending-bg);
+  color: var(--blue-color);
 }
 
 .status-progress {
-	background-color: var(--status-in-progress-bg);
-	color: var(--status-in-progress-text);
+  background-color: var(--status-in-progress-bg);
+  color: var(--status-in-progress-text);
 }
 
 .status-completed {
-	background-color: var(--status-completed-bg);
-	color: var(--status-completed-text);
+  background-color: var(--status-completed-bg);
+  color: var(--status-completed-text);
 }
 
 .status-cancelled {
-	background-color: var(--status-cancelled-bg);
-	color: var(--status-cancelled-text);
+  background-color: var(--status-cancelled-bg);
+  color: var(--status-cancelled-text);
 }

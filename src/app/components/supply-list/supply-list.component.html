@@ -1,19 +1,28 @@
 <div class="supply-list">
-  @for (supply of supplies; track supply.id) {
-    <div class="supply-item" (click)="openDetails(supply)">
-      <h3>{{ supply.title }}</h3>
-      <p>{{ supply.description }}</p>
-      <div class="supply-status" [class]="getStatusClass(supply.status)">
-        {{ getStatusLabel(supply.status) }}
+  <div class="supply-items">
+    <div *ngFor="let supply of supplies" class="supply-item" (click)="onSupplyClick(supply)">
+      <div class="supply-header">
+        <h3>{{ supply.title }}</h3>
+        <span class="priority-badge" [ngClass]="supply.priority">
+          {{ supply.priority === 'high' ? 'Высокий' : supply.priority === 'medium' ? 'Средний' : 'Низкий' }}
+        </span>
+      </div>
+      <p class="supply-description">{{ supply.description }}</p>
+      <div class="supply-footer">
+        <span class="status-badge" [ngClass]="supply.status">
+          {{ supply.status === 'new' ? 'Новая' :
+          supply.status === 'in_progress' ? 'В работе' :
+          supply.status === 'completed' ? 'Выполнена' :
+          supply.status === 'finalized' ? 'Завершена' : 'Отменена' }}
+        </span>
+        <span class="date">{{ supply.createdAt | date:'dd.MM.yyyy' }}</span>
       </div>
     </div>
-  }
+  </div>
 
-  @if (selectedSupply) {
-    <app-supply-details-modal
-      [data]="selectedSupply"
-      (close)="closeDetails()"
-      (statusChange)="onStatusChange($event)"
-    ></app-supply-details-modal>
-  }
-</div> 
+  <app-supply-details-modal *ngIf="showDetailsModal && selectedSupply" [data]="selectedSupply" [userRole]="userRole"
+    (close)="onCloseDetails()" (edit)="onEditSupply($event)"></app-supply-details-modal>
+
+  <app-edit-supply-modal *ngIf="showEditModal && selectedSupply" [supply]="selectedSupply" (close)="onCloseEdit()"
+    (saved)="onSupplySaved($event)"></app-edit-supply-modal>
+</div>

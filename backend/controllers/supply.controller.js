@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
     // Создаем абсолютный путь к директории загрузки
     const uploadDir = path.join(__dirname, '..', 'uploads', 'supply');
     console.log(`Директория для загрузки файлов заявок: ${uploadDir}`);
-    
+
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
       console.log(`Создана директория: ${uploadDir}`);
@@ -47,7 +47,7 @@ exports.upload = upload;
 exports.createSupply = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     // Получаем информацию о пользователе
     const user = await User.findById(userId);
     if (!user) {
@@ -55,7 +55,7 @@ exports.createSupply = async (req, res) => {
     }
 
     const userName = `${user.lastName || ''} ${user.firstName || ''}`.trim() || "Пользователь";
-    
+
     const supply = new Supply({
       ...req.body,
       createdBy: {
@@ -71,15 +71,15 @@ exports.createSupply = async (req, res) => {
         purchased: false
       }));
     }
-    
+
     await supply.save();
-    
+
     // Отправляем уведомление об обновлении
     const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
     if (emitSupplyUpdate) {
       emitSupplyUpdate(supply);
     }
-    
+
     res.status(201).json(supply);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -108,25 +108,25 @@ exports.getMySupplies = async (req, res) => {
 exports.updateSupplyStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    
+
     // Проверка прав для установки статуса "Завершена"
-    if (status === 'finalized' && 
-        req.user.role !== ROLES.ADMIN && 
-        req.user.role !== ROLES.MANAGER) {
-      return res.status(403).json({ 
-        message: 'Только администратор или руководитель могут установить статус "Завершена"' 
+    if (status === 'finalized' &&
+      req.user.role !== ROLES.ADMIN &&
+      req.user.role !== ROLES.MANAGER) {
+      return res.status(403).json({
+        message: 'Только администратор или руководитель могут установить статус "Завершена"'
       });
     }
-    
+
     // Проверка прав для отмены заявки (статус "Отменена")
-    if (status === 'cancelled' && 
-        req.user.role !== ROLES.ADMIN && 
-        req.user.role !== ROLES.MANAGER) {
-      return res.status(403).json({ 
-        message: 'Только администратор или руководитель могут отменить заявку' 
+    if (status === 'cancelled' &&
+      req.user.role !== ROLES.ADMIN &&
+      req.user.role !== ROLES.MANAGER) {
+      return res.status(403).json({
+        message: 'Только администратор или руководитель могут отменить заявку'
       });
     }
-    
+
     // Если статус новый, все предметы должны быть не куплены
     if (status === 'new') {
       const supply = await Supply.findByIdAndUpdate(
@@ -185,28 +185,50 @@ exports.updateSupplyStatus = async (req, res) => {
 
 exports.updateSupply = async (req, res) => {
   try {
-    // Проверка прав для установки статуса "Завершена"
-    if (req.body.status === 'finalized' && 
-        req.user.role !== ROLES.ADMIN && 
-        req.user.role !== ROLES.MANAGER) {
-      return res.status(403).json({ 
-        message: 'Только администратор или руководитель могут установить статус "Завершена"' 
+    const supplyId = req.params.id;
+    const userId = req.user.userId;
+    const userRole = req.user.role;
+
+    // Найдем заявку, чтобы проверить создателя
+    const supply = await Supply.findById(supplyId);
+    if (!supply) {
+      return res.status(404).json({ message: 'Заявка не найдена' });
+    }
+
+    // Проверка прав на редактирование:
+    // Разрешено администраторам, менеджерам, специалистам снабжения
+    // ИЛИ создателю заявки
+    const canEdit = userRole === ROLES.ADMIN ||
+      userRole === ROLES.MANAGER ||
+      userRole === ROLES.SUPPLY_SPECIALIST ||
+      (supply.createdBy && supply.createdBy.userId && supply.createdBy.userId.toString() === userId.toString());
+
+    if (!canEdit) {
+      return res.status(403).json({ message: 'Нет прав для редактирования этой заявки' });
+    }
+
+    // Проверка прав для установки статуса "Завершена" (оставляем только для админа/менеджера)
+    if (req.body.status === 'finalized' &&
+      userRole !== ROLES.ADMIN &&
+      userRole !== ROLES.MANAGER) {
+      return res.status(403).json({
+        message: 'Только администратор или руководитель могут установить статус "Завершена"'
       });
     }
-    
-    // Проверка прав для отмены заявки (статус "Отменена")
-    if (req.body.status === 'cancelled' && 
-        req.user.role !== ROLES.ADMIN && 
-        req.user.role !== ROLES.MANAGER) {
-      return res.status(403).json({ 
-        message: 'Только администратор или руководитель могут отменить заявку' 
+
+    // Проверка прав для отмены заявки (оставляем только для админа/менеджера)
+    if (req.body.status === 'cancelled' &&
+      userRole !== ROLES.ADMIN &&
+      userRole !== ROLES.MANAGER) {
+      return res.status(403).json({
+        message: 'Только администратор или руководитель могут отменить заявку'
       });
     }
-    
+
     // Если статус новый, все предметы должны быть не куплены
     if (req.body.status === 'new') {
-      const supply = await Supply.findByIdAndUpdate(
-        req.params.id,
+      const updatedSupply = await Supply.findByIdAndUpdate(
+        supplyId,
         {
           $set: {
             ...req.body,
@@ -216,23 +238,23 @@ exports.updateSupply = async (req, res) => {
         },
         { new: true }
       );
-      
-      if (!supply) {
+
+      if (!updatedSupply) {
         return res.status(404).json({ message: 'Заявка не найдена' });
       }
 
       // Отправляем уведомление об обновлении
       const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
       if (emitSupplyUpdate) {
-        emitSupplyUpdate(supply);
+        emitSupplyUpdate(updatedSupply);
       }
 
-      return res.json(supply);
+      return res.json(updatedSupply);
     }
 
     // Для других статусов обновляем как обычно
-    const supply = await Supply.findByIdAndUpdate(
-      req.params.id,
+    const updatedSupply = await Supply.findByIdAndUpdate(
+      supplyId,
       {
         $set: {
           ...req.body,
@@ -241,19 +263,20 @@ exports.updateSupply = async (req, res) => {
       },
       { new: true }
     );
-    
-    if (!supply) {
+
+    if (!updatedSupply) {
       return res.status(404).json({ message: 'Заявка не найдена' });
     }
 
     // Отправляем уведомление об обновлении
     const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
     if (emitSupplyUpdate) {
-      emitSupplyUpdate(supply);
+      emitSupplyUpdate(updatedSupply);
     }
 
-    res.json(supply);
+    res.json(updatedSupply);
   } catch (error) {
+    console.error('Ошибка при обновлении заявки:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -279,13 +302,13 @@ exports.deleteSupply = async (req, res) => {
           // Используем абсолютный путь для удаления файла
           const absolutePath = path.resolve(__dirname, '..', comment.attachment.url);
           console.log(`Попытка удаления файла: ${absolutePath}`);
-          
+
           if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(absolutePath);
             console.log(`✓ Успешно удален файл: ${absolutePath}`);
           } else {
             console.log(`✗ Файл не существует: ${absolutePath}`);
-            
+
             // Попробуем найти файл относительно корня сервера
             const alternativePath = path.resolve(comment.attachment.url);
             if (fs.existsSync(alternativePath)) {
@@ -308,20 +331,20 @@ exports.deleteSupply = async (req, res) => {
     // Удаляем файлы вложений заявки, если они есть
     if (supply.attachments && supply.attachments.length > 0) {
       console.log(`Найдено ${supply.attachments.length} вложений для удаления`);
-      
+
       for (const attachment of supply.attachments) {
         if (attachment.url) {
           try {
             // Используем абсолютный путь для удаления файла
             const absolutePath = path.resolve(__dirname, '..', attachment.url);
             console.log(`Попытка удаления вложения: ${absolutePath}`);
-            
+
             if (fs.existsSync(absolutePath)) {
               fs.unlinkSync(absolutePath);
               console.log(`✓ Успешно удалено вложение: ${absolutePath}`);
             } else {
               console.log(`✗ Вложение не существует: ${absolutePath}`);
-              
+
               // Попробуем найти файл относительно корня сервера
               const alternativePath = path.resolve(attachment.url);
               if (fs.existsSync(alternativePath)) {
@@ -367,7 +390,7 @@ exports.uploadAttachment = async (req, res) => {
     }
 
     console.log(`Получен файл: ${file.originalname}, размер: ${file.size} байт, путь: ${file.path}`);
-    
+
     // Создаем относительный путь для хранения в БД и доступа через веб
     const relativePath = 'uploads/supply/' + path.basename(file.path);
     console.log(`Сохраняем относительный путь: ${relativePath}`);
@@ -421,35 +444,35 @@ exports.uploadAttachment = async (req, res) => {
 exports.deleteAttachment = async (req, res) => {
   try {
     const { supplyId, attachmentId } = req.params;
-    
+
     const supply = await Supply.findById(supplyId);
     if (!supply) {
       return res.status(404).json({ message: 'Заявка не найдена' });
     }
-    
+
     // Находим вложение
     const attachment = supply.attachments.id(attachmentId);
     if (!attachment) {
       return res.status(404).json({ message: 'Вложение не найдено' });
     }
-    
+
     // Удаляем файл с диска
     try {
       fs.unlinkSync(attachment.url);
     } catch (err) {
       console.error('Ошибка при удалении файла:', err);
     }
-    
+
     // Удаляем вложение из массива
     supply.attachments.pull(attachmentId);
     await supply.save();
-    
+
     // Отправляем уведомление об обновлении
     const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
     if (emitSupplyUpdate) {
       emitSupplyUpdate(supply);
     }
-    
+
     res.json(supply);
   } catch (error) {
     res.status(500).json({ message: 'Ошибка при удалении вложения' });
