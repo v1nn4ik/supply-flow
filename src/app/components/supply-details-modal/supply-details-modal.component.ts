@@ -459,15 +459,7 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   }
 
   get canEdit(): boolean {
-    // Проверяем, есть ли данные о текущем пользователе и данные заявки
-    if (!this.currentUser || !this.data || !this.data.createdBy) {
-      return false;
-    }
-    // Разрешаем редактирование, если пользователь - администратор, менеджер или специалист снабжения (старая логика)
-    // ИЛИ если пользователь является создателем заявки (новая логика)
-    return this.userRole === 'admin' ||
-      this.userRole === 'manager' ||
-      this.userRole === 'supply_specialist' ||
-      this.currentUser.userId === this.data.createdBy.userId;
+    // Разрешаем редактирование любой авторизованной роли
+    return !!this.userRole;
   }
 }

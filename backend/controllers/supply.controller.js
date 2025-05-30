@@ -189,22 +189,10 @@ exports.updateSupply = async (req, res) => {
     const userId = req.user.userId;
     const userRole = req.user.role;
 
-    // Найдем заявку, чтобы проверить создателя
+    // Найдем заявку, чтобы проверить создателя (больше не нужно для проверки прав на редактирование, но нужно для проверки статусов)
     const supply = await Supply.findById(supplyId);
     if (!supply) {
       return res.status(404).json({ message: 'Заявка не найдена' });
-    }
-
-    // Проверка прав на редактирование:
-    // Разрешено администраторам, менеджерам, специалистам снабжения
-    // ИЛИ создателю заявки
-    const canEdit = userRole === ROLES.ADMIN ||
-      userRole === ROLES.MANAGER ||
-      userRole === ROLES.SUPPLY_SPECIALIST ||
-      (supply.createdBy && supply.createdBy.userId && supply.createdBy.userId.toString() === userId.toString());
-
-    if (!canEdit) {
-      return res.status(403).json({ message: 'Нет прав для редактирования этой заявки' });
     }
 
     // Проверка прав для установки статуса "Завершена" (оставляем только для админа/менеджера)
