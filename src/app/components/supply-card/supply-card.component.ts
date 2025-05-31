@@ -35,7 +35,6 @@ export class SupplyCardComponent {
 
   get isCreatedByCurrentUser(): boolean {
     const createdById = this.data.createdBy?.userId;
-    console.log('createdBy.userId:', createdById, 'currentUserId:', this.currentUserId);
     return (
       !!this.currentUserId &&
       createdById === this.currentUserId

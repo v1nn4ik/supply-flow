@@ -31,6 +31,7 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   filteredSupplies: SupplyRequest[] = [];
   selectedSupply: SupplyRequest | null = null;
   duplicateData: SupplyRequest | null = null;
+  editData: SupplyRequest | null = null;
   error: string | null = null;
   userRole: string | null = null;
   isEmployee = false;
@@ -77,12 +78,10 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
 
   private subscribeToUserData() {
     this.userSubscription = this.userService.userData$.subscribe(userData => {
-      console.log('userData из userService:', userData);
       if (userData) {
         this.userRole = userData.role || null;
         this.isEmployee = userData.role === UserRoles.EMPLOYEE;
         this.currentUserId = userData._id || null;
-        console.log('Текущий пользователь:', this.currentUserId, userData);
         this.loadSupplies();
       }
     });
@@ -215,6 +214,14 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   // Методы для работы с модальными окнами
   openCreateModal(supplyToDuplicate?: SupplyRequest) {
     this.duplicateData = supplyToDuplicate || null;
+    this.editData = null;
+    this.showCreateModal = true;
+    this.showDetailsModal = false;
+  }
+
+  openEditModal(supply: SupplyRequest) {
+    this.editData = this.cloneSupply(supply);
+    this.duplicateData = null;
     this.showCreateModal = true;
     this.showDetailsModal = false;
   }
@@ -222,6 +229,7 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
   closeCreateModal() {
     this.showCreateModal = false;
     this.duplicateData = null;
+    this.editData = null;
   }
 
   openDetailsModal(supply: SupplyRequest) {
@@ -244,6 +252,18 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
         this.loadSupplies();
       },
       error: () => this.setError('create')
+    });
+  }
+
+  handleUpdateSupply(event: { id: string, data: Partial<SupplyRequest> }) {
+    this.clearError();
+    this.supplyService.updateSupplyRequest(event.id, event.data).subscribe({
+      next: (updatedSupply) => {
+        this.closeCreateModal();
+        this.updateSupplyInList(updatedSupply);
+        this.applyFilters();
+      },
+      error: () => this.setError('update')
     });
   }
 
@@ -342,13 +362,14 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
     this.error = null;
   }
 
-  private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load') {
+  private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load' | 'update') {
     const errorMessages = {
       create: 'Произошла ошибка при создании заявки.',
       status: 'Произошла ошибка при обновлении статуса.',
       delete: 'Произошла ошибка при удалении заявки.',
       items: 'Произошла ошибка при обновлении статуса закупки.',
-      load: 'Произошла ошибка при загрузке заявок. Пожалуйста, обновите страницу.'
+      load: 'Произошла ошибка при загрузке заявок. Пожалуйста, обновите страницу.',
+      update: 'Произошла ошибка при обновлении заявки.'
     };
     this.error = errorMessages[type] + ' Пожалуйста, попробуйте снова.';
   }

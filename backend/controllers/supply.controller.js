@@ -185,86 +185,100 @@ exports.updateSupplyStatus = async (req, res) => {
 
 exports.updateSupply = async (req, res) => {
   try {
-    const supplyId = req.params.id;
-    const userId = req.user.userId;
-    const userRole = req.user.role;
+    // Сначала найдем заявку, чтобы проверить ее текущий статус
+    const existingSupply = await Supply.findById(req.params.id);
 
-    // Найдем заявку, чтобы проверить создателя (больше не нужно для проверки прав на редактирование, но нужно для проверки статусов)
-    const supply = await Supply.findById(supplyId);
-    if (!supply) {
+    if (!existingSupply) {
       return res.status(404).json({ message: 'Заявка не найдена' });
     }
 
-    // Проверка прав для установки статуса "Завершена" (оставляем только для админа/менеджера)
+    // Проверяем статус: редактировать можно только заявки со статусом 'new'
+    if (existingSupply.status !== 'new') {
+      return res.status(400).json({ message: 'Редактировать можно только заявки со статусом "Новая"' });
+    }
+
+    // Проверка прав для установки статуса "Завершена"
     if (req.body.status === 'finalized' &&
-      userRole !== ROLES.ADMIN &&
-      userRole !== ROLES.MANAGER) {
+      req.user.role !== ROLES.ADMIN &&
+      req.user.role !== ROLES.MANAGER) {
       return res.status(403).json({
         message: 'Только администратор или руководитель могут установить статус "Завершена"'
       });
     }
 
-    // Проверка прав для отмены заявки (оставляем только для админа/менеджера)
+    // Проверка прав для отмены заявки (статус "Отменена")
     if (req.body.status === 'cancelled' &&
-      userRole !== ROLES.ADMIN &&
-      userRole !== ROLES.MANAGER) {
+      req.user.role !== ROLES.ADMIN &&
+      req.user.role !== ROLES.MANAGER) {
       return res.status(403).json({
         message: 'Только администратор или руководитель могут отменить заявку'
       });
     }
 
-    // Если статус новый, все предметы должны быть не куплены
-    if (req.body.status === 'new') {
-      const updatedSupply = await Supply.findByIdAndUpdate(
-        supplyId,
-        {
-          $set: {
-            ...req.body,
-            updatedAt: Date.now(),
-            'items.$[].purchased': false
-          }
-        },
-        { new: true }
-      );
+    // Получаем поля для обновления из тела запроса, исключая items и другие поля, которые могут обрабатываться отдельно
+    const updateFields = { ...req.body };
+    delete updateFields.items;
+    // Можно также удалить статус, так как он обрабатывается отдельно в ветке ниже
+    delete updateFields.status;
 
-      if (!updatedSupply) {
-        return res.status(404).json({ message: 'Заявка не найдена' });
+    let updateObject = {
+      $set: {
+        ...updateFields,
+        updatedAt: Date.now()
       }
+    };
 
-      // Отправляем уведомление об обновлении
-      const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
-      if (emitSupplyUpdate) {
-        emitSupplyUpdate(updatedSupply);
-      }
-
-      return res.json(updatedSupply);
+    // Если в теле запроса есть items, добавляем их в $set
+    if (req.body.items) {
+      updateObject.$set.items = req.body.items;
     }
 
-    // Для других статусов обновляем как обычно
-    const updatedSupply = await Supply.findByIdAndUpdate(
-      supplyId,
-      {
-        $set: {
-          ...req.body,
-          updatedAt: Date.now()
+    // Если статус меняется на new, сбрасываем purchased для всех предметов
+    if (req.body.status === 'new') {
+      updateObject.$set.status = 'new';
+      // Используем $[] для сброса всех purchased в массиве items
+      // Убедимся, что items.$[].purchased добавляется только один раз и не конфликтует с заменой всего массива
+      // Если мы заменяем весь массив items, нет необходимости сбрасывать purchased отдельно
+      // Если req.body.items не предоставлен, но статус меняется на new, мы должны сбросить purchased в существующем массиве
+      // В данном случае, фронтенд всегда отправляет items, так что просто убедимся, что в отправленном массиве purchased === false для нового статуса.
+      // Фронтенд уже должен был установить purchased в false при переходе в режим редактирования для статуса new.
+      // Таким образом, нам не нужно дополнительно использовать 'items.$[].purchased': false здесь, если мы заменяем весь массив.
+
+      // Если статус явно установлен в new в теле запроса
+      if (req.body.status === 'new') {
+        updateObject.$set.status = 'new';
+        // Так как мы заменяем весь массив items, ожидается, что purchased уже установлен в false фронтендом для этого случая
+        // Если нет items в body, но статус new, сбрасываем purchased в текущем массиве
+        if (!req.body.items) {
+          updateObject.$set['items.$[].purchased'] = false;
+          updateObject.arrayFilters = [{}]; // Пустой фильтр для применения ко всем элементам
         }
-      },
+      }
+    }
+
+    // Для других статусов просто обновляем статус, если он есть в body
+    if (req.body.status && req.body.status !== 'new') {
+      updateObject.$set.status = req.body.status;
+    }
+
+    const supply = await Supply.findByIdAndUpdate(
+      req.params.id,
+      updateObject,
       { new: true }
     );
 
-    if (!updatedSupply) {
+    if (!supply) {
       return res.status(404).json({ message: 'Заявка не найдена' });
     }
 
     // Отправляем уведомление об обновлении
     const emitSupplyUpdate = req.app.get('emitSupplyUpdate');
     if (emitSupplyUpdate) {
-      emitSupplyUpdate(updatedSupply);
+      emitSupplyUpdate(supply);
     }
 
-    res.json(updatedSupply);
+    res.json(supply);
   } catch (error) {
-    console.error('Ошибка при обновлении заявки:', error);
     res.status(400).json({ message: error.message });
   }
 };

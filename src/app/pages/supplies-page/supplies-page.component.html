@@ -65,15 +65,14 @@
   </div>
 
   @if (showCreateModal) {
-  <app-create-supply-modal [duplicateData]="duplicateData" (close)="closeCreateModal()"
-    (create)="handleCreateSupply($event)">
-  </app-create-supply-modal>
+  <app-create-supply-modal [duplicateData]="duplicateData" [editData]="editData" (close)="closeCreateModal()"
+    (create)="handleCreateSupply($event)" (update)="handleUpdateSupply($event)"></app-create-supply-modal>
   }
 
   @if (showDetailsModal && selectedSupply) {
   <app-supply-details-modal [data]="selectedSupply" [userRole]="userRole" (close)="closeDetailsModal()"
     (statusChange)="handleStatusChange($event)" (itemUpdate)="handleItemUpdate($event)"
-    (duplicate)="openCreateModal($event)">
+    (duplicate)="openCreateModal($event)" (edit)="openEditModal($event)">
   </app-supply-details-modal>
   }
 </div>

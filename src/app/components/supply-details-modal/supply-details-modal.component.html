@@ -6,7 +6,7 @@
         <button mat-icon-button matTooltip="Дублировать заявку" (click)="duplicateSupply()">
           <mat-icon>content_copy</mat-icon>
         </button>
-        <button mat-icon-button matTooltip="Редактировать заявку" (click)="onEdit()" *ngIf="canEdit">
+        <button mat-icon-button matTooltip="Редактировать заявку" (click)="editSupply()">
           <mat-icon>edit</mat-icon>
         </button>
         <button mat-icon-button class="close-button" (click)="closeModal()">
@@ -170,7 +170,7 @@
       <button class="action-button view-button" (click)="duplicateSupply()">
         Дублировать заявку
       </button>
-      <button class="action-button view-button" (click)="onEdit()" *ngIf="canEdit">
+      <button class="action-button view-button" (click)="editSupply()">
         Редактировать
       </button>
       <button class="action-button view-button" (click)="closeModal()">

@@ -86,7 +86,6 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    console.log('SupplyDetailsModalComponent ngOnInit', { data: this.data, userRole: this.userRole });
     this.loadComments();
     this.currentUser = this.userService.getUserData();
 
@@ -449,17 +448,7 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   }
 
   editSupply() {
-    console.log('Edit supply clicked', this.data);
     this.edit.emit(this.data);
-  }
-
-  onEdit() {
-    console.log('onEdit called', this.data);
-    this.edit.emit(this.data);
-  }
-
-  get canEdit(): boolean {
-    // Разрешаем редактирование любой авторизованной роли
-    return !!this.userRole;
+    this.closeModal();
   }
 }

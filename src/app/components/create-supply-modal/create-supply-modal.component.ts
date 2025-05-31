@@ -34,10 +34,13 @@ import { SupplyRequest, SupplyItem } from '../../services/supply.service';
 export class CreateSupplyModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() create = new EventEmitter<Omit<SupplyRequest, 'id'>>();
+  @Output() update = new EventEmitter<{ id: string, data: Partial<SupplyRequest> }>();
   @Input() duplicateData: SupplyRequest | null = null;
+  @Input() editData: SupplyRequest | null = null;
 
   today = new Date();
   minDate = new Date();
+  isEditMode = false;
 
   constructor() {
     this.minDate.setHours(0, 0, 0, 0);
@@ -45,7 +48,22 @@ export class CreateSupplyModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.duplicateData) {
+    if (this.editData) {
+      this.isEditMode = true;
+      // Копируем данные из редактируемой заявки
+      this.formData = {
+        title: this.editData.title,
+        description: this.editData.description,
+        items: this.editData.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+          purchased: item.purchased
+        })),
+        priority: this.editData.priority,
+        deadline: this.editData.deadline ? new Date(this.editData.deadline) : null
+      };
+    } else if (this.duplicateData) {
       // Копируем данные из дублируемой заявки
       this.formData = {
         title: `${this.duplicateData.title} (копия)`,
@@ -142,7 +160,18 @@ export class CreateSupplyModalComponent implements OnInit {
         status: 'new' as const,
         deadline: utcDeadline.toISOString()
       };
-      this.create.emit(formattedData);
+
+      if (this.isEditMode && this.editData) {
+        const id = this.editData.id || this.editData._id;
+        if (id) {
+          this.update.emit({
+            id,
+            data: formattedData
+          });
+        }
+      } else {
+        this.create.emit(formattedData);
+      }
     }
   }
 
