@@ -272,6 +272,54 @@ async function initializeDatabase() {
     await supplyRequest3.save();
     console.log('Заявка на оргтехнику создана:', supplyRequest3);
 
+    // Создание заявки от имени администратора
+    const adminSupplyRequest = new Supply({
+      title: 'Заявка на канцтовары для отдела АХО',
+      description: 'Требуется пополнить запасы канцтоваров для административно-хозяйственного отдела. Список необходимых позиций прилагается.',
+      priority: 'medium',
+      status: 'new',
+      deadline: new Date('2025-07-15T23:59:59.999Z'),
+      items: [
+        {
+          name: 'Бумага А4 для принтера',
+          quantity: 50,
+          unit: 'уп',
+          purchased: false
+        },
+        {
+          name: 'Ручки шариковые синие',
+          quantity: 100,
+          unit: 'шт',
+          purchased: false
+        },
+        {
+          name: 'Маркеры текстовыделители (набор 4 цвета)',
+          quantity: 10,
+          unit: 'уп',
+          purchased: false
+        },
+        {
+          name: 'Скотч канцелярский широкий',
+          quantity: 15,
+          unit: 'шт',
+          purchased: false
+        },
+        {
+          name: 'Степлер',
+          quantity: 2,
+          unit: 'шт',
+          purchased: false
+        }
+      ],
+      createdBy: {
+        userId: admin._id,
+        name: `${admin.lastName} ${admin.firstName} ${admin.middleName}`
+      }
+    });
+
+    await adminSupplyRequest.save();
+    console.log('Заявка от администратора создана:', adminSupplyRequest);
+
     await mongoose.disconnect();
     console.log('Disconnected from MongoDB');
   } catch (error) {

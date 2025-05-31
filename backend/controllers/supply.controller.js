@@ -185,17 +185,6 @@ exports.updateSupplyStatus = async (req, res) => {
 
 exports.updateSupply = async (req, res) => {
   try {
-    // Сначала найдем заявку, чтобы проверить ее текущий статус
-    const existingSupply = await Supply.findById(req.params.id);
-
-    if (!existingSupply) {
-      return res.status(404).json({ message: 'Заявка не найдена' });
-    }
-
-    // Проверяем статус: редактировать можно только заявки со статусом 'new'
-    if (existingSupply.status !== 'new') {
-      return res.status(400).json({ message: 'Редактировать можно только заявки со статусом "Новая"' });
-    }
 
     // Проверка прав для установки статуса "Завершена"
     if (req.body.status === 'finalized' &&
@@ -236,23 +225,11 @@ exports.updateSupply = async (req, res) => {
     // Если статус меняется на new, сбрасываем purchased для всех предметов
     if (req.body.status === 'new') {
       updateObject.$set.status = 'new';
-      // Используем $[] для сброса всех purchased в массиве items
-      // Убедимся, что items.$[].purchased добавляется только один раз и не конфликтует с заменой всего массива
-      // Если мы заменяем весь массив items, нет необходимости сбрасывать purchased отдельно
-      // Если req.body.items не предоставлен, но статус меняется на new, мы должны сбросить purchased в существующем массиве
-      // В данном случае, фронтенд всегда отправляет items, так что просто убедимся, что в отправленном массиве purchased === false для нового статуса.
-      // Фронтенд уже должен был установить purchased в false при переходе в режим редактирования для статуса new.
-      // Таким образом, нам не нужно дополнительно использовать 'items.$[].purchased': false здесь, если мы заменяем весь массив.
-
-      // Если статус явно установлен в new в теле запроса
-      if (req.body.status === 'new') {
-        updateObject.$set.status = 'new';
-        // Так как мы заменяем весь массив items, ожидается, что purchased уже установлен в false фронтендом для этого случая
-        // Если нет items в body, но статус new, сбрасываем purchased в текущем массиве
-        if (!req.body.items) {
-          updateObject.$set['items.$[].purchased'] = false;
-          updateObject.arrayFilters = [{}]; // Пустой фильтр для применения ко всем элементам
-        }
+      // Так как мы заменяем весь массив items, ожидается, что purchased уже установлен в false фронтендом для этого случая
+      // Если нет items в body, но статус new, сбрасываем purchased в текущем массиве
+      if (!req.body.items) {
+        updateObject.$set['items.$[].purchased'] = false;
+        updateObject.arrayFilters = [{}]; // Пустой фильтр для применения ко всем элементам
       }
     }
 
@@ -315,9 +292,9 @@ exports.deleteSupply = async (req, res) => {
             const alternativePath = path.resolve(comment.attachment.url);
             if (fs.existsSync(alternativePath)) {
               fs.unlinkSync(alternativePath);
-              console.log(`✓ Успешно удален файл (альтернативный путь): ${alternativePath}`);
+              console.log(`✓ Успешно удалено вложение (альтернативный путь): ${alternativePath}`);
             } else {
-              console.log(`✗ Файл не существует (альтернативный путь): ${alternativePath}`);
+              console.log(`✗ Вложение не существует (альтернативный путь): ${alternativePath}`);
             }
           }
         } catch (err) {

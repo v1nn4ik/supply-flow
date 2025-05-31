@@ -448,6 +448,12 @@ export class SupplyDetailsModalComponent implements OnInit, OnDestroy {
   }
 
   editSupply() {
+    // Проверяем статус заявки перед редактированием
+    if (this.data.status !== 'new') {
+      alert('Редактировать можно только заявки со статусом "Новая"');
+      return; // Прерываем выполнение функции, если статус не 'new'
+    }
+
     this.edit.emit(this.data);
     this.closeModal();
   }
