@@ -22,11 +22,6 @@ export class SupplyCardComponent {
   @Input() currentUserId: string | null = null;
   @Output() viewDetails = new EventEmitter<SupplyRequest>();
   @Output() delete = new EventEmitter<string>();
-  @Output() toggleFavorite = new EventEmitter<{ id: string, isFavorite: boolean }>();
-
-  get isFavorite(): boolean {
-    return this.data.isFavorite || false;
-  }
 
   get isEmployee(): boolean {
     return this.userRole === UserRoles.EMPLOYEE;
@@ -87,17 +82,6 @@ export class SupplyCardComponent {
 
     if (itemId && confirm('Вы уверены, что хотите удалить эту заявку?')) {
       this.delete.emit(itemId);
-    }
-  }
-
-  onToggleFavorite(event: Event) {
-    event.stopPropagation();
-    event.preventDefault();
-
-    const itemId = this.data.id || this.data._id;
-
-    if (itemId) {
-      this.toggleFavorite.emit({ id: itemId, isFavorite: !this.isFavorite });
     }
   }
 }
