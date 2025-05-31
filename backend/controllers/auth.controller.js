@@ -46,8 +46,13 @@ class AuthController {
       return res.status(400).json({ message: `Запись с таким ${field} (${value}) уже существует` });
     }
 
-    // Для других типов ошибок отправляем общее сообщение
-    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    // Для других типов ошибок отправляем общее сообщение и детали ошибки (для отладки в разработке)
+    res.status(500).json({
+      message: 'Внутренняя ошибка сервера',
+      error: process.env.NODE_ENV !== 'production' ? error.message : undefined,
+      // Также можно включить весь объект ошибки для максимальной отладки (осторожно с чувствительными данными)
+      // fullError: process.env.NODE_ENV !== 'production' ? JSON.parse(JSON.stringify(error)) : undefined
+    });
   }
 
   static _getUserPublicData(user) {
