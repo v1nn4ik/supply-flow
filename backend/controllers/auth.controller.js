@@ -32,6 +32,21 @@ class AuthController {
 
   static _handleServerError(res, error) {
     console.error('Server error:', error);
+
+    // Проверяем, является ли ошибка ошибкой валидации Mongoose
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ message: 'Ошибка валидации', details: errors });
+    }
+
+    // Проверяем, является ли ошибка ошибкой дублирования ключа MongoDB (например, для уникальных полей)
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      const value = Object.values(error.keyValue)[0];
+      return res.status(400).json({ message: `Запись с таким ${field} (${value}) уже существует` });
+    }
+
+    // Для других типов ошибок отправляем общее сообщение
     res.status(500).json({ message: 'Внутренняя ошибка сервера' });
   }
 
