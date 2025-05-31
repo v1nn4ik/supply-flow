@@ -309,6 +309,17 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  handleToggleFavorite(event: { id: string, isFavorite: boolean }) {
+    this.clearError();
+    this.supplyService.updateSupplyRequest(event.id, { isFavorite: event.isFavorite }).subscribe({
+      next: (updatedSupply) => {
+        this.updateSupplyInList(updatedSupply);
+        this.applyFilters();
+      },
+      error: () => this.setError('favorite')
+    });
+  }
+
   // Вспомогательные методы
   private getSupplyId(supply: SupplyRequest): string {
     return supply.id || supply._id || '';
@@ -362,14 +373,15 @@ export class SuppliesPageComponent implements OnInit, OnDestroy {
     this.error = null;
   }
 
-  private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load' | 'update') {
+  private setError(type: 'create' | 'status' | 'delete' | 'items' | 'load' | 'update' | 'favorite') {
     const errorMessages = {
       create: 'Произошла ошибка при создании заявки.',
       status: 'Произошла ошибка при обновлении статуса.',
       delete: 'Произошла ошибка при удалении заявки.',
       items: 'Произошла ошибка при обновлении статуса закупки.',
       load: 'Произошла ошибка при загрузке заявок. Пожалуйста, обновите страницу.',
-      update: 'Произошла ошибка при обновлении заявки.'
+      update: 'Произошла ошибка при обновлении заявки.',
+      favorite: 'Произошла ошибка при обновлении статуса избранного.'
     };
     this.error = errorMessages[type] + ' Пожалуйста, попробуйте снова.';
   }

@@ -47,6 +47,9 @@
     <span *ngIf="isCreatedByCurrentUser" class="my-star" matTooltip="Моя заявка">
       <mat-icon>person</mat-icon>
     </span>
+    <button class="action-button favorite-button" (click)="onToggleFavorite($event)" matTooltip="Добавить в избранное">
+      <mat-icon [class.favorite-active]="isFavorite">favorite</mat-icon>
+    </button>
     <button class="action-button view-button" (click)="onViewDetails(); $event.stopPropagation()">
       Подробнее
     </button>

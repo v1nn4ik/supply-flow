@@ -58,7 +58,8 @@
     @if (filteredSupplies.length > 0) {
     @for (supply of filteredSupplies; track supply.id || $index) {
     <app-supply-card [data]="supply" [userRole]="userRole" [currentUserId]="currentUserId"
-      (viewDetails)="openDetailsModal($event)" (delete)="handleDeleteSupply($event)">
+      (viewDetails)="openDetailsModal($event)" (delete)="handleDeleteSupply($event)"
+      (toggleFavorite)="handleToggleFavorite($event)">
     </app-supply-card>
     }
     }
