@@ -56,10 +56,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 
               <div class="form-field">
                 <label>Дата рождения</label>
-                <input type="date" formControlName="birthDate" required>
-                <div class="error" *ngIf="employeeForm.get('birthDate')?.hasError('required') && employeeForm.get('birthDate')?.touched">
-                  Дата рождения обязательна
-                </div>
+                <input type="date" formControlName="birthDate">
               </div>
             </div>
           </div>
@@ -92,7 +89,7 @@ export class AddEmployeeDialogComponent {
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       middleName: [''],
       phone: ['', [Validators.required, Validators.pattern(/^7\d{10}$/)]],
-      birthDate: ['', Validators.required]
+      birthDate: ['']
     });
   }
 

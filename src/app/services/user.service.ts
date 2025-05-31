@@ -183,7 +183,10 @@ export class UserService implements OnDestroy {
     });
   }
 
-  createUser(userData: FormData): Observable<any> {
+  // Метод для создания нового пользователя (сотрудника)
+  createUser(userData: any): Observable<any> { // Принимаем обычный объект данных
+    // HttpClient по умолчанию отправляет обычные объекты как JSON
+    // Отправляем POST запрос на эндпоинт /api/users
     return this.http.post(`${API_URL}/users`, userData);
   }
 }
